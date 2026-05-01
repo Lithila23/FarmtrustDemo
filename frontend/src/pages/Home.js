@@ -1,13 +1,77 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+// ---------------------------------------------------------------------------
+// Hero slideshow — high-quality Unsplash agriculture images.
+// We use translateX on an absolute flex track to create the physical slide.
+// ---------------------------------------------------------------------------
+const HERO_SLIDES = [
+  {
+    url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&auto=format&fit=crop&q=80',
+    alt: 'Golden wheat field at sunrise',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1600&auto=format&fit=crop&q=80',
+    alt: 'Tractor working a large green farm',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1600&auto=format&fit=crop&q=80',
+    alt: 'Fresh produce at a farmers market',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=1600&auto=format&fit=crop&q=80',
+    alt: 'Sunrise over a lush agricultural valley',
+  },
+];
+
 const Home = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % HERO_SLIDES.length);
+    }, 5000);
+    // Cleanup: prevent memory leaks on unmount
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* Hero Section */}
-      <section className="top-banner">
-        <div className="max-w-7xl mx-auto px-6 text-center hero-text">
+      {/* Hero Section — sliding image background */}
+      <section className="hero-slideshow-section">
+
+        {/* ── Overflow-hidden viewport (clips the sliding track) ────────── */}
+        <div className="absolute inset-0 overflow-hidden">
+
+          {/* ── Sliding track: w-full keeps width = 1 viewport; each slide
+               is min-w-full so translateX(-N*100%) shifts exactly N slides */}
+          <div
+            className="flex w-full h-full transition-transform duration-1000 ease-in-out"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          >
+            {HERO_SLIDES.map((slide, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 w-full h-full"
+                style={{
+                  backgroundImage: `url('${slide.url}')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+                role="img"
+                aria-label={slide.alt}
+              />
+            ))}
+          </div>
+
+        </div>{/* end viewport */}
+
+        {/* ── Dark scrim: bg-black/40 = 40% opacity, z-10 above the images ─ */}
+        <div className="absolute inset-0 bg-black/40 z-10 pointer-events-none" />
+
+        {/* ── Content — z-20 sits above both the images and the scrim ─────── */}
+        <div className="max-w-7xl mx-auto px-6 text-center relative z-20 text-white">
           <h2 className="text-5xl md:text-6xl font-display font-bold mb-4">Empower Your Agricultural Business</h2>
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-10">FarmTrust connects farmers and buyers with transparency, trust, and fair pricing. Grow your business with our intelligent marketplace.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -15,6 +79,7 @@ const Home = () => {
             <Link to="/login" className="btn-outline text-lg">Explore Platform</Link>
           </div>
         </div>
+
       </section>
 
       <section className="py-24 bg-slate-50">

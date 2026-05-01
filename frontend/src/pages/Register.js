@@ -31,9 +31,11 @@ const Register = () => {
             <p className="text-sm opacity-90">Create your farmer/buyer account</p>
           </div>
           <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-gradient-to-r from-primary-600 to-primary-700 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-xl">FT</span>
-            </div>
+            <img
+              src="/main_logo.png"
+              alt="FarmTrust logo"
+              className="h-14 w-auto object-contain mx-auto mb-4"
+            />
             <h1 className="text-3xl font-display font-bold text-slate-900 mb-2">Join FarmTrust</h1>
             <p className="text-slate-600">Create your account to get started</p>
           </div>

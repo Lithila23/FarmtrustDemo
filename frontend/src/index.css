@@ -144,19 +144,34 @@
     @apply bg-primary-50 border border-primary-200 text-primary-800 rounded-xl p-4;
   }
 
-  .top-banner {
-    @apply py-16 md:py-24 bg-gradient-to-r from-primary-600 via-emerald-500 to-primary-700 text-white overflow-hidden relative;
+  /* ── Hero Slideshow ──────────────────────────────────────────────────── */
+
+  /* Outer section: fixed height, clips the sliding track, centres content  */
+  .hero-slideshow-section {
+    @apply relative overflow-hidden flex items-center justify-center;
+    min-height: 480px;
+    padding: 4rem 0;          /* equivalent to py-16 */
+  }
+  @media (min-width: 768px) {
+    .hero-slideshow-section { padding: 6rem 0; }  /* md:py-24 */
   }
 
-  .top-banner::before {
-    content: '';
+  /* Moving strip: styles now applied via Tailwind utilities in JSX          */
+  /* (flex w-full h-full transition-transform duration-1000 ease-in-out)     */
+
+  /* Individual slides: styles applied via Tailwind + inline style in JSX    */
+  /* (flex-shrink-0 w-full h-full, backgroundImage/Size/Position via style)  */
+
+  /* Semi-transparent scrim so white text stays legible over any image       */
+  .hero-overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.26), transparent 45%), radial-gradient(circle at 80% 25%, rgba(255,255,255,0.22), transparent 40%);
-    opacity: 0.75;
+    background: rgba(0, 0, 0, 0.38);
+    z-index: 1;
     pointer-events: none;
   }
 
+  /* Content layer — identical positioning to the old .hero-text             */
   .hero-text {
     @apply relative z-10 text-white;
   }
