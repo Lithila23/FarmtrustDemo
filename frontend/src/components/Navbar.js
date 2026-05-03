@@ -54,9 +54,9 @@ const Navbar = () => {
             className={
               location.pathname === REGISTER_HREF
                 ? // Active state: looks exactly like other active nav items + bottom border line
-                  'px-2 py-2 text-sm font-semibold transition border-b-2 border-green-500 text-green-700 bg-transparent'
+                'px-2 py-2 text-sm font-semibold transition border-b-2 border-green-500 text-green-700 bg-transparent'
                 : // Inactive state: prominent CTA button
-                  'px-4 py-2 text-sm font-semibold transition rounded-md bg-primary-600 text-white hover:bg-primary-700'
+                'px-4 py-2 text-sm font-semibold transition rounded-md bg-primary-600 text-white hover:bg-primary-700'
             }
           >
             Register
@@ -94,9 +94,9 @@ const Navbar = () => {
               className={
                 location.pathname === REGISTER_HREF
                   ? // Active: standard highlighted mobile link
-                    'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-100 text-primary-800'
+                  'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-100 text-primary-800'
                   : // Inactive: CTA button style
-                    'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-600 text-white hover:bg-primary-700'
+                  'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-600 text-white hover:bg-primary-700'
               }
             >
               Register
