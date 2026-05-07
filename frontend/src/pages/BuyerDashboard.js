@@ -1,6 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// ── Image-fallback helper ────────────────────────────────────────────────────
+const CROP_EMOJI_MAP = {
+  banana: '🍌', coconut: '🥥', watermelon: '🍉', mango: '🥭',
+  apple: '🍎', orange: '🍊', grape: '🍇', strawberry: '🍓',
+  tomato: '🍅', potato: '🥔', carrot: '🥕', corn: '🌽',
+  wheat: '🌾', rice: '🍚', onion: '🧅', garlic: '🧄',
+  pepper: '🫑', broccoli: '🥦', spinach: '🥬', pumpkin: '🎃',
+  lemon: '🍋', pineapple: '🍍', peach: '🍑', pear: '🍐',
+  cherry: '🍒', blueberry: '🫐', mushroom: '🍄', cabbage: '🥬',
+  cucumber: '🥒', avocado: '🥑', eggplant: '🍆', radish: '🌱',
+};
+
+const getCropEmoji = (name = '') => {
+  const key = name.toLowerCase();
+  for (const [word, emoji] of Object.entries(CROP_EMOJI_MAP)) {
+    if (key.includes(word)) return emoji;
+  }
+  return '🌿';
+};
+
 const BuyerDashboard = () => {
   const [crops, setCrops] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -151,23 +171,94 @@ const BuyerDashboard = () => {
             className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400"
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCrops.length > 0 ? (
-            filteredCrops.map(crop => (
-              <div key={crop.id} className="glass-card dark:bg-slate-800 dark:border dark:border-slate-700 hover:shadow-2xl hover:scale-[1.02] transition-transform">
-                <h3 className="text-xl font-bold text-primary mb-2">{crop.name}</h3>
-                <p className="text-slate-600 dark:text-slate-300 mb-2"><strong>Available:</strong> {crop.quantity} kg</p>
-                <p className="text-lg font-bold text-accent mb-4">${crop.price}/kg</p>
-                {crop.description && <p className="text-slate-600 dark:text-slate-300 mb-4">{crop.description}</p>}
-                <button
-                  type="button"
-                  className="btn-primary w-full"
-                  onClick={() => openPaymentWindow(crop)}
+            filteredCrops.map(crop => {
+              const offerPrice = Number(crop.price);
+              const originalPrice = (offerPrice * 1.25).toFixed(2);
+              const discountPct = 20;
+              const emoji = getCropEmoji(crop.name);
+              return (
+                <div
+                  key={crop.id}
+                  className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
                 >
-                  Buy Now
-                </button>
-              </div>
-            ))
+                  {/* ── Image / Emoji Area ── */}
+                  <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                    {crop.image ? (
+                      <img
+                        src={crop.image}
+                        alt={crop.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
+                        {emoji}
+                      </span>
+                    )}
+
+                    {/* Discount badge – top-left */}
+                    <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                      {discountPct}% Off
+                    </span>
+
+                    {/* Produce tag – bottom-left */}
+                    <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
+                      🌱 Fresh Produce
+                    </span>
+                  </div>
+
+                  {/* ── Details Area ── */}
+                  <div className="flex flex-col flex-1 p-4 gap-3">
+                    {/* Title */}
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
+                      {crop.name}
+                    </h3>
+
+                    {/* Weight / quantity sub-text */}
+                    <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
+                      Available: {crop.quantity} kg
+                    </p>
+
+                    {/* Description */}
+                    {crop.description && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {crop.description}
+                      </p>
+                    )}
+
+                    {/* Pricing row */}
+                    <div className="flex items-baseline gap-2 mt-auto">
+                      <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
+                        ${offerPrice.toFixed(2)}
+                        <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
+                      </span>
+                      <span className="text-sm text-slate-400 line-through">
+                        ${originalPrice}
+                      </span>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                      <button
+                        type="button"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
+                        onClick={() => openPaymentWindow(crop)}
+                      >
+                        🛒 Add to Cart
+                      </button>
+                      <button
+                        type="button"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg transition-all duration-200"
+                        onClick={() => openPaymentWindow(crop)}
+                      >
+                        ⚡ Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-12">
               <div className="text-6xl mb-4">🛒</div>

@@ -24,6 +24,61 @@ const HERO_SLIDES = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Featured Products — mock data (image: '' triggers emoji fallback logic)
+// ---------------------------------------------------------------------------
+const FEATURED_PRODUCTS = [
+  {
+    id: 1,
+    name: 'Organic Mango',
+    quantity: 200,
+    price: 3.49,
+    originalPrice: 4.49,
+    discount: 22,
+    image: '',
+  },
+  {
+    id: 2,
+    name: 'Fresh Watermelon',
+    quantity: 85,
+    price: 1.99,
+    originalPrice: 2.49,
+    discount: 20,
+    image: '',
+  },
+  {
+    id: 3,
+    name: 'Premium Basmati Rice',
+    quantity: 500,
+    price: 2.79,
+    originalPrice: 3.49,
+    discount: 20,
+    image: '',
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Image-fallback emoji mapping (mirrors BuyerDashboard / FarmerDashboard)
+// ---------------------------------------------------------------------------
+const CROP_EMOJI_MAP = {
+  banana: '🍌', coconut: '🥥', watermelon: '🍉', mango: '🥭',
+  apple: '🍎', orange: '🍊', grape: '🍇', strawberry: '🍓',
+  tomato: '🍅', potato: '🥔', carrot: '🥕', corn: '🌽',
+  wheat: '🌾', rice: '🍚', onion: '🧅', garlic: '🧄',
+  pepper: '🫑', broccoli: '🥦', spinach: '🥬', pumpkin: '🎃',
+  lemon: '🍋', pineapple: '🍍', peach: '🍑', pear: '🍐',
+  cherry: '🍒', blueberry: '🫐', mushroom: '🍄', cabbage: '🥬',
+  cucumber: '🥒', avocado: '🥑', eggplant: '🍆', radish: '🌱',
+};
+
+const getCropEmoji = (name = '') => {
+  const key = name.toLowerCase();
+  for (const [word, emoji] of Object.entries(CROP_EMOJI_MAP)) {
+    if (key.includes(word)) return emoji;
+  }
+  return '🌿';
+};
+
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -155,6 +210,134 @@ const Home = () => {
           </div>
         </div>
 
+      </section>
+
+      {/* ── Featured Products ─────────────────────────────────────────────────
+           Sits between Hero and "Why Choose FarmTrust". Same bg/padding as
+           the Why Choose section for a seamless visual transition.          */}
+      <section className="py-24 bg-slate-50 dark:bg-slate-800 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-6">
+
+          {/* Section header */}
+          <div className="mb-12 text-center">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
+              🛒 Live on FarmTrust
+            </span>
+            <h3 className="section-header dark:text-slate-100">Featured Products</h3>
+            <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
+              Hand-picked fresh produce from verified farmers — straight to you.
+            </p>
+          </div>
+
+          {/* Desktop: cards + explore button in a single row
+               Mobile : cards stacked, button at the bottom              */}
+          <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
+
+            {/* 3 product cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
+              {FEATURED_PRODUCTS.map(product => {
+                const emoji = getCropEmoji(product.name);
+                return (
+                  <div
+                    key={product.id}
+                    className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                  >
+                    {/* Image / Emoji area */}
+                    <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
+                          {emoji}
+                        </span>
+                      )}
+
+                      {/* Discount badge — top-left */}
+                      <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                        {product.discount}% Off
+                      </span>
+
+                      {/* Produce tag — bottom-left */}
+                      <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
+                        🌱 Fresh Produce
+                      </span>
+                    </div>
+
+                    {/* Details area */}
+                    <div className="flex flex-col flex-1 p-4 gap-3">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
+                        {product.name}
+                      </h3>
+
+                      <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
+                        Available: {product.quantity} kg
+                      </p>
+
+                      {/* Pricing row */}
+                      <div className="flex items-baseline gap-2 mt-auto">
+                        <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
+                          ${product.price.toFixed(2)}
+                          <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
+                        </span>
+                        <span className="text-sm text-slate-400 line-through">
+                          ${product.originalPrice.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                        <Link
+                          to="/buyer"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
+                        >
+                          🛒 Add to Cart
+                        </Link>
+                        <Link
+                          to="/buyer"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg transition-all duration-200"
+                        >
+                          ⚡ Buy Now
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
+            <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
+              <Link
+                to="/buyer"
+                className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
+              >
+                {/* Animated arrow circle */}
+                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
+                  <svg
+                    className="w-8 h-8 text-white transition-transform duration-300 group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+                <span className="text-base font-bold leading-tight">
+                  Explore<br />for more
+                </span>
+                <span className="text-xs text-white/70 font-medium">
+                  View all listings →
+                </span>
+              </Link>
+            </div>
+
+          </div>
+        </div>
       </section>
 
       {/* sectionRef on the outermost wrapper — py-24 padding + heading give it
