@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 // ---------------------------------------------------------------------------
 // Hero slideshow — high-quality Unsplash agriculture images.
@@ -79,7 +80,23 @@ const getCropEmoji = (name = '') => {
   return '🌿';
 };
 
+// ---------------------------------------------------------------------------
+// Role → CTA configuration map
+// Determines the primary button text and destination for the current user.
+// ---------------------------------------------------------------------------
+const CTA_CONFIG = {
+  '':      { label: 'Start Exploring',    route: '/buyer'  },
+  buyer:   { label: 'Go to Marketplace',  route: '/buyer'  },
+  farmer:  { label: 'Go to Dashboard',    route: '/farmer' },
+  admin:   { label: 'Go to Admin Panel',  route: '/admin'  },
+};
+
 const Home = () => {
+  const { user } = useAuth();
+
+  // Derive the primary CTA text + route from the current auth role
+  const ctaConfig = CTA_CONFIG[user?.role ?? ''] ?? CTA_CONFIG[''];
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -205,8 +222,12 @@ const Home = () => {
           <h2 className="text-5xl md:text-6xl font-display font-bold mb-4">Empower Your Agricultural Business</h2>
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-10">FarmTrust connects farmers and buyers with transparency, trust, and fair pricing. Grow your business with our intelligent marketplace.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/register" className="cta-button text-lg">Get Started Free</Link>
-            <Link to="/login" className="btn-outline text-lg">Explore Platform</Link>
+            {/* Primary CTA — destination and label driven by auth role */}
+            <Link to={ctaConfig.route} className="cta-button text-lg">{ctaConfig.label}</Link>
+            {/* Secondary CTA — always visible, guides guests to sign up */}
+            {!user && (
+              <Link to="/register" className="btn-outline text-lg">Get Started Free</Link>
+            )}
           </div>
         </div>
 
@@ -312,7 +333,7 @@ const Home = () => {
             {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
             <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
               <Link
-                to="/buyer"
+                to={ctaConfig.route}
                 className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
               >
                 {/* Animated arrow circle */}

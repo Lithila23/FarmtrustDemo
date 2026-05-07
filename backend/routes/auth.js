@@ -60,7 +60,17 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        // Return the token AND the user profile so the frontend can
+        // perform role-based routing without a second API call.
+        res.json({
+          token,
+          user: {
+            id:    user.id,
+            name:  user.name,
+            email: user.email,
+            role:  user.role,   // ENUM: 'farmer' | 'buyer' | 'admin'
+          },
+        });
       }
     );
   } catch (err) {

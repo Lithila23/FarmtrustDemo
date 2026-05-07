@@ -1,21 +1,94 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/farmer', label: 'Farmer' },
-  { href: '/buyer', label: 'Marketplace' },
-  { href: '/ai-predictions', label: 'Future Prices' },
-  { href: '/admin', label: 'Admin' },
-  { href: '/login', label: 'Login' },
-];
+// ---------------------------------------------------------------------------
+// Role-based navigation link configuration
+// Each entry in the map is the definitive link list for that role.
+// The guest key ('') covers the unauthenticated state.
+// ---------------------------------------------------------------------------
+const NAV_LINKS_BY_ROLE = {
+  '':       [
+    { href: '/',           label: 'Home'        },
+    { href: '/buyer',      label: 'Marketplace' },
+  ],
+  buyer:    [
+    { href: '/buyer',          label: 'Marketplace' },
+    { href: '/ai-predictions', label: 'Future Prices' },
+  ],
+  farmer:   [
+    { href: '/farmer',     label: 'Dashboard'    },
+    { href: '/farmer',     label: 'My Products'  },
+  ],
+  admin:    [
+    { href: '/admin',      label: 'Admin Panel'  },
+    { href: '/admin',      label: 'Manage Users' },
+  ],
+};
 
 const REGISTER_HREF = '/register';
 
+// ---------------------------------------------------------------------------
+// Navbar component
+// ---------------------------------------------------------------------------
 const Navbar = () => {
-  const location = useLocation();
+  const location  = useLocation();
+  const navigate  = useNavigate();
   const [navOpen, setNavOpen] = useState(false);
 
+  // Consume AuthContext — zero prop-drilling required
+  const { user, logout } = useAuth();
+
+  // Derive the correct link list for the current auth state / role
+  const role        = user?.role ?? '';
+  const activeLinks = NAV_LINKS_BY_ROLE[role] ?? NAV_LINKS_BY_ROLE[''];
+  const isGuest     = !user;
+
+  // Logout handler: clear context + localStorage, then redirect home
+  const handleLogout = () => {
+    logout();
+    setNavOpen(false);
+    navigate('/');
+  };
+
+  // ---------------------------------------------------------------------------
+  // Shared render helpers (keep class strings identical to the original)
+  // ---------------------------------------------------------------------------
+
+  /** Desktop nav link */
+  const DesktopLink = ({ href, label }) => (
+    <Link
+      key={href + label}
+      to={href}
+      className={`px-3 py-2 text-sm font-semibold transition
+  ${location.pathname === href
+          ? 'border-b-2 border-green-500 text-green-700'
+          : 'text-slate-600 hover:text-slate-900'
+        }`}
+    >
+      {label}
+    </Link>
+  );
+
+  /** Mobile nav link */
+  const MobileLink = ({ href, label }) => (
+    <Link
+      key={href + label}
+      to={href}
+      onClick={() => setNavOpen(false)}
+      className={`block px-3 py-2 rounded-lg text-sm font-semibold transition ${
+        location.pathname === href
+          ? 'bg-primary-100 text-primary-800'
+          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+      }`}
+    >
+      {label}
+    </Link>
+  );
+
+  // ---------------------------------------------------------------------------
+  // JSX — structure identical to original; only the mapped content changes
+  // ---------------------------------------------------------------------------
   return (
     <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
@@ -33,36 +106,52 @@ const Navbar = () => {
           </div>
         </Link>
 
+        {/* ── Desktop navigation ── */}
         <div className="hidden md:flex items-center gap-2">
-          {links.map(({ href, label }) => (
-            <Link
-              key={href}
-              to={href}
-              className={`px-3 py-2 text-sm font-semibold transition
-  ${location.pathname === href
-                  ? 'border-b-2 border-green-500 text-green-700'
-                  : 'text-slate-600 hover:text-slate-900'
-                }`}
-            >
-              {label}
-            </Link>
+          {activeLinks.map(({ href, label }) => (
+            <DesktopLink key={href + label} href={href} label={label} />
           ))}
 
-          {/* Register — CTA button when inactive, standard active link when on the page */}
-          <Link
-            to={REGISTER_HREF}
-            className={
-              location.pathname === REGISTER_HREF
-                ? // Active state: looks exactly like other active nav items + bottom border line
-                'px-2 py-2 text-sm font-semibold transition border-b-2 border-green-500 text-green-700 bg-transparent'
-                : // Inactive state: prominent CTA button
-                'px-4 py-2 text-sm font-semibold transition rounded-md bg-primary-600 text-white hover:bg-primary-700'
-            }
-          >
-            Register
-          </Link>
+          {isGuest ? (
+            <>
+              {/* Login — standard nav link */}
+              <Link
+                to="/login"
+                className={`px-3 py-2 text-sm font-semibold transition
+  ${location.pathname === '/login'
+                    ? 'border-b-2 border-green-500 text-green-700'
+                    : 'text-slate-600 hover:text-slate-900'
+                  }`}
+              >
+                Login
+              </Link>
+
+              {/* Register — CTA button when inactive, standard active link when on the page */}
+              <Link
+                to={REGISTER_HREF}
+                className={
+                  location.pathname === REGISTER_HREF
+                    ? // Active state: looks exactly like other active nav items + bottom border line
+                      'px-2 py-2 text-sm font-semibold transition border-b-2 border-green-500 text-green-700 bg-transparent'
+                    : // Inactive state: prominent CTA button
+                      'px-4 py-2 text-sm font-semibold transition rounded-md bg-primary-600 text-white hover:bg-primary-700'
+                }
+              >
+                Register
+              </Link>
+            </>
+          ) : (
+            /* Authenticated: single Logout CTA */
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-sm font-semibold transition rounded-md bg-primary-600 text-white hover:bg-primary-700"
+            >
+              Logout
+            </button>
+          )}
         </div>
 
+        {/* ── Hamburger toggle ── */}
         <button
           className="md:hidden p-2 rounded-lg bg-white/70 hover:bg-white border border-slate-200"
           onClick={() => setNavOpen(prev => !prev)}
@@ -72,35 +161,53 @@ const Navbar = () => {
         </button>
       </div>
 
+      {/* ── Mobile dropdown ── */}
       {navOpen && (
         <div className="md:hidden bg-white shadow-md border-t border-slate-200">
           <div className="px-4 py-3 space-y-1">
-            {links.map(({ href, label }) => (
-              <Link
-                key={href}
-                to={href}
-                onClick={() => setNavOpen(false)}
-                className={`block px-3 py-2 rounded-lg text-sm font-semibold transition ${location.pathname === href ? 'bg-primary-100 text-primary-800' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-              >
-                {label}
-              </Link>
+            {activeLinks.map(({ href, label }) => (
+              <MobileLink key={href + label} href={href} label={label} />
             ))}
 
-            {/* Register — CTA button (inactive) / active link (active) in mobile menu */}
-            <Link
-              to={REGISTER_HREF}
-              onClick={() => setNavOpen(false)}
-              className={
-                location.pathname === REGISTER_HREF
-                  ? // Active: standard highlighted mobile link
-                  'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-100 text-primary-800'
-                  : // Inactive: CTA button style
-                  'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-600 text-white hover:bg-primary-700'
-              }
-            >
-              Register
-            </Link>
+            {isGuest ? (
+              <>
+                {/* Login — standard mobile link */}
+                <Link
+                  to="/login"
+                  onClick={() => setNavOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                    location.pathname === '/login'
+                      ? 'bg-primary-100 text-primary-800'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
+                >
+                  Login
+                </Link>
+
+                {/* Register — CTA button (inactive) / active link (active) in mobile menu */}
+                <Link
+                  to={REGISTER_HREF}
+                  onClick={() => setNavOpen(false)}
+                  className={
+                    location.pathname === REGISTER_HREF
+                      ? // Active: standard highlighted mobile link
+                        'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-100 text-primary-800'
+                      : // Inactive: CTA button style
+                        'block px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-600 text-white hover:bg-primary-700'
+                  }
+                >
+                  Register
+                </Link>
+              </>
+            ) : (
+              /* Authenticated: single Logout CTA (mobile) */
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-600 text-white hover:bg-primary-700"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       )}
