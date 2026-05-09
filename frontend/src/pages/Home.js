@@ -85,10 +85,10 @@ const getCropEmoji = (name = '') => {
 // Determines the primary button text and destination for the current user.
 // ---------------------------------------------------------------------------
 const CTA_CONFIG = {
-  '':      { label: 'Start Exploring',    route: '/buyer'  },
-  buyer:   { label: 'Go to Marketplace',  route: '/buyer'  },
-  farmer:  { label: 'Go to Dashboard',    route: '/farmer' },
-  admin:   { label: 'Go to Admin Panel',  route: '/admin'  },
+  '': { label: 'Start Exploring', route: '/buyer' },
+  buyer: { label: 'Go to Marketplace', route: '/buyer' },
+  farmer: { label: 'Go to Dashboard', route: '/farmer' },
+  admin: { label: 'Go to Admin Panel', route: '/admin' },
 };
 
 const Home = () => {
@@ -495,14 +495,31 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
-        <div className="max-w-4xl mx-auto px-6 text-center text-white">
-          <h3 className="text-3xl font-display font-bold mb-4">Ready to Transform Your Agricultural Business?</h3>
-          <p className="text-lg mb-8 text-primary-100">Join thousands of farmers and buyers on FarmTrust today.</p>
-          <Link to="/register" className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-white text-primary-600 font-semibold hover:bg-primary-50 transition-colors">
-            Start Free Trial
-          </Link>
+      {/* ── Premium CTA Section ─────────────────────────────────────────── */}
+      <section className="relative py-24 md:py-28 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 dark:from-emerald-900 dark:to-teal-950 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
+        {/* Subtle glowing orbs for depth */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/10 blur-[120px] rounded-full"></div>
+        </div>
+
+        <div className="relative max-w-4xl mx-auto px-6 text-center z-10">
+          <h3 className="text-3xl md:text-5xl font-display font-extrabold text-white mb-6 tracking-tight leading-tight">
+            Cultivate Your Future with FarmTrust.
+          </h3>
+          <p className="text-lg md:text-xl mb-10 text-primary-100 dark:text-teal-100/90 max-w-2xl mx-auto font-medium leading-relaxed">
+            Connect directly with verified buyers and trusted farmers. Experience transparent pricing, secure transactions, and a thriving digital community.
+          </p>
+          <div className="flex justify-center">
+            <Link 
+              to={user ? ctaConfig.route : "/register"} 
+              className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-primary-700 dark:text-emerald-900 font-bold text-lg shadow-lg hover:bg-slate-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            >
+              {user ? ctaConfig.label : "Create Your Free Account"}
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 

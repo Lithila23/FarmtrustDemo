@@ -20,10 +20,7 @@ const NAV_LINKS_BY_ROLE = {
     { href: '/farmer',     label: 'Dashboard'    },
     { href: '/farmer',     label: 'My Products'  },
   ],
-  admin:    [
-    { href: '/admin',      label: 'Admin Panel'  },
-    { href: '/admin',      label: 'Manage Users' },
-  ],
+  admin:    [],
 };
 
 const REGISTER_HREF = '/register';
@@ -107,7 +104,7 @@ const Navbar = () => {
         </Link>
 
         {/* ── Desktop navigation ── */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2 ml-auto">
           {activeLinks.map(({ href, label }) => (
             <DesktopLink key={href + label} href={href} label={label} />
           ))}

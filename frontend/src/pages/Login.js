@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', role: 'farmer' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -60,7 +60,7 @@ const Login = () => {
       <div className="max-w-md w-full">
         <div className="glass-card shadow-2xl border border-white/30 dark:bg-slate-800 dark:border-slate-700 overflow-hidden">
           <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-8 py-6 mb-4 text-white rounded-t-xl">
-            <h2 className="text-xl font-display font-bold">Farmer & Buyer Login</h2>
+            <h2 className="text-xl font-display font-bold">FarmTrust Sign In</h2>
             <p className="text-sm opacity-90">Access your FarmTrust portal</p>
           </div>
           <div className="text-center mb-8">
@@ -103,6 +103,20 @@ const Login = () => {
                 required
                 className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400"
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label dark:text-slate-300">Sign in as</label>
+              <select
+                name="role"
+                onChange={onChange}
+                value={formData.role}
+                className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+              >
+                <option value="farmer">Farmer</option>
+                <option value="buyer">Buyer</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
 
             <button type="submit" disabled={loading} className="btn-primary w-full mb-4 text-lg">
