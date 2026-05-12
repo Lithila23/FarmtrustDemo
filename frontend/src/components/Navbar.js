@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ShoppingCart, LogOut } from 'lucide-react';
+import CartDrawer from './CartDrawer';
 
 // ---------------------------------------------------------------------------
 // Role-based navigation link configuration
@@ -138,13 +140,25 @@ const Navbar = () => {
               </Link>
             </>
           ) : (
-            /* Authenticated: single Logout CTA */
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-sm font-semibold transition rounded-md bg-primary-600 text-white hover:bg-primary-700"
-            >
-              Logout
-            </button>
+            /* Authenticated: Cart (if buyer) + Logout CTA */
+            <div className="flex items-center gap-3 ml-2 border-l border-slate-200 pl-4">
+              {role === 'buyer' && (
+                <button
+                  onClick={() => window.dispatchEvent(new Event('openCart'))}
+                  className="p-2 text-slate-600 hover:text-slate-900 transition flex items-center justify-center rounded-full hover:bg-slate-100"
+                  aria-label="Open Cart"
+                >
+                  <ShoppingCart size={20} />
+                </button>
+              )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition rounded-md border border-slate-200 hover:bg-red-500/10 text-red-500 bg-white hover:border-red-500/20 shadow-sm"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+            </div>
           )}
         </div>
 
@@ -197,17 +211,35 @@ const Navbar = () => {
                 </Link>
               </>
             ) : (
-              /* Authenticated: single Logout CTA (mobile) */
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition bg-primary-600 text-white hover:bg-primary-700"
-              >
-                Logout
-              </button>
+              /* Authenticated: Cart (if buyer) + Logout CTA (mobile) */
+              <div className="pt-2 border-t border-slate-100 mt-2 space-y-2">
+                {role === 'buyer' && (
+                  <button
+                    onClick={() => {
+                      setNavOpen(false);
+                      window.dispatchEvent(new Event('openCart'));
+                    }}
+                    className="flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  >
+                    <ShoppingCart size={18} />
+                    View Cart / Orders
+                  </button>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition border border-slate-200 hover:bg-red-500/10 text-red-500 bg-white hover:border-red-500/20"
+                >
+                  <LogOut size={18} />
+                  Logout
+                </button>
+              </div>
             )}
           </div>
         </div>
       )}
+
+      {/* Globally persistent Cart Drawer for Buyers */}
+      {role === 'buyer' && <CartDrawer />}
     </nav>
   );
 };

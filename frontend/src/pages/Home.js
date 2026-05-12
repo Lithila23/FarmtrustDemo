@@ -534,7 +534,7 @@ const Home = () => {
                 <span className="text-3xl font-display font-extrabold text-white tracking-tight">FarmTrust</span>
               </Link>
               <p className="text-slate-400 text-base leading-relaxed mb-6 max-w-sm">
-                Connecting farmers and buyers with trust and transparency. Experience a fair, secure, and intelligent agricultural marketplace.
+                Connecting farmers and buyers with trust and transparency. Experience a fair, secure and intelligent agricultural marketplace.
               </p>
               <div className="flex flex-col gap-3">
                 <a href="mailto:support@farmtrust.com" className="inline-flex items-center gap-3 text-slate-400 hover:text-white transition-colors">

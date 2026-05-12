@@ -1,5 +1,6 @@
 import React from 'react';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -70,13 +71,15 @@ function AnimatedRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:bg-slate-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
-          <Navbar />
-          <AnimatedRoutes />
-          <ThemeToggle />
-        </div>
-      </Router>
+      <CartProvider>
+        <Router>
+          <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:bg-slate-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
+            <Navbar />
+            <AnimatedRoutes />
+            <ThemeToggle />
+          </div>
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }

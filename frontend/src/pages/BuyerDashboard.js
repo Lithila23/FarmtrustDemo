@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';
+import { ShoppingBag } from 'lucide-react';
 
 // ── Image-fallback helper ────────────────────────────────────────────────────
 const CROP_EMOJI_MAP = {
@@ -22,6 +24,7 @@ const getCropEmoji = (name = '') => {
 };
 
 const BuyerDashboard = () => {
+  const { addToCart } = useCart();
   const [crops, setCrops] = useState([]);
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('');
@@ -243,7 +246,7 @@ const BuyerDashboard = () => {
                       <button
                         type="button"
                         className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
-                        onClick={() => openPaymentWindow(crop)}
+                        onClick={() => addToCart(crop)}
                       >
                         🛒 Add to Cart
                       </button>
@@ -266,34 +269,6 @@ const BuyerDashboard = () => {
               <p className="text-slate-600 dark:text-slate-400">Farmers haven't listed any crops yet. Check back soon!</p>
             </div>
           )}
-        </div>
-
-        <div className="mt-12">
-          <h2 className="page-title">My Recent Orders</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {orders.length > 0 ? (
-              orders.slice(0, 8).map(order => (
-                <div key={order.id} className="card dark:bg-slate-800 dark:border dark:border-slate-700">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{order.crop?.name || 'Crop'}</h3>
-                    <span className={`badge ${order.paymentStatus === 'paid' ? 'badge-success' : 'badge-warning'}`}>
-                      {order.paymentStatus}
-                    </span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300">Qty: {order.quantity} kg</p>
-                  <p className="text-slate-600 dark:text-slate-300">Total: ${Number(order.totalAmount).toFixed(2)}</p>
-                  <p className="text-slate-600 dark:text-slate-300">Method: {order.paymentMethod}</p>
-                  {order.paymentReference && (
-                    <p className="text-slate-600 dark:text-slate-300">Ref: {order.paymentReference}</p>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full card text-center text-slate-600">
-                No orders yet. Buy a crop to create your first order.
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -375,6 +350,7 @@ const BuyerDashboard = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
