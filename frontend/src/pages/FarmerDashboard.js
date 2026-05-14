@@ -71,16 +71,16 @@ const FarmerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+      <div className="px-4 pt-8 pb-4 flex justify-between items-center">
+        <h1 className="text-3xl font-display font-bold text-primary-900 dark:text-primary-400 m-0">Farmer Dashboard</h1>
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="btn-primary shadow-sm hover:shadow"
+        >
+          {showAddForm ? 'Cancel' : 'Add Crop'}
+        </button>
+      </div>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-display font-bold text-primary-900 dark:text-primary-400">Farmer Dashboard</h1>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="btn-primary"
-          >
-            {showAddForm ? 'Cancel' : 'Add Crop'}
-          </button>
-        </div>
 
         {showAddForm && (
           <div className="glass-card dark:bg-slate-800 dark:border dark:border-slate-700 mb-8 p-6">
@@ -124,15 +124,7 @@ const FarmerDashboard = () => {
           </div>
         )}
 
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="page-title">Your Crops</h2>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="btn-primary"
-          >
-            {showAddForm ? 'Cancel' : 'Add Crop'}
-          </button>
-        </div>
+        <h2 className="page-title mb-8">Your Crops</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {crops.length > 0 ? (
