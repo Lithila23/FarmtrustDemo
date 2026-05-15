@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const predictRoutes = require('./routes/predict');
 
 // Load environment variables
 dotenv.config();
@@ -18,6 +19,8 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/crops', require('./routes/crops'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/ai',    require('./routes/ai'));
+app.use('/predict',     predictRoutes);          // Direct access: /predict/:product
+app.use('/api/predict', predictRoutes);          // API-prefixed access: /api/predict/:product
 app.use('/api/admin', require('./routes/admin'));
 
 const PORT = process.env.PORT || 5000;
