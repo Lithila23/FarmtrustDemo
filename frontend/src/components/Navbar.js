@@ -90,15 +90,15 @@ const Navbar = () => {
   // ---------------------------------------------------------------------------
   return (
     <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-slate-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <div className="w-full px-4 py-1 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3">
           <img
             src="/main_logo.png"
             alt="FarmTrust logo"
-            className="h-10 w-auto object-contain"
+            className="h-7 w-auto object-contain"
           />
           <div>
-            <h1 className="text-2xl font-display font-bold text-primary-900">
+            <h1 className="text-xl font-display font-bold text-primary-900">
               FarmTrust
             </h1>
             <p className="text-xs text-slate-500">Agriculture marketplace</p>
