@@ -90,8 +90,8 @@ const Navbar = () => {
   // ---------------------------------------------------------------------------
   return (
     <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-slate-200 shadow-sm">
-      <div className="w-full px-4 py-1 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-3">
+      <div className="px-6 py-3 flex items-center justify-between gap-4">
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0">
           <img
             src="/main_logo.png"
             alt="FarmTrust logo"
