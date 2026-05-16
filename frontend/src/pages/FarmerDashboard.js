@@ -1,6 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// ── Image-fallback helper (mirrors BuyerDashboard) ───────────────────────────
+const CROP_EMOJI_MAP = {
+  banana: '🍌', coconut: '🥥', watermelon: '🍉', mango: '🥭',
+  apple: '🍎', orange: '🍊', grape: '🍇', strawberry: '🍓',
+  tomato: '🍅', potato: '🥔', carrot: '🥕', corn: '🌽',
+  wheat: '🌾', rice: '🍚', onion: '🧅', garlic: '🧄',
+  pepper: '🫑', broccoli: '🥦', spinach: '🥬', pumpkin: '🎃',
+  lemon: '🍋', pineapple: '🍍', peach: '🍑', pear: '🍐',
+  cherry: '🍒', blueberry: '🫐', mushroom: '🍄', cabbage: '🥬',
+  cucumber: '🥒', avocado: '🥑', eggplant: '🍆', radish: '🌱',
+};
+
+const getCropEmoji = (name = '') => {
+  const key = name.toLowerCase();
+  for (const [word, emoji] of Object.entries(CROP_EMOJI_MAP)) {
+    if (key.includes(word)) return emoji;
+  }
+  return '🌿';
+};
+
 const FarmerDashboard = () => {
   const [crops, setCrops] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -126,16 +146,79 @@ const FarmerDashboard = () => {
 
         <h2 className="page-title mb-8">Your Crops</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {crops.length > 0 ? (
-            crops.map(crop => (
-              <div key={crop._id} className="glass-card dark:bg-slate-800 dark:border dark:border-slate-700 hover:shadow-2xl transition-transform transform hover:-translate-y-1">
-                <h3 className="text-xl font-bold text-primary mb-2">{crop.name}</h3>
-                <p className="text-slate-600 dark:text-slate-300 mb-2"><strong>Quantity:</strong> {crop.quantity} kg</p>
-                <p className="text-slate-600 dark:text-slate-300 mb-2"><strong>Price:</strong> ${crop.price}/kg</p>
-                {crop.description && <p className="text-slate-600 dark:text-slate-300"><strong>Description:</strong> {crop.description}</p>}
-              </div>
-            ))
+            crops.map(crop => {
+              const offerPrice = Number(crop.price);
+              const originalPrice = (offerPrice * 1.25).toFixed(2);
+              const discountPct = 20;
+              const emoji = getCropEmoji(crop.name);
+              return (
+                <div
+                  key={crop._id}
+                  className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                >
+                  {/* ── Image / Emoji Area ── */}
+                  <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                    {crop.image ? (
+                      <img
+                        src={crop.image}
+                        alt={crop.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
+                        {emoji}
+                      </span>
+                    )}
+
+                    {/* Discount badge – top-left */}
+                    <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                      {discountPct}% Off
+                    </span>
+
+                    {/* Status tag – bottom-left */}
+                    <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
+                      ✅ Active Listing
+                    </span>
+                  </div>
+
+                  {/* ── Details Area ── */}
+                  <div className="flex flex-col flex-1 p-4 gap-3">
+                    {/* Title */}
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
+                      {crop.name}
+                    </h3>
+
+                    {/* Quantity sub-text */}
+                    <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
+                      Stock: {crop.quantity} kg available
+                    </p>
+
+                    {/* Description */}
+                    {crop.description && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {crop.description}
+                      </p>
+                    )}
+
+                    {/* Pricing row */}
+                    <div className="flex items-baseline gap-2 mt-auto">
+                      <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
+                        ${offerPrice.toFixed(2)}
+                        <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
+                      </span>
+                      <span className="text-sm text-slate-400 line-through">
+                        ${originalPrice}
+                      </span>
+                      <span className="ml-auto text-xs font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">
+                        Listed
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
           ) : (
             <div className="col-span-full text-center py-12">
               <div className="text-6xl mb-4">🌾</div>

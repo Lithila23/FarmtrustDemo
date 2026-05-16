@@ -43,6 +43,36 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
+    // ── Master Admin credential check (intercept BEFORE any DB query) ────────
+    // Admins cannot self-register; this is the sole entry point for admin auth.
+    const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'admin@farmtrust.com';
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      const adminPayload = { user: { id: 'admin_1' } };
+      return jwt.sign(
+        adminPayload,
+        process.env.JWT_SECRET || 'secret',
+        { expiresIn: '7d' },
+        (err, token) => {
+          if (err) {
+            console.error('JWT sign error (admin):', err);
+            return res.status(500).json({ msg: 'Server error' });
+          }
+          return res.json({
+            token,
+            user: {
+              id:    'admin_1',
+              name:  'System Admin',
+              email: ADMIN_EMAIL,
+              role:  'admin',
+            },
+          });
+        }
+      );
+    }
+    // ── Standard DB-backed login (Farmer / Buyer) ─────────────────────────────
+
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ msg: 'Invalid credentials' });
@@ -60,7 +90,17 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        // Return the token AND the user profile so the frontend can
+        // perform role-based routing without a second API call.
+        res.json({
+          token,
+          user: {
+            id:    user.id,
+            name:  user.name,
+            email: user.email,
+            role:  user.role,   // ENUM: 'farmer' | 'buyer' | 'admin'
+          },
+        });
       }
     );
   } catch (err) {
