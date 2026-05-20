@@ -27,7 +27,12 @@ const User = (sequelize) => {
     role: {
       type: DataTypes.ENUM('farmer', 'buyer', 'admin'),
       defaultValue: 'buyer'
+    },
+    status: {
+      type: DataTypes.ENUM('active', 'inactive'),
+      defaultValue: 'active'
     }
+
   }, {
     timestamps: true,
     hooks: {

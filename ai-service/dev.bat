@@ -1,2 +1,4 @@
 @echo off
-.\venv\Scripts\python.exe -m uvicorn main:app --reload
+call .\venv\Scripts\activate.bat
+python -m uvicorn main:app --reload
+

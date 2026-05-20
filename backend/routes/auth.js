@@ -78,6 +78,10 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
+    if (user.status === 'inactive') {
+      return res.status(403).json({ msg: 'Account is inactive. Please contact the administrator.' });
+    }
+
     const isMatch = await user.validatePassword(password);
     if (!isMatch) {
       return res.status(400).json({ msg: 'Invalid credentials' });

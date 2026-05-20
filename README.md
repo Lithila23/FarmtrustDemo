@@ -1,53 +1,97 @@
-<<<<<<< HEAD
 # FarmTrust
 
-A web application for connecting farmers and buyers in Sri Lanka with transparency and trust.
+A web application for connecting Sri Lankan farmers and buyers, featuring transparent pricing, direct order management, and AI-driven crop price predictions.
 
 ## Project Structure
 
-- `backend/`: Express.js server with MongoDB
-- `frontend/`: React.js client with Tailwind CSS styling
+- `frontend/`: React.js web client styled with Tailwind CSS.
+- `backend/`: Express.js server utilizing Sequelize (MySQL) and offering prediction integration.
+- `ai-service/`: FastAPI service using Python and Prophet for crop price forecasting.
 
-## Setup
+---
 
-1. Install Node.js and npm.
-2. Install MongoDB: Download from https://www.mongodb.com/try/download/community or use `winget install MongoDB.MongoDBCommunity`. Start with `mongod --dbpath C:\data\db`.
-3. Install dependencies:
-   - Backend: `cd backend && npm install`
-   - Frontend: `cd frontend && npm install`
-4. .env file is created in backend with default values. Update JWT_SECRET for security.
+## Setup & Running Instructions
 
-## Running
+### 1. Prerequisites
+- **Node.js** (v18+ recommended) and **npm**
+- **Python** (v3.8+ recommended)
+- **MySQL Server** (installed and running locally, e.g., via MySQL Installer, XAMPP, or your choice of local installation)
 
-1. Start MongoDB: `mongod --dbpath C:\data\db`
-2. Start backend: `cd backend && npm start` (runs on http://localhost:5000)
-3. Start frontend: `cd frontend && npm start` (runs on http://localhost:3000)
-4. Open http://localhost:3000
+---
 
-## Features
+### 2. AI Service Setup (`ai-service/`)
+1. Open a terminal and navigate to the AI service directory:
+   ```bash
+   cd ai-service
+   ```
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+3. Activate the virtual environment:
+   - **Windows (PowerShell)**: `.\venv\Scripts\Activate.ps1`
+   - **Windows (CMD)**: `.\venv\Scripts\activate.bat`
+   - **macOS/Linux**: `source venv/bin/activate`
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Start the AI service:
+   ```bash
+   dev.bat
+   ```
+   *(Runs on `http://127.0.0.1:8000`)*
 
-- **User Authentication**: Registration and login for farmers, buyers, and admins
-- **Responsive Design**: Mobile-friendly UI with Tailwind CSS
-- **Farmer Dashboard**: List crops with details
-- **Buyer Dashboard**: Browse and search available crops
-- **Admin Panel**: Manage users, crops, and system settings
-- **Modern Styling**: Green gradient theme with custom components
+---
 
-## Styling
+### 3. Backend Setup (`backend/`)
+1. Open a terminal and navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment configuration:
+   - Copy `.env.example` to `.env`
+   - Update `DB_USER`, `DB_PASSWORD`, and `JWT_SECRET` as required for your local database configuration.
+4. Set up the database:
+   - Ensure MySQL is running on your system.
+   - Run the creation script to create the `farmtrust` database:
+     ```bash
+     node create-db.js
+     ```
+   - Seed the database (creates tables and populates sample users):
+     ```bash
+     node seed.js
+     ```
+5. Start the backend server:
+   - **Development**: `npm run dev`
+   - **Production**: `npm start`
+   *(Runs on `http://localhost:5000`)*
 
-The application uses:
-- **Tailwind CSS**: Utility-first CSS framework for responsive design
-- **Custom CSS**: Additional styling in `src/index.css` with custom classes
-- **Color Scheme**: Primary green (#10b981), secondary darker green (#059669), accent yellow (#f59e0b)
+---
 
-## API Endpoints
+### 4. Frontend Setup (`frontend/`)
+1. Open a terminal and navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the React development server:
+   ```bash
+   npm start
+   ```
+   *(Runs on `http://localhost:3000` and automatically opens in your browser)*
 
-- POST /api/auth/register
-- POST /api/auth/login
-- GET /api/crops
-- POST /api/crops (authenticated)
-- GET /api/users/profile (authenticated)
-- PUT /api/users/profile (authenticated)
-=======
-# FarmtrustDemo
->>>>>>> 65831607da4e6ff6fe608e1b39978d98d40b6490
+---
+
+## Default Seed Accounts
+Once the database is seeded (`node seed.js`), you can log in using these accounts:
+- **Admin**: `admin@farmtrust.com` / `admin123`
+- **Farmer**: `farmer@farmtrust.com` / `farmer123`
+- **Buyer**: `buyer@farmtrust.com` / `buyer123`
