@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import client, { setAuthToken } from '../api/client';
 import { Link } from 'react-router-dom';
 
 const Register = () => {
@@ -13,8 +13,9 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await client.post('/auth/register', formData);
       localStorage.setItem('token', res.data.token);
+      setAuthToken(res.data.token);
       window.location.href = '/farmer';
     } catch (err) {
       setError(err.response?.data?.msg || 'Registration failed');
