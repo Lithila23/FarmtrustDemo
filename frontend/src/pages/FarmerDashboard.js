@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import client from '../api/client';
 
 // ── Image-fallback helper (mirrors BuyerDashboard) ───────────────────────────
 const CROP_EMOJI_MAP = {
@@ -44,7 +44,7 @@ const FarmerDashboard = () => {
           'x-auth-token': token
         }
       };
-      const res = await axios.get('http://localhost:5000/api/crops', config);
+      const res = await client.get('/crops', config);
       setCrops(res.data);
     } catch (err) {
       console.error('Error fetching crops:', err);
@@ -71,7 +71,7 @@ const FarmerDashboard = () => {
         }
       };
 
-      await axios.post('http://localhost:5000/api/crops', formData, config);
+      await client.post('/crops', formData, config);
 
       // Reset form and hide it
       setFormData({ name: '', quantity: '', price: '', description: '' });
