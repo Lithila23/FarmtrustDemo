@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { setAuthToken } from '../api/client';
 
 // ---------------------------------------------------------------------------
 // 1. Create the context
@@ -20,6 +21,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('farmtrust_user');
+      const token = localStorage.getItem('token');
+      if (token) {
+        setAuthToken(token);
+      }
       if (stored) {
         setUser(JSON.parse(stored));
       }
@@ -27,6 +32,8 @@ export function AuthProvider({ children }) {
       // Corrupt / unparseable data – clear it to avoid a stuck loading state.
       console.error('[AuthContext] Failed to parse stored user data:', error);
       localStorage.removeItem('farmtrust_user');
+      localStorage.removeItem('token');
+      setAuthToken(null);
     } finally {
       setLoading(false);
     }
@@ -49,6 +56,8 @@ export function AuthProvider({ children }) {
   // -------------------------------------------------------------------------
   const logout = () => {
     localStorage.removeItem('farmtrust_user');
+    localStorage.removeItem('token');
+    setAuthToken(null);
     setUser(null);
   };
 
