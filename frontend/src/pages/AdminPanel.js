@@ -72,6 +72,27 @@ const AdminPanel = () => {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
+  const [searchText, setSearchText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [crops, setCrops] = useState(MOCK_CROPS);
+  const [cropStatusMenuOpenId, setCropStatusMenuOpenId] = useState(null);
+  const STATUS_OPTIONS = ['Active', 'Pending', 'Inactive'];
+
+  const handleChangeCropStatus = (cropId, newStatus) => {
+    setCrops(prevCrops => prevCrops.map(crop => crop.id === cropId ? { ...crop, status: newStatus } : crop));
+    setCropStatusMenuOpenId(null);
+  };
+
+  const handleSearch = () => {
+    setSearchQuery(searchText.trim());
+  };
+
+  const handleSearchKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSearch();
+    }
+  };
 
   // ── Data fetching — secured with the JWT token stored on login ───────────
   const fetchSystemMetrics = async () => {
@@ -225,11 +246,18 @@ const AdminPanel = () => {
             </div>
             <input
               type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               placeholder="Search by crop, farmer, location..."
               className="block w-full pl-10 pr-3 py-2 bg-slate-50 dark:bg-[#1e293b] border border-slate-200 dark:border-[#334155] rounded-lg text-sm placeholder-slate-400 dark:placeholder-[#475569] text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
             />
           </div>
-          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-green-700">
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-green-700"
+          >
             Search
           </button>
         </div>
@@ -296,10 +324,19 @@ const AdminPanel = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-[#1e293b]">
-            {MOCK_CROPS.filter(crop => 
-              (statusFilter === 'All Status' || crop.status === statusFilter) && 
-              (categoryFilter === 'All Categories' || crop.category === categoryFilter)
-            ).map((crop) => (
+            {crops.filter(crop => {
+              const matchesStatus = statusFilter === 'All Status' || crop.status === statusFilter;
+              const matchesCategory = categoryFilter === 'All Categories' || crop.category === categoryFilter;
+              const query = searchQuery.toLowerCase();
+              const matchesSearch = !query || [
+                crop.name,
+                crop.category,
+                crop.farmerName,
+                crop.location,
+                crop.id
+              ].some(value => value.toLowerCase().includes(query));
+              return matchesStatus && matchesCategory && matchesSearch;
+            }).map((crop) => (
               <tr key={crop.id} className="hover:bg-slate-50 dark:hover:bg-[#1e293b]/50 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
@@ -320,22 +357,53 @@ const AdminPanel = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-slate-600 dark:text-[#94a3b8]">{crop.category}</td>
-                <td className="px-6 py-4">
-                  {crop.status === 'Active' && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-[#064e3b]/50 text-emerald-700 dark:text-[#34d399] text-xs font-medium border border-emerald-200 dark:border-[#065f46]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#10b981]"></span> Active
-                    </span>
-                  )}
-                  {crop.status === 'Pending' && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-[#422006]/80 text-amber-700 dark:text-[#fbbf24] text-xs font-medium border border-amber-200 dark:border-[#78350f]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-[#f59e0b]"></span> Pending
-                    </span>
-                  )}
-                  {crop.status === 'Inactive' && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-[#1e293b] text-slate-600 dark:text-[#94a3b8] text-xs font-medium border border-slate-200 dark:border-[#334155]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500 dark:bg-[#64748b]"></span> Inactive
-                    </span>
-                  )}
+                <td className="px-6 py-4 relative">
+                  <div className="relative inline-flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => setCropStatusMenuOpenId(prev => prev === crop.id ? null : crop.id)}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-slate-200 dark:border-[#334155] bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-medium shadow-sm hover:bg-slate-50 dark:hover:bg-[#1e293b] transition-colors"
+                    >
+                      {crop.status === 'Active' && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#10b981]"></span> Active
+                        </span>
+                      )}
+                      {crop.status === 'Pending' && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-[#f59e0b]"></span> Pending
+                        </span>
+                      )}
+                      {crop.status === 'Inactive' && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-500 dark:bg-[#64748b]"></span> Inactive
+                        </span>
+                      )}
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    </button>
+
+                    {cropStatusMenuOpenId === crop.id && (
+                      <div className="absolute top-full left-0 mt-2 min-w-[12rem] rounded-3xl border border-slate-200 dark:border-[#334155] bg-white dark:bg-slate-900 shadow-xl overflow-hidden z-20">
+                        <div className="px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Change status</div>
+                        <div className="divide-y divide-slate-200 dark:divide-[#334155]">
+                          {STATUS_OPTIONS.map(option => (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => handleChangeCropStatus(crop.id, option)}
+                              className={`w-full px-4 py-2 text-left flex items-center justify-between text-sm transition-colors ${crop.status === option ? 'bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-950'}`}
+                            >
+                              <span className="inline-flex items-center gap-2">
+                                <span className={`w-2.5 h-2.5 rounded-full ${option === 'Active' ? 'bg-emerald-500' : option === 'Pending' ? 'bg-amber-500' : 'bg-slate-500'}`} />
+                                {option}
+                              </span>
+                              {crop.status === option && <Check className="w-4 h-4 text-emerald-500" />}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-200">
                   {crop.price}<span className="text-slate-500 dark:text-[#475569] font-normal text-xs"> /kg</span>
