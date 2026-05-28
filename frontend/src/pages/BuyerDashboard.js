@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import client from '../api/client';
 import { useCart } from '../context/CartContext';
 import { ShoppingBag } from 'lucide-react';
 
@@ -56,7 +56,7 @@ const BuyerDashboard = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/orders/my', getAuthConfig());
+      const res = await client.get('/orders/my', getAuthConfig());
       setOrders(res.data);
     } catch (err) {
       const msg = err.response?.data?.msg;
@@ -68,7 +68,7 @@ const BuyerDashboard = () => {
   useEffect(() => {
     const fetchCrops = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/crops', getAuthConfig());
+        const res = await client.get('/crops', getAuthConfig());
         setCrops(res.data);
       } catch (err) {
         console.error('Error fetching crops:', err);
@@ -102,8 +102,8 @@ const BuyerDashboard = () => {
     setPaymentLoading(true);
     setError('');
     try {
-      const res = await axios.post(
-        'http://localhost:5000/api/orders/create-intent',
+      const res = await client.post(
+        '/orders/create-intent',
         {
           cropId: selectedCrop.id,
           quantity,
@@ -127,15 +127,15 @@ const BuyerDashboard = () => {
     setPaymentLoading(true);
     setError('');
     try {
-      await axios.post(
-        `http://localhost:5000/api/orders/${orderIntent.orderId}/complete`,
+      await client.post(
+        `/orders/${orderIntent.orderId}/complete`,
         { success },
         getAuthConfig()
       );
 
       await Promise.all([
-        axios.get('http://localhost:5000/api/crops', getAuthConfig()),
-        axios.get('http://localhost:5000/api/orders/my', getAuthConfig())
+        client.get('/crops', getAuthConfig()),
+        client.get('/orders/my', getAuthConfig())
       ]).then(([cropsRes, ordersRes]) => {
         setCrops(cropsRes.data);
         setOrders(ordersRes.data);
