@@ -53,7 +53,7 @@ router.post('/', auth, async (req, res) => {
     if (cropWithFarmer && cropWithFarmer.district) {
       const farmerName = cropWithFarmer.farmer ? cropWithFarmer.farmer.name : 'A local farmer';
       const cropDistrict = cropWithFarmer.district;
-      
+
       User.findAll({
         where: {
           role: 'buyer',
@@ -71,16 +71,16 @@ router.post('/', auth, async (req, res) => {
 
           // Map over buyers and send emails concurrently
           Promise.allSettled(
-            buyers.map(buyer => 
+            buyers.map(buyer =>
               sendNewListingAlert(buyer.email, buyer.name, productDetails)
             )
           ).then(results => {
-             const successful = results.filter(r => r.status === 'fulfilled').length;
-             console.log(`[Alerts] Sent ${successful}/${buyers.length} new listing alerts in ${cropDistrict}`);
+            const successful = results.filter(r => r.status === 'fulfilled').length;
+            console.log(`[Alerts] Sent ${successful}/${buyers.length} new listing alerts in ${cropDistrict}`);
           });
         }
       }).catch(err => {
-         console.error('[Alerts] Background task failed to fetch buyers:', err);
+        console.error('[Alerts] Background task failed to fetch buyers:', err);
       });
     }
 

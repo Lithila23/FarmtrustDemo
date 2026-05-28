@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import client from '../api/client';
 import {
   Users, Wheat, Banknote, ShieldCheck, LayoutDashboard, Settings, RefreshCw,
-  Search, ChevronDown, Plus, Check, Pencil, Eye, Trash2, MapPin, ChevronRight
+  Search, ChevronDown, Plus, Check, Pencil, Eye, Trash2, MapPin, ChevronRight, Undo2
 } from 'lucide-react';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -76,7 +76,7 @@ const AdminPanel = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [crops, setCrops] = useState(MOCK_CROPS);
   const [cropStatusMenuOpenId, setCropStatusMenuOpenId] = useState(null);
-  const STATUS_OPTIONS = ['Active', 'Pending', 'Inactive'];
+  const STATUS_OPTIONS = ['Active', 'Pending', 'Inactive', 'Trash'];
 
   const handleChangeCropStatus = (cropId, newStatus) => {
     setCrops(prevCrops => prevCrops.map(crop => crop.id === cropId ? { ...crop, status: newStatus } : crop));
@@ -92,6 +92,173 @@ const AdminPanel = () => {
       event.preventDefault();
       handleSearch();
     }
+  };
+
+  const moveToTrash = (cropId) => {
+    setCrops(prevCrops => prevCrops.map(crop => crop.id === cropId ? { ...crop, status: 'Trash' } : crop));
+  };
+
+  const deleteCropForever = (cropId) => {
+    setCrops(prevCrops => prevCrops.filter(crop => crop.id !== cropId));
+  };
+
+  // State for delete confirmation dialog
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [cropToDelete, setCropToDelete] = useState(null);
+
+  const confirmDelete = (actionType) => {
+    if (cropToDelete) {
+      if (actionType === 'trash') {
+        moveToTrash(cropToDelete);
+      } else {
+        deleteCropForever(cropToDelete);
+      }
+    }
+    setShowDeleteConfirm(false);
+    setCropToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setCropToDelete(null);
+  };
+
+  // State for edit dialog
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [cropToEdit, setCropToEdit] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    category: '',
+    price: '',
+    qty: '',
+    farmerName: '',
+    location: '',
+    listed: ''
+  });
+
+  const handleEditClick = (crop) => {
+    setCropToEdit(crop.id);
+    setEditFormData({
+      name: crop.name,
+      category: crop.category,
+      price: crop.price,
+      qty: crop.qty,
+      farmerName: crop.farmerName,
+      location: crop.location,
+      listed: crop.listed
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleEditSave = (e) => {
+    e.preventDefault();
+    setCrops(prevCrops => prevCrops.map(crop => {
+      if (crop.id === cropToEdit) {
+        return {
+          ...crop,
+          name: editFormData.name,
+          category: editFormData.category,
+          price: editFormData.price,
+          qty: editFormData.qty,
+          farmerName: editFormData.farmerName,
+          location: editFormData.location,
+          listed: editFormData.listed
+        };
+      }
+      return crop;
+    }));
+    setShowEditModal(false);
+    setCropToEdit(null);
+  };
+
+  const cancelEdit = () => {
+    setShowEditModal(false);
+    setCropToEdit(null);
+  };
+
+  // State for add listing modal
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addFormData, setAddFormData] = useState({
+    name: '',
+    category: 'Grain',
+    price: '',
+    qty: '',
+    farmerName: '',
+    location: '',
+    listed: ''
+  });
+
+  const handleAddClick = () => {
+    const options = { month: 'short', day: 'numeric' };
+    const todayStr = new Date().toLocaleDateString('en-US', options);
+
+    setAddFormData({
+      name: '',
+      category: 'Grain',
+      price: '',
+      qty: '',
+      farmerName: '',
+      location: '',
+      listed: todayStr
+    });
+    setShowAddModal(true);
+  };
+
+  const handleAddFormChange = (e) => {
+    const { name, value } = e.target;
+    setAddFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAddSave = (e) => {
+    e.preventDefault();
+    const newId = `CRP-0${crops.length + 1}`;
+
+    const initials = addFormData.farmerName
+      ? addFormData.farmerName.split(' ').map(n => n[0]).join('').toUpperCase()
+      : 'U';
+
+    const colors = [
+      'bg-blue-900 text-blue-200',
+      'bg-green-900 text-green-200',
+      'bg-purple-900 text-purple-200',
+      'bg-orange-900 text-orange-200',
+      'bg-pink-900 text-pink-200'
+    ];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+    const newCrop = {
+      id: newId,
+      name: addFormData.name,
+      category: addFormData.category,
+      status: 'Active',
+      price: addFormData.price.startsWith('$') ? addFormData.price : `$${addFormData.price}`,
+      qty: addFormData.qty,
+      farmerInitials: initials.slice(0, 2),
+      farmerName: addFormData.farmerName,
+      farmerColor: randomColor,
+      location: addFormData.location,
+      listed: addFormData.listed,
+      isOrganic: false,
+      icon: <Wheat className="w-5 h-5" />
+    };
+
+    setCrops(prev => [newCrop, ...prev]);
+    setShowAddModal(false);
+  };
+
+  const cancelAdd = () => {
+    setShowAddModal(false);
   };
 
   // ── Data fetching — secured with the JWT token stored on login ───────────
@@ -250,8 +417,16 @@ const AdminPanel = () => {
               onChange={(e) => setSearchText(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Search by crop, farmer, location..."
-              className="block w-full pl-10 pr-3 py-2 bg-slate-50 dark:bg-[#1e293b] border border-slate-200 dark:border-[#334155] rounded-lg text-sm placeholder-slate-400 dark:placeholder-[#475569] text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+              className="block w-full pl-10 pr-10 py-2 bg-slate-50 dark:bg-[#1e293b] border border-slate-200 dark:border-[#334155] rounded-lg text-sm placeholder-slate-400 dark:placeholder-[#475569] text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
             />
+            <button
+              type="button"
+              onClick={() => { setSearchText(''); setSearchQuery(''); }}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-700 dark:text-[#475569] dark:hover:text-[#a3a3a3]"
+              title="Clear search"
+            >
+              <Undo2 className="h-4 w-4" />
+            </button>
           </div>
           <button
             type="button"
@@ -263,7 +438,7 @@ const AdminPanel = () => {
         </div>
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
           <div className="relative">
-            <button 
+            <button
               key={statusFilter}
               onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
               className="animate-shudder flex items-center gap-2 bg-white dark:bg-[#1e293b] hover:bg-slate-50 dark:hover:bg-[#334155] border border-slate-200 dark:border-[#334155] text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm transition-colors"
@@ -276,11 +451,12 @@ const AdminPanel = () => {
                 <button onClick={() => { setStatusFilter('Active'); setStatusDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#334155] hover:text-slate-900 dark:hover:text-white transition-colors">Active</button>
                 <button onClick={() => { setStatusFilter('Pending'); setStatusDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#334155] hover:text-slate-900 dark:hover:text-white transition-colors">Pending</button>
                 <button onClick={() => { setStatusFilter('Inactive'); setStatusDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#334155] hover:text-slate-900 dark:hover:text-white transition-colors">Inactive</button>
+                <button onClick={() => { setStatusFilter('Trash'); setStatusDropdownOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#334155] hover:text-slate-900 dark:hover:text-white transition-colors">Trash</button>
               </div>
             )}
           </div>
           <div className="relative">
-            <button 
+            <button
               key={categoryFilter}
               onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
               className="animate-shudder flex items-center gap-2 bg-white dark:bg-[#1e293b] hover:bg-slate-50 dark:hover:bg-[#334155] border border-slate-200 dark:border-[#334155] text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm transition-colors"
@@ -297,7 +473,7 @@ const AdminPanel = () => {
               </div>
             )}
           </div>
-          <button className="flex items-center gap-2 bg-[#4ade80] hover:bg-[#22c55e] text-[#022c22] font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+          <button onClick={handleAddClick} className="flex items-center gap-2 bg-[#4ade80] hover:bg-[#22c55e] text-[#022c22] font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
             <Plus className="w-4 h-4" /> Add Listing
           </button>
         </div>
@@ -325,7 +501,7 @@ const AdminPanel = () => {
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-[#1e293b]">
             {crops.filter(crop => {
-              const matchesStatus = statusFilter === 'All Status' || crop.status === statusFilter;
+              const matchesStatus = statusFilter === 'All Status' ? true : crop.status === statusFilter;
               const matchesCategory = categoryFilter === 'All Categories' || crop.category === categoryFilter;
               const query = searchQuery.toLowerCase();
               const matchesSearch = !query || [
@@ -379,6 +555,11 @@ const AdminPanel = () => {
                           <span className="w-1.5 h-1.5 rounded-full bg-slate-500 dark:bg-[#64748b]"></span> Inactive
                         </span>
                       )}
+                      {crop.status === 'Trash' && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 dark:bg-[#f43f5e]"></span> Trash
+                        </span>
+                      )}
                       <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                     </button>
 
@@ -394,7 +575,7 @@ const AdminPanel = () => {
                               className={`w-full px-4 py-2 text-left flex items-center justify-between text-sm transition-colors ${crop.status === option ? 'bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-950'}`}
                             >
                               <span className="inline-flex items-center gap-2">
-                                <span className={`w-2.5 h-2.5 rounded-full ${option === 'Active' ? 'bg-emerald-500' : option === 'Pending' ? 'bg-amber-500' : 'bg-slate-500'}`} />
+                                <span className={`w-2.5 h-2.5 rounded-full ${option === 'Active' ? 'bg-emerald-500' : option === 'Pending' ? 'bg-amber-500' : option === 'Trash' ? 'bg-rose-500' : 'bg-slate-500'}`} />
                                 {option}
                               </span>
                               {crop.status === option && <Check className="w-4 h-4 text-emerald-500" />}
@@ -426,16 +607,10 @@ const AdminPanel = () => {
                 <td className="px-6 py-4 text-slate-500 dark:text-[#94a3b8]">{crop.listed}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-2">
-                    <button className="p-1.5 rounded bg-emerald-100 dark:bg-[#064e3b]/50 text-emerald-600 dark:text-[#34d399] hover:bg-emerald-200 dark:hover:bg-[#065f46] transition-colors border border-emerald-200 dark:border-[#065f46]" title="Approve">
-                      <Check className="w-3.5 h-3.5" />
-                    </button>
-                    <button className="p-1.5 rounded bg-slate-100 dark:bg-[#1e293b] text-slate-600 dark:text-[#94a3b8] hover:bg-slate-200 dark:hover:bg-[#334155] transition-colors border border-slate-200 dark:border-[#334155]" title="Edit">
+                    <button onClick={() => handleEditClick(crop)} className="p-1.5 rounded bg-slate-100 dark:bg-[#1e293b] text-slate-600 dark:text-[#94a3b8] hover:bg-slate-200 dark:hover:bg-[#334155] transition-colors border border-slate-200 dark:border-[#334155]" title="Edit">
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
-                    <button className="p-1.5 rounded bg-sky-100 dark:bg-[#1e293b] text-sky-600 dark:text-[#38bdf8] hover:bg-sky-200 dark:hover:bg-[#0c4a6e] transition-colors border border-sky-200 dark:border-[#0369a1]" title="View">
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
-                    <button className="p-1.5 rounded bg-rose-100 dark:bg-[#4c1d95]/30 text-rose-600 dark:text-[#f43f5e] hover:bg-rose-200 dark:hover:bg-[#7f1d1d]/50 transition-colors border border-rose-200 dark:border-[#9f1239]" title="Delete">
+                    <button onClick={() => { setCropToDelete(crop.id); setShowDeleteConfirm(true); }} className="p-1.5 rounded bg-rose-100 dark:bg-[#4c1d95]/30 text-rose-600 dark:text-[#f43f5e] hover:bg-rose-200 dark:hover:bg-[#7f1d1d]/50 transition-colors border border-rose-200 dark:border-[#9f1239]" title="Delete">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -446,7 +621,288 @@ const AdminPanel = () => {
         </table>
       </div>
 
-      {/* Footer / Pagination */}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (() => {
+        const crop = crops.find(c => c.id === cropToDelete);
+        const isAlreadyTrash = crop && crop.status === 'Trash';
+        return (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 w-80">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                {isAlreadyTrash ? 'Delete Forever' : 'Confirm Delete'}
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 mb-6">
+                {isAlreadyTrash
+                  ? 'Are you sure you want to permanently delete this crop listing? This action cannot be undone.'
+                  : 'Are you sure you want to delete this listing?'
+                }
+              </p>
+              <div className="flex justify-end gap-2">
+                <button onClick={cancelDelete} className="px-3 py-1.5 text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                  Cancel
+                </button>
+                {isAlreadyTrash ? (
+                  <button onClick={() => confirmDelete('forever')} className="px-3 py-1.5 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded transition-colors">
+                    Delete Forever
+                  </button>
+                ) : (
+                  <button onClick={() => confirmDelete('trash')} className="px-3 py-1.5 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded transition-colors">
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Edit Crop Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-[#1e293b] rounded-2xl shadow-xl border border-slate-200 dark:border-[#334155] p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Edit Crop Listing</h3>
+            <form onSubmit={handleEditSave} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Crop Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={editFormData.name}
+                  onChange={handleEditFormChange}
+                  required
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Category</label>
+                <select
+                  name="category"
+                  value={editFormData.category}
+                  onChange={handleEditFormChange}
+                  required
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                >
+                  <option value="Grain">Grain</option>
+                  <option value="Vegetable">Vegetable</option>
+                  <option value="Fruit">Fruit</option>
+                  <option value="Spice">Spice</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Price</label>
+                  <input
+                    type="text"
+                    name="price"
+                    value={editFormData.price}
+                    onChange={handleEditFormChange}
+                    required
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Qty (KG)</label>
+                  <input
+                    type="text"
+                    name="qty"
+                    value={editFormData.qty}
+                    onChange={handleEditFormChange}
+                    required
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Farmer</label>
+                <input
+                  type="text"
+                  name="farmerName"
+                  value={editFormData.farmerName}
+                  onChange={handleEditFormChange}
+                  required
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={editFormData.location}
+                    onChange={handleEditFormChange}
+                    required
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-4">
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors border border-green-700"
+                  >
+                    Save
+                  </button>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Listed Date</label>
+                  <input
+                    type="text"
+                    name="listed"
+                    value={editFormData.listed}
+                    onChange={handleEditFormChange}
+                    required
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <button
+                  type="button"
+                  onClick={cancelEdit}
+                  className="px-4 py-2 text-sm font-semibold bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors border border-green-700"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Crop Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-[#1e293b] rounded-2xl shadow-xl border border-slate-200 dark:border-[#334155] p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Add New Crop</h3>
+            <form onSubmit={handleAddSave} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Crop Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={addFormData.name}
+                  onChange={handleAddFormChange}
+                  required
+                  placeholder="e.g. Basmati rice"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Category</label>
+                <select
+                  name="category"
+                  value={addFormData.category}
+                  onChange={handleAddFormChange}
+                  required
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                >
+                  <option value="Grain">Grain</option>
+                  <option value="Vegetable">Vegetable</option>
+                  <option value="Fruit">Fruit</option>
+                  <option value="Spice">Spice</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Price</label>
+                  <input
+                    type="text"
+                    name="price"
+                    value={addFormData.price}
+                    onChange={handleAddFormChange}
+                    required
+                    placeholder="e.g. $2.45"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Qty (KG)</label>
+                  <input
+                    type="text"
+                    name="qty"
+                    value={addFormData.qty}
+                    onChange={handleAddFormChange}
+                    required
+                    placeholder="e.g. 52"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Farmer</label>
+                <input
+                  type="text"
+                  name="farmerName"
+                  value={addFormData.farmerName}
+                  onChange={handleAddFormChange}
+                  required
+                  placeholder="e.g. R. Premadasa"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Location</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={addFormData.location}
+                    onChange={handleAddFormChange}
+                    required
+                    placeholder="e.g. Dambulla"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#475569] mb-1">Listed Date</label>
+                  <input
+                    type="text"
+                    name="listed"
+                    value={addFormData.listed}
+                    onChange={handleAddFormChange}
+                    required
+                    placeholder="e.g. May 20"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-[#334155] rounded-lg text-sm text-slate-900 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <button
+                  type="button"
+                  onClick={cancelAdd}
+                  className="px-4 py-2 text-sm font-semibold bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors border border-green-700"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <span className="text-sm text-slate-500 dark:text-[#475569]">Showing 1-8 of 24 listings</span>
         <div className="flex items-center gap-1 text-sm">
@@ -479,10 +935,10 @@ const AdminPanel = () => {
   );
 
   const VIEW_MAP = {
-    dashboard: <DashboardView />,
-    users: <UsersView />,
-    crops: <CropsView />,
-    settings: <SettingsView />,
+    dashboard: DashboardView(),
+    users: UsersView(),
+    crops: CropsView(),
+    settings: SettingsView(),
   };
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -548,9 +1004,9 @@ const AdminPanel = () => {
               Admin Control Center
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 capitalize">
-              {activeTab === 'dashboard' ? 'System overview & recent activity' : 
-               activeTab === 'crops' ? null : 
-               `${activeTab} management`}
+              {activeTab === 'dashboard' ? 'System overview & recent activity' :
+                activeTab === 'crops' ? null :
+                  `${activeTab} management`}
             </p>
           </div>
           <button
