@@ -1,0 +1,25 @@
+[33m8db3015[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: commit: Fix merge conflicts in AdminPanel.js and Login.js
+[33m1d3e781[m HEAD@{1}: commit: Save frontend work before syncing with main
+[33m181ab20[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/admin_userpage_frontend[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;31morigin/Feature-/admin_userpage_frontend[m[33m)[m HEAD@{2}: commit (merge): Merge remote-tracking branch 'origin/main'
+[33mfc0ab0b[m HEAD@{3}: reset: moving to fc0ab0b
+[33mc82baa0[m HEAD@{4}: commit (merge): Merge branch 'main' of https://github.com/Lithila23/FarmtrustDemo
+[33mfc0ab0b[m HEAD@{5}: reset: moving to HEAD
+[33mfc0ab0b[m HEAD@{6}: checkout: moving from farmer_dashboard_update to main
+[33me7d5308[m[33m ([m[1;32mfarmer_dashboard_update[m[33m)[m HEAD@{7}: pull origin main: Merge made by the 'ort' strategy.
+[33m4db9389[m[33m ([m[1;31morigin/farmer_dashboard_update[m[33m)[m HEAD@{8}: commit: Updated project
+[33m05441eb[m HEAD@{9}: commit: Added edit status
+[33mc655970[m HEAD@{10}: merge origin/main: Merge made by the 'ort' strategy.
+[33m05ce5f1[m HEAD@{11}: checkout: moving from main to farmer_dashboard_update
+[33mfc0ab0b[m HEAD@{12}: reset: moving to HEAD
+[33mfc0ab0b[m HEAD@{13}: checkout: moving from Farmer_dashboard_update to main
+[33m05ce5f1[m HEAD@{14}: reset: moving to HEAD
+[33m05ce5f1[m HEAD@{15}: merge origin/main: Merge made by the 'ort' strategy.
+[33m9ee3780[m HEAD@{16}: checkout: moving from main to Farmer_dashboard_update
+[33mfc0ab0b[m HEAD@{17}: commit: Describe your updates
+[33m2505c86[m HEAD@{18}: checkout: moving from home_update to main
+[33m9ee3780[m HEAD@{19}: commit: Updated homepage enhancements
+[33m5720a58[m HEAD@{20}: checkout: moving from home_update to home_update
+[33m5720a58[m HEAD@{21}: commit: Position FarmTrust logo and name at left corner
+[33m2505c86[m HEAD@{22}: checkout: moving from main to home_update
+[33m2505c86[m HEAD@{23}: pull origin main: Fast-forward
+[33mfe89505[m HEAD@{24}: clone: from https://github.com/Lithila23/FarmtrustDemo.git
