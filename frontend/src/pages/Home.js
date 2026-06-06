@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 // ---------------------------------------------------------------------------
@@ -10,20 +10,39 @@ import { motion } from 'framer-motion';
 // ---------------------------------------------------------------------------
 const HERO_SLIDES = [
   {
-    url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Golden wheat field at sunrise',
+    url: '/images/hero1.png',
+    alt: 'FarmTrust agricultural scene 1',
+    tag: ' Smart Agriculture',
+    title: 'Empower Your Agricultural Business',
+    description: 'FarmTrust connects farmers and buyers with transparency, trust, and fair pricing. Grow your business with our intelligent marketplace.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Tractor working a large green farm',
+    url: '/images/hero2.png',
+    alt: 'FarmTrust agricultural scene 2',
+    tag: ' Direct Logistics',
+    title: 'Optimized Farm-to-Table Supply Chain',
+    description: 'Eliminate middleman markups and optimize your margins. Access fresh produce directly from verified farmers.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Fresh produce at a farmers market',
+    url: '/images/hero3.png',
+    alt: 'FarmTrust agricultural scene 3',
+    tag: ' Secure Trading',
+    title: 'Transparent Pricing & Escrow Safety',
+    description: 'Transact with absolute confidence. Our protected escrow payment system and smart contracts ensure safe and secure deals.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Sunrise over a lush agricultural valley',
+    url: '/images/hero4.png',
+    alt: 'FarmTrust agricultural scene 4',
+    tag: ' Market Analytics',
+    title: 'Data-Driven Agricultural Decisions',
+    description: 'Get real-time market insights and automated price predictions to make informed trading choices at the peak time.',
+  },
+  {
+    url: '/images/hero5.png',
+    alt: 'FarmTrust agricultural scene 5',
+    tag: ' Sustainable Growth',
+    title: 'Cultivating Trusted Business Relationships',
+    description: 'Join a thriving community of verified buyers and growers dedicated to transparent and sustainable food trading.',
   },
 ];
 
@@ -213,31 +232,30 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
 
-      {/* Hero Section — sliding image background */}
-      <section className="relative h-[calc(100vh-73px)] w-full overflow-hidden">
+      {/* Hero Section — sliding image background; h-screen because Navbar is now fixed+transparent */}
+      <section className="relative h-screen w-full overflow-hidden">
 
         {/* ── Overflow-hidden viewport (clips the sliding track) ────────── */}
         <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-
-          {/* ── Sliding track: w-full keeps width = 1 viewport; each slide
-               is min-w-full so translateX(-N*100%) shifts exactly N slides */}
-          <div
-            className="flex w-full h-full transition-transform duration-1000 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {HERO_SLIDES.map((slide, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url('${slide.url}')`
-                }}
-                role="img"
-                aria-label={slide.alt}
-              />
-            ))}
-          </div>
-
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={currentIndex}
+              initial={{ x: '100%', scale: 1.1, opacity: 0.5 }}
+              animate={{ x: 0, scale: 1, opacity: 1 }}
+              exit={{ x: '-100%', opacity: 0 }}
+              transition={{
+                x: { duration: 0.8, ease: 'easeInOut' },
+                opacity: { duration: 0.8, ease: 'easeInOut' },
+                scale: { duration: 5, ease: 'linear' }
+              }}
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url('${HERO_SLIDES[currentIndex].url}')`
+              }}
+              role="img"
+              aria-label={HERO_SLIDES[currentIndex].alt}
+            />
+          </AnimatePresence>
         </div>{/* end viewport */}
 
         {/* ── Dark scrim: bg-black/40 = 40% opacity, sits in background ─ */}
@@ -249,42 +267,38 @@ const Home = () => {
         {/* ── Content — sits securely above the background carousel ─────── */}
         <div className="relative z-10 h-full flex flex-col justify-end pb-16 md:pb-24 w-full max-w-7xl mx-auto px-6 text-center text-white">
 
-          {/* ── Typewriter heading: each word fades in via staggerChildren ─── */}
-          <motion.h2
-            className="text-5xl md:text-6xl font-hero-display font-bold italic mb-4 tracking-tight"
-            variants={headingContainerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {HERO_HEADING_WORDS.map((word, i) => (
-              <motion.span
-                key={i}
-                variants={headingWordVariants}
-                // inline-block so each word is an independent animation target
-                // while still wrapping naturally on narrow viewports
-                className="inline-block mr-[0.25em] last:mr-0"
-              >
-                {word}
-              </motion.span>
-            ))}
-          </motion.h2>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              className="flex flex-col items-center"
+            >
+              {/* Slide-specific Tagline Pill */}
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 text-emerald-300 font-semibold text-sm mb-4 tracking-wide shadow-sm">
+                {HERO_SLIDES[currentIndex].tag}
+              </span>
 
-          {/* ── Paragraph: fade-up, starts after typing finishes (≈1.5s) ─── */}
-          <motion.p
-            className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-md"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 1.5 }}
-          >
-            FarmTrust connects farmers and buyers with transparency, trust, and fair pricing. Grow your business with our intelligent marketplace.
-          </motion.p>
+              {/* Slide-specific Heading */}
+              <h2 className="text-4xl md:text-6xl font-hero-display font-bold italic mb-4 tracking-tight leading-tight max-w-4xl drop-shadow-md">
+                {HERO_SLIDES[currentIndex].title}
+              </h2>
 
-          {/* ── Buttons: fade-up last, 300ms after paragraph begins (≈1.8s) ── */}
+              {/* Slide-specific Paragraph */}
+              <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-md leading-relaxed">
+                {HERO_SLIDES[currentIndex].description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* ── Buttons: fade-up once on mount ── */}
           <motion.div
-            className="flex flex-col sm:flex-row justify-center gap-4"
+            className="flex flex-col sm:flex-row justify-center gap-4 z-20"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 1.8 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.5 }}
           >
             {/* Primary CTA — rich gradient, inner glow, outer shadow, and animated arrow */}
             <Link
@@ -316,267 +330,271 @@ const Home = () => {
 
       </section>
 
-      {/* ── Featured Products ─────────────────────────────────────────────────
-           Sits between Hero and "Why Choose FarmTrust". Same bg/padding as
-           the Why Choose section for a seamless visual transition.          */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* ── Middle Sections (Greenish Gradient Flow) ──────────────────────────
+           This continuous gradient flows smoothly from the light hero tail 
+           and syncs perfectly into the solid green Premium CTA section below. */}
+      <div className="bg-gradient-to-b from-slate-50 via-emerald-50 to-primary-100/80 dark:from-slate-900 dark:via-emerald-950/30 dark:to-primary-950/80 transition-colors duration-300">
 
-          {/* Section header */}
-          <div className="mb-12 text-center">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
-              🛒 Live on FarmTrust
-            </span>
-            <h3 className="section-header dark:text-slate-100">Featured Products</h3>
-            <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
-              Hand-picked fresh produce from verified farmers — straight to you.
-            </p>
-          </div>
+        {/* ── Featured Products ─────────────────────────────────────────────── */}
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-6">
 
-          {/* Desktop: cards + explore button in a single row
+            {/* Section header */}
+            <div className="mb-12 text-center">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
+                🛒 Live on FarmTrust
+              </span>
+              <h3 className="section-header dark:text-slate-100">Featured Products</h3>
+              <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
+                Hand-picked fresh produce from verified farmers — straight to you.
+              </p>
+            </div>
+
+            {/* Desktop: cards + explore button in a single row
                Mobile : cards stacked, button at the bottom              */}
-          <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
 
-            {/* 3 product cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-              {FEATURED_PRODUCTS.map(product => {
-                const emoji = getCropEmoji(product.name);
-                return (
-                  <div
-                    key={product.id}
-                    className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-                  >
-                    {/* Image / Emoji area */}
-                    <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
-                          {emoji}
+              {/* 3 product cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
+                {FEATURED_PRODUCTS.map(product => {
+                  const emoji = getCropEmoji(product.name);
+                  return (
+                    <div
+                      key={product.id}
+                      className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                    >
+                      {/* Image / Emoji area */}
+                      <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
+                            {emoji}
+                          </span>
+                        )}
+
+                        {/* Discount badge — top-left */}
+                        <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+                          {product.discount}% Off
                         </span>
-                      )}
 
-                      {/* Discount badge — top-left */}
-                      <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
-                        {product.discount}% Off
-                      </span>
-
-                      {/* Produce tag — bottom-left */}
-                      <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
-                        🌱 Fresh Produce
-                      </span>
-                    </div>
-
-                    {/* Details area */}
-                    <div className="flex flex-col flex-1 p-4 gap-3">
-                      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
-                        {product.name}
-                      </h3>
-
-                      <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
-                        Available: {product.quantity} kg
-                      </p>
-
-                      {/* Pricing row */}
-                      <div className="flex items-baseline gap-2 mt-auto">
-                        <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                          ${product.price.toFixed(2)}
-                          <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
-                        </span>
-                        <span className="text-sm text-slate-400 line-through">
-                          ${product.originalPrice.toFixed(2)}
+                        {/* Produce tag — bottom-left */}
+                        <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
+                          🌱 Fresh Produce
                         </span>
                       </div>
 
-                      {/* Action buttons */}
-                      <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                        <Link
-                          to="/buyer"
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
-                        >
-                          🛒 Add to Cart
-                        </Link>
-                        <Link
-                          to="/buyer"
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg transition-all duration-200"
-                        >
-                          ⚡ Buy Now
-                        </Link>
+                      {/* Details area */}
+                      <div className="flex flex-col flex-1 p-4 gap-3">
+                        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
+                          {product.name}
+                        </h3>
+
+                        <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
+                          Available: {product.quantity} kg
+                        </p>
+
+                        {/* Pricing row */}
+                        <div className="flex items-baseline gap-2 mt-auto">
+                          <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
+                            ${product.price.toFixed(2)}
+                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
+                          </span>
+                          <span className="text-sm text-slate-400 line-through">
+                            ${product.originalPrice.toFixed(2)}
+                          </span>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                          <Link
+                            to="/buyer"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
+                          >
+                            🛒 Add to Cart
+                          </Link>
+                          <Link
+                            to="/buyer"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg transition-all duration-200"
+                          >
+                            ⚡ Buy Now
+                          </Link>
+                        </div>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+
+              {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
+              <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
+                <Link
+                  to={ctaConfig.route}
+                  className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
+                >
+                  {/* Animated arrow circle */}
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
+                    <svg
+                      className="w-8 h-8 text-white transition-transform duration-300 group-hover:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
                   </div>
-                );
-              })}
-            </div>
+                  <span className="text-base font-bold leading-tight">
+                    Explore<br />for more
+                  </span>
+                  <span className="text-xs text-white/70 font-medium">
+                    View all listings →
+                  </span>
+                </Link>
+              </div>
 
-            {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
-            <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
-              <Link
-                to={ctaConfig.route}
-                className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
-              >
-                {/* Animated arrow circle */}
-                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
-                  <svg
-                    className="w-8 h-8 text-white transition-transform duration-300 group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
-                <span className="text-base font-bold leading-tight">
-                  Explore<br />for more
-                </span>
-                <span className="text-xs text-white/70 font-medium">
-                  View all listings →
-                </span>
-              </Link>
             </div>
-
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* sectionRef on the outermost wrapper — py-24 padding + heading give it
+        {/* sectionRef on the outermost wrapper — py-24 padding + heading give it
           guaranteed intrinsic height so the observer fires early & reliably. */}
-      <section ref={sectionRef} className="py-24 bg-slate-50 dark:bg-slate-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <section ref={sectionRef} className="py-24">
+          <div className="max-w-7xl mx-auto px-6">
+            <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
 
-            {/* ── Card 1 — Transparent Pricing
+              {/* ── Card 1 — Transparent Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : none (fires first) */}
-            <div
-              className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+              <div
+                className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
                 transition-all duration-1000 ease-out
                 ${isVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                }`}
-            >
-              <div className="feature-icon mb-4">⚖️</div>
-              <h4 className="dark:text-slate-100">Transparent Pricing</h4>
-              <p className="dark:text-slate-300">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
-            </div>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                  }`}
+              >
+                <div className="feature-icon mb-4">⚖️</div>
+                <h4 className="dark:text-slate-100">Transparent Pricing</h4>
+                <p className="dark:text-slate-300">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
+              </div>
 
-            {/* ── Card 2 — Secure Payments
+              {/* ── Card 2 — Secure Payments
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-            <div
-              className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+              <div
+                className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
                 transition-all duration-1000 ease-out delay-200
                 ${isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-20'
-                }`}
-            >
-              <div className="feature-icon mb-4">🔒</div>
-              <h4 className="dark:text-slate-100">Secure Payments</h4>
-              <p className="dark:text-slate-300">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
-            </div>
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-20'
+                  }`}
+              >
+                <div className="feature-icon mb-4">🔒</div>
+                <h4 className="dark:text-slate-100">Secure Payments</h4>
+                <p className="dark:text-slate-300">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
+              </div>
 
-            {/* ── Card 3 — Verified Trust
+              {/* ── Card 3 — Verified Trust
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-            <div
-              className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+              <div
+                className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
                 transition-all duration-1000 ease-out delay-400
                 ${isVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                }`}
-            >
-              <div className="feature-icon mb-4">✔️</div>
-              <h4 className="dark:text-slate-100">Verified Trust</h4>
-              <p className="dark:text-slate-300">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                  }`}
+              >
+                <div className="feature-icon mb-4">✔️</div>
+                <h4 className="dark:text-slate-100">Verified Trust</h4>
+                <p className="dark:text-slate-300">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+              </div>
+
             </div>
-
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
+        {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
           intrinsic height (py-24 + heading), so the observer fires reliably. */}
-      <section ref={highlightsRef} className="py-24 bg-white dark:bg-slate-900 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <section ref={highlightsRef} className="py-24">
+          <div className="max-w-7xl mx-auto px-6">
+            <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
 
-            {/* Card 1 — Fair Pricing
+              {/* Card 1 — Fair Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : 100ms */}
-            <div
-              className={`glass-card text-center dark:bg-slate-800 dark:border dark:border-slate-700
+              <div
+                className={`glass-card text-center dark:bg-slate-800 dark:border dark:border-slate-700
                 transition-all duration-1000 ease-out delay-100
                 ${isHighlightsVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                }`}
-            >
-              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                  }`}
+              >
+                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
+                <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
-              <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
-            </div>
 
-            {/* Card 2 — Secure Payments
+              {/* Card 2 — Secure Payments
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-            <div
-              className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
+              <div
+                className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
                 transition-all duration-1000 ease-out delay-200
                 ${isHighlightsVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-20'
-                }`}
-            >
-              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-20'
+                  }`}
+              >
+                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
+                <p className="text-slate-600 dark:text-slate-300">Safe, encrypted transactions with escrow and multiple payment options for peace of mind.</p>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
-              <p className="text-slate-600 dark:text-slate-300">Safe, encrypted transactions with escrow and multiple payment options for peace of mind.</p>
-            </div>
 
-            {/* Card 3 — Trust Marks
+              {/* Card 3 — Trust Marks
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-            <div
-              className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
+              <div
+                className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
                 transition-all duration-1000 ease-out delay-400
                 ${isHighlightsVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                }`}
-            >
-              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                  }`}
+              >
+                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
+                <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
-              <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
-            </div>
 
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div> {/* End of Middle Sections Gradient Wrapper */}
 
       {/* ── Premium CTA Section ─────────────────────────────────────────── */}
       <section className="relative py-24 md:py-28 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 dark:from-emerald-900 dark:to-teal-950 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
