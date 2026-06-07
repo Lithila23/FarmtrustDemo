@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import client from '../api/client';
+import { Scale, ShieldCheck, BadgeCheck } from 'lucide-react';
 
 
 // ---------------------------------------------------------------------------
@@ -47,37 +49,9 @@ const HERO_SLIDES = [
 ];
 
 // ---------------------------------------------------------------------------
-// Featured Products — mock data (image: '' triggers emoji fallback logic)
+// Featured Products — fetched live from the API (last 3 listings)
+// The FEATURED_PRODUCTS constant has been removed; data comes from state.
 // ---------------------------------------------------------------------------
-const FEATURED_PRODUCTS = [
-  {
-    id: 1,
-    name: 'Organic Mango',
-    quantity: 200,
-    price: 3.49,
-    originalPrice: 4.49,
-    discount: 22,
-    image: '',
-  },
-  {
-    id: 2,
-    name: 'Fresh Watermelon',
-    quantity: 85,
-    price: 1.99,
-    originalPrice: 2.49,
-    discount: 20,
-    image: '',
-  },
-  {
-    id: 3,
-    name: 'Premium Basmati Rice',
-    quantity: 500,
-    price: 2.79,
-    originalPrice: 3.49,
-    discount: 20,
-    image: '',
-  },
-];
 
 // ---------------------------------------------------------------------------
 // Image-fallback emoji mapping (mirrors BuyerDashboard / FarmerDashboard)
@@ -147,6 +121,28 @@ const Home = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // ---------------------------------------------------------------------------
+  // Live featured products — last 3 listings from the marketplace API.
+  // No auth token required; the crops endpoint is public.
+  // ---------------------------------------------------------------------------
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await client.get('/crops');
+        // API returns newest-first; take the first 3
+        setFeaturedProducts(res.data.slice(0, 3));
+      } catch (err) {
+        console.error('Failed to fetch featured products:', err);
+      } finally {
+        setFeaturedLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Bulletproof scroll-reveal: ref on the <section> (guaranteed intrinsic
@@ -330,13 +326,57 @@ const Home = () => {
 
       </section>
 
-      {/* ── Middle Sections (Greenish Gradient Flow) ──────────────────────────
-           This continuous gradient flows smoothly from the light hero tail 
-           and syncs perfectly into the solid green Premium CTA section below. */}
-      <div className="bg-gradient-to-b from-slate-50 via-emerald-50 to-primary-100/80 dark:from-slate-900 dark:via-emerald-950/30 dark:to-primary-950/80 transition-colors duration-300">
+      {/* ── Middle Sections (Ambient Gradient Flow) ──────────────────────────
+           A rich 3-colour pastel gradient: rose → violet/lavender → sky (light)
+           deep-purple → indigo → teal (dark).  The About & Premium CTA sections
+           are NOT wrapped here, so they keep their own styles unchanged. */}
+      <div className="relative overflow-hidden transition-colors duration-300"
+        style={{
+          background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
+        }}
+      >
+        {/* dark-mode override via a pseudo-layer — Tailwind can't do multi-stop
+            inline gradients, so we use a CSS-variable trick: an absolutely
+            positioned dark overlay that is hidden in light mode */}
+        <div
+          className="absolute inset-0 pointer-events-none hidden dark:block"
+          style={{
+            background: 'linear-gradient(180deg, #1e0a2e 0%, #1a1040 35%, #0d1f3c 70%, #022c22 100%)'
+          }}
+        />
+        {/* Decorative ambient orbs — give the "glowing colour blob" look */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* top-left rose orb */}
+          <div
+            className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+            style={{ background: 'radial-gradient(circle, #f9a8d4, transparent 70%)' }}
+          />
+          {/* centre violet orb */}
+          <div
+            className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-25 dark:opacity-15 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #c4b5fd, transparent 70%)' }}
+          />
+          {/* bottom-right sky orb */}
+          <div
+            className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+            style={{ background: 'radial-gradient(circle, #7dd3fc, transparent 70%)' }}
+          />
+          {/* dark-mode: deep indigo orb */}
+          <div
+            className="absolute top-1/2 left-1/4 w-[400px] h-[300px] rounded-full opacity-0 dark:opacity-25 blur-[90px]"
+            style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
+          />
+        </div>
+
+        {/* ── Content wrapper: relative + z-10 keeps all sections above the
+             absolutely-positioned orb/overlay layers in the same stacking
+             context. Without this, CSS paint order renders absolute elements
+             on top of static flow, hiding the Explore button until hover
+             triggers scale-105 (which creates its own stacking context). */}
+        <div className="relative z-10">
 
         {/* ── Featured Products ─────────────────────────────────────────────── */}
-        <section className="py-24">
+        <section className="pt-24 pb-12">
           <div className="max-w-7xl mx-auto px-6">
 
             {/* Section header */}
@@ -354,21 +394,49 @@ const Home = () => {
                Mobile : cards stacked, button at the bottom              */}
             <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
 
-              {/* 3 product cards */}
+              {/* 3 live product cards — last 3 listings from the marketplace */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-                {FEATURED_PRODUCTS.map(product => {
-                  const emoji = getCropEmoji(product.name);
+
+                {/* ── Skeleton shimmer while loading ── */}
+                {featuredLoading && [1, 2, 3].map(n => (
+                  <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
+                    <div className="h-48 bg-slate-200 dark:bg-slate-700" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
+                      <div className="flex gap-2 pt-1">
+                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* ── Empty state ── */}
+                {!featuredLoading && featuredProducts.length === 0 && (
+                  <div className="col-span-3 flex flex-col items-center justify-center py-16 text-center">
+                    <span className="text-6xl mb-4">🌾</span>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
+                  </div>
+                )}
+
+                {/* ── Real product cards ── */}
+                {!featuredLoading && featuredProducts.map(crop => {
+                  const offerPrice  = Number(crop.price);
+                  const originalPrice = (offerPrice * 1.25).toFixed(2);
+                  const emoji = getCropEmoji(crop.name);
                   return (
                     <div
-                      key={product.id}
-                      className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                      key={crop.id}
+                      className="group relative flex flex-col rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-white/60 dark:border-slate-600/50 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
                     >
                       {/* Image / Emoji area */}
                       <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-                        {product.image ? (
+                        {crop.image ? (
                           <img
-                            src={product.image}
-                            alt={product.name}
+                            src={crop.image}
+                            alt={crop.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
@@ -379,7 +447,7 @@ const Home = () => {
 
                         {/* Discount badge — top-left */}
                         <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
-                          {product.discount}% Off
+                          20% Off
                         </span>
 
                         {/* Produce tag — bottom-left */}
@@ -391,25 +459,32 @@ const Home = () => {
                       {/* Details area */}
                       <div className="flex flex-col flex-1 p-4 gap-3">
                         <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
-                          {product.name}
+                          {crop.name}
                         </h3>
 
                         <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
-                          Available: {product.quantity} kg
+                          Available: {crop.quantity} kg
                         </p>
+
+                        {/* Description snippet if available */}
+                        {crop.description && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                            {crop.description}
+                          </p>
+                        )}
 
                         {/* Pricing row */}
                         <div className="flex items-baseline gap-2 mt-auto">
                           <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                            ${product.price.toFixed(2)}
+                            ${offerPrice.toFixed(2)}
                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
                           </span>
                           <span className="text-sm text-slate-400 line-through">
-                            ${product.originalPrice.toFixed(2)}
+                            ${originalPrice}
                           </span>
                         </div>
 
-                        {/* Action buttons */}
+                        {/* Action buttons — both navigate to buyer marketplace */}
                         <div className="flex flex-col sm:flex-row gap-2 pt-1">
                           <Link
                             to="/buyer"
@@ -461,9 +536,9 @@ const Home = () => {
           </div>
         </section>
 
-        {/* sectionRef on the outermost wrapper — py-24 padding + heading give it
+        {/* sectionRef on the outermost wrapper — py-12 padding + heading give it
           guaranteed intrinsic height so the observer fires early & reliably. */}
-        <section ref={sectionRef} className="py-24">
+        <section ref={sectionRef} className="py-12">
           <div className="max-w-7xl mx-auto px-6">
             <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
@@ -473,32 +548,36 @@ const Home = () => {
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : none (fires first) */}
               <div
-                className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgb(16,185,129,0.12)]
                 transition-all duration-1000 ease-out
                 ${isVisible
                     ? 'opacity-100 translate-x-0 translate-y-0'
                     : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
                   }`}
               >
-                <div className="feature-icon mb-4">⚖️</div>
-                <h4 className="dark:text-slate-100">Transparent Pricing</h4>
-                <p className="dark:text-slate-300">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <Scale className="w-7 h-7 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Transparent Pricing</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
               </div>
 
               {/* ── Card 2 — Secure Payments
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
               <div
-                className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]
                 transition-all duration-1000 ease-out delay-200
                 ${isVisible
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-10 md:translate-y-20'
                   }`}
               >
-                <div className="feature-icon mb-4">🔒</div>
-                <h4 className="dark:text-slate-100">Secure Payments</h4>
-                <p className="dark:text-slate-300">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 border border-violet-200 dark:border-violet-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+                  <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2} />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
               </div>
 
               {/* ── Card 3 — Verified Trust
@@ -506,16 +585,18 @@ const Home = () => {
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
               <div
-                className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-sky-500/30 hover:shadow-[0_8px_30px_rgb(14,165,233,0.12)]
                 transition-all duration-1000 ease-out delay-400
                 ${isVisible
                     ? 'opacity-100 translate-x-0 translate-y-0'
                     : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
                   }`}
               >
-                <div className="feature-icon mb-4">✔️</div>
-                <h4 className="dark:text-slate-100">Verified Trust</h4>
-                <p className="dark:text-slate-300">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 border border-sky-200 dark:border-sky-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <BadgeCheck className="w-7 h-7 text-sky-600 dark:text-sky-400" strokeWidth={2} />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Verified Trust</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
               </div>
 
             </div>
@@ -523,8 +604,8 @@ const Home = () => {
         </section>
 
         {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
-          intrinsic height (py-24 + heading), so the observer fires reliably. */}
-        <section ref={highlightsRef} className="py-24">
+          intrinsic height (pt-12 + heading), so the observer fires reliably. */}
+        <section ref={highlightsRef} className="pt-12 pb-24">
           <div className="max-w-7xl mx-auto px-6">
             <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
@@ -534,7 +615,7 @@ const Home = () => {
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : 100ms */}
               <div
-                className={`glass-card text-center dark:bg-slate-800 dark:border dark:border-slate-700
+                className={`glass-card text-center bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-100
                 ${isHighlightsVisible
                     ? 'opacity-100 translate-x-0 translate-y-0'
@@ -550,11 +631,11 @@ const Home = () => {
                 <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
               </div>
 
-              {/* Card 2 — Secure Payments
+              {/* Card 2 — Direct Connection
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
               <div
-                className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
+                className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-200
                 ${isHighlightsVisible
                     ? 'opacity-100 translate-y-0'
@@ -563,11 +644,11 @@ const Home = () => {
               >
                 <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
-                <p className="text-slate-600 dark:text-slate-300">Safe, encrypted transactions with escrow and multiple payment options for peace of mind.</p>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Direct Connection</h4>
+                <p className="text-slate-600 dark:text-slate-300">Link directly with verified local farmers, ensuring the freshest produce while eliminating middleman delays.</p>
               </div>
 
               {/* Card 3 — Trust Marks
@@ -575,7 +656,7 @@ const Home = () => {
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
               <div
-                className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
+                className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-400
                 ${isHighlightsVisible
                     ? 'opacity-100 translate-x-0 translate-y-0'
@@ -594,6 +675,7 @@ const Home = () => {
             </div>
           </div>
         </section>
+        </div> {/* End of z-10 content wrapper */}
       </div> {/* End of Middle Sections Gradient Wrapper */}
 
       {/* ── Premium CTA Section ─────────────────────────────────────────── */}
