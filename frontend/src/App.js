@@ -9,7 +9,6 @@ import BuyerDashboard from './pages/BuyerDashboard';
 import AdminPanel from './pages/AdminPanel';
 import AIPredictions from './pages/AIPredictions';
 import Navbar from './components/Navbar';
-import ThemeToggle from './components/ThemeToggle';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function AnimatedRoutes() {
@@ -78,7 +77,6 @@ function App() {
           <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:bg-slate-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
             <Navbar />
             <AnimatedRoutes />
-            <ThemeToggle />
           </div>
         </Router>
       </CartProvider>

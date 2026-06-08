@@ -8,6 +8,8 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 
   body {
@@ -126,18 +128,9 @@
   }
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - hidden globally as requested */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-slate-100;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-slate-400 rounded-full hover:bg-slate-500;
+  display: none;
 }
 
 /* Additional lightweight polished custom UI */
