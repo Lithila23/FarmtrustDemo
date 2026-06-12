@@ -2,7 +2,18 @@ node_modules/
 build/
 dist/
 .env
+*.env.*
+.env.local
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Caches
+ai-service/forecast_cache.json
 
 # Python
 __pycache__/
 *.pyc
+.venv/
+venv/

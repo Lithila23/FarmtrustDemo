@@ -9,7 +9,6 @@ import BuyerDashboard from './pages/BuyerDashboard';
 import AdminPanel from './pages/AdminPanel';
 import AIPredictions from './pages/AIPredictions';
 import Navbar from './components/Navbar';
-import ThemeToggle from './components/ThemeToggle';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function AnimatedRoutes() {
@@ -23,8 +22,8 @@ function AnimatedRoutes() {
         {/* Canonical auth entry point — covers login + register */}
         <Route path="/auth" element={<Auth />} />
         {/* Legacy redirects — keep old URLs working */}
-        <Route path="/login"    element={<Navigate to="/auth" replace />} />
-        <Route path="/register" element={<Navigate to="/auth" replace />} />
+        <Route path="/login"    element={<Navigate to="/auth?mode=login" replace />} />
+        <Route path="/register" element={<Navigate to="/auth?mode=register" replace />} />
 
         {/* ── Protected: Farmers & Admins only ── */}
         <Route
@@ -78,7 +77,6 @@ function App() {
           <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:bg-slate-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900">
             <Navbar />
             <AnimatedRoutes />
-            <ThemeToggle />
           </div>
         </Router>
       </CartProvider>

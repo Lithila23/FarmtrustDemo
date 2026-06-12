@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import client from '../api/client';
+import { Scale, ShieldCheck, BadgeCheck } from 'lucide-react';
+import CropCard from '../components/CropCard';
 
 
 // ---------------------------------------------------------------------------
@@ -10,77 +13,48 @@ import { motion } from 'framer-motion';
 // ---------------------------------------------------------------------------
 const HERO_SLIDES = [
   {
-    url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Golden wheat field at sunrise',
+    url: '/images/hero1.png',
+    alt: 'FarmTrust agricultural scene 1',
+    tag: ' Smart Agriculture',
+    title: 'Empower Your Agricultural Business',
+    description: 'FarmTrust connects farmers and buyers with transparency, trust, and fair pricing. Grow your business with our intelligent marketplace.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Tractor working a large green farm',
+    url: '/images/hero2.png',
+    alt: 'FarmTrust agricultural scene 2',
+    tag: ' Direct Logistics',
+    title: 'Optimized Farm-to-Table Supply Chain',
+    description: 'Eliminate middleman markups and optimize your margins. Access fresh produce directly from verified farmers.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Fresh produce at a farmers market',
+    url: '/images/hero3.png',
+    alt: 'FarmTrust agricultural scene 3',
+    tag: ' Secure Trading',
+    title: 'Transparent Pricing & Escrow Safety',
+    description: 'Transact with absolute confidence. Our protected escrow payment system and smart contracts ensure safe and secure deals.',
   },
   {
-    url: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=1600&auto=format&fit=crop&q=80',
-    alt: 'Sunrise over a lush agricultural valley',
+    url: '/images/hero4.png',
+    alt: 'FarmTrust agricultural scene 4',
+    tag: ' Market Analytics',
+    title: 'Data-Driven Agricultural Decisions',
+    description: 'Get real-time market insights and automated price predictions to make informed trading choices at the peak time.',
+  },
+  {
+    url: '/images/hero5.png',
+    alt: 'FarmTrust agricultural scene 5',
+    tag: ' Sustainable Growth',
+    title: 'Cultivating Trusted Business Relationships',
+    description: 'Join a thriving community of verified buyers and growers dedicated to transparent and sustainable food trading.',
   },
 ];
 
 // ---------------------------------------------------------------------------
-// Featured Products — mock data (image: '' triggers emoji fallback logic)
+// Featured Products — fetched live from the API (last 3 listings)
+// The FEATURED_PRODUCTS constant has been removed; data comes from state.
 // ---------------------------------------------------------------------------
-const FEATURED_PRODUCTS = [
-  {
-    id: 1,
-    name: 'Organic Mango',
-    quantity: 200,
-    price: 3.49,
-    originalPrice: 4.49,
-    discount: 22,
-    image: '',
-  },
-  {
-    id: 2,
-    name: 'Fresh Watermelon',
-    quantity: 85,
-    price: 1.99,
-    originalPrice: 2.49,
-    discount: 20,
-    image: '',
-  },
-  {
-    id: 3,
-    name: 'Premium Basmati Rice',
-    quantity: 500,
-    price: 2.79,
-    originalPrice: 3.49,
-    discount: 20,
-    image: '',
-  },
-];
 
-// ---------------------------------------------------------------------------
-// Image-fallback emoji mapping (mirrors BuyerDashboard / FarmerDashboard)
-// ---------------------------------------------------------------------------
-const CROP_EMOJI_MAP = {
-  banana: '🍌', coconut: '🥥', watermelon: '🍉', mango: '🥭',
-  apple: '🍎', orange: '🍊', grape: '🍇', strawberry: '🍓',
-  tomato: '🍅', potato: '🥔', carrot: '🥕', corn: '🌽',
-  wheat: '🌾', rice: '🍚', onion: '🧅', garlic: '🧄',
-  pepper: '🫑', broccoli: '🥦', spinach: '🥬', pumpkin: '🎃',
-  lemon: '🍋', pineapple: '🍍', peach: '🍑', pear: '🍐',
-  cherry: '🍒', blueberry: '🫐', mushroom: '🍄', cabbage: '🥬',
-  cucumber: '🥒', avocado: '🥑', eggplant: '🍆', radish: '🌱',
-};
 
-const getCropEmoji = (name = '') => {
-  const key = name.toLowerCase();
-  for (const [word, emoji] of Object.entries(CROP_EMOJI_MAP)) {
-    if (key.includes(word)) return emoji;
-  }
-  return '🌿';
-};
 
 // ---------------------------------------------------------------------------
 // Role → CTA configuration map
@@ -122,12 +96,35 @@ const headingWordVariants = {
 
 const Home = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Derive the primary CTA text + route from the current auth role
   const ctaConfig = CTA_CONFIG[user?.role ?? ''] ?? CTA_CONFIG[''];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // ---------------------------------------------------------------------------
+  // Live featured products — last 3 listings from the marketplace API.
+  // No auth token required; the crops endpoint is public.
+  // ---------------------------------------------------------------------------
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await client.get('/crops');
+        // API returns newest-first; take the first 3
+        setFeaturedProducts(res.data.slice(0, 3));
+      } catch (err) {
+        console.error('Failed to fetch featured products:', err);
+      } finally {
+        setFeaturedLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Bulletproof scroll-reveal: ref on the <section> (guaranteed intrinsic
@@ -213,31 +210,30 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
 
-      {/* Hero Section — sliding image background */}
-      <section className="relative h-[calc(100vh-73px)] w-full overflow-hidden">
+      {/* Hero Section — sliding image background; h-screen because Navbar is now fixed+transparent */}
+      <section className="relative h-screen w-full overflow-hidden">
 
         {/* ── Overflow-hidden viewport (clips the sliding track) ────────── */}
         <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-
-          {/* ── Sliding track: w-full keeps width = 1 viewport; each slide
-               is min-w-full so translateX(-N*100%) shifts exactly N slides */}
-          <div
-            className="flex w-full h-full transition-transform duration-1000 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {HERO_SLIDES.map((slide, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url('${slide.url}')`
-                }}
-                role="img"
-                aria-label={slide.alt}
-              />
-            ))}
-          </div>
-
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={currentIndex}
+              initial={{ x: '100%', scale: 1.1, opacity: 0.5 }}
+              animate={{ x: 0, scale: 1, opacity: 1 }}
+              exit={{ x: '-100%', opacity: 0 }}
+              transition={{
+                x: { duration: 0.8, ease: 'easeInOut' },
+                opacity: { duration: 0.8, ease: 'easeInOut' },
+                scale: { duration: 5, ease: 'linear' }
+              }}
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url('${HERO_SLIDES[currentIndex].url}')`
+              }}
+              role="img"
+              aria-label={HERO_SLIDES[currentIndex].alt}
+            />
+          </AnimatePresence>
         </div>{/* end viewport */}
 
         {/* ── Dark scrim: bg-black/40 = 40% opacity, sits in background ─ */}
@@ -249,42 +245,38 @@ const Home = () => {
         {/* ── Content — sits securely above the background carousel ─────── */}
         <div className="relative z-10 h-full flex flex-col justify-end pb-16 md:pb-24 w-full max-w-7xl mx-auto px-6 text-center text-white">
 
-          {/* ── Typewriter heading: each word fades in via staggerChildren ─── */}
-          <motion.h2
-            className="text-5xl md:text-6xl font-hero-display font-bold italic mb-4 tracking-tight"
-            variants={headingContainerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {HERO_HEADING_WORDS.map((word, i) => (
-              <motion.span
-                key={i}
-                variants={headingWordVariants}
-                // inline-block so each word is an independent animation target
-                // while still wrapping naturally on narrow viewports
-                className="inline-block mr-[0.25em] last:mr-0"
-              >
-                {word}
-              </motion.span>
-            ))}
-          </motion.h2>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              className="flex flex-col items-center"
+            >
+              {/* Slide-specific Tagline Pill */}
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 text-emerald-300 font-semibold text-sm mb-4 tracking-wide shadow-sm">
+                {HERO_SLIDES[currentIndex].tag}
+              </span>
 
-          {/* ── Paragraph: fade-up, starts after typing finishes (≈1.5s) ─── */}
-          <motion.p
-            className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-md"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 1.5 }}
-          >
-            FarmTrust connects farmers and buyers with transparency, trust, and fair pricing. Grow your business with our intelligent marketplace.
-          </motion.p>
+              {/* Slide-specific Heading */}
+              <h2 className="text-4xl md:text-6xl font-hero-display font-bold italic mb-4 tracking-tight leading-tight max-w-4xl drop-shadow-md">
+                {HERO_SLIDES[currentIndex].title}
+              </h2>
 
-          {/* ── Buttons: fade-up last, 300ms after paragraph begins (≈1.8s) ── */}
+              {/* Slide-specific Paragraph */}
+              <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-md leading-relaxed">
+                {HERO_SLIDES[currentIndex].description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* ── Buttons: fade-up once on mount ── */}
           <motion.div
-            className="flex flex-col sm:flex-row justify-center gap-4"
+            className="flex flex-col sm:flex-row justify-center gap-4 z-20"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 1.8 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.5 }}
           >
             {/* Primary CTA — rich gradient, inner glow, outer shadow, and animated arrow */}
             <Link
@@ -316,267 +308,285 @@ const Home = () => {
 
       </section>
 
-      {/* ── Featured Products ─────────────────────────────────────────────────
-           Sits between Hero and "Why Choose FarmTrust". Same bg/padding as
-           the Why Choose section for a seamless visual transition.          */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* ── Middle Sections (Ambient Gradient Flow) ──────────────────────────
+           A rich 3-colour pastel gradient: rose → violet/lavender → sky (light)
+           deep-purple → indigo → teal (dark).  The About & Premium CTA sections
+           are NOT wrapped here, so they keep their own styles unchanged. */}
+      <div className="relative overflow-hidden transition-colors duration-300"
+        style={{
+          background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
+        }}
+      >
+        {/* dark-mode override via a pseudo-layer — Tailwind can't do multi-stop
+            inline gradients, so we use a CSS-variable trick: an absolutely
+            positioned dark overlay that is hidden in light mode */}
+        <div
+          className="absolute inset-0 pointer-events-none hidden dark:block"
+          style={{
+            background: 'linear-gradient(180deg, #1e0a2e 0%, #1a1040 35%, #0d1f3c 70%, #022c22 100%)'
+          }}
+        />
+        {/* Decorative ambient orbs — give the "glowing colour blob" look */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* top-left rose orb */}
+          <div
+            className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+            style={{ background: 'radial-gradient(circle, #f9a8d4, transparent 70%)' }}
+          />
+          {/* centre violet orb */}
+          <div
+            className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-25 dark:opacity-15 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #c4b5fd, transparent 70%)' }}
+          />
+          {/* bottom-right sky orb */}
+          <div
+            className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+            style={{ background: 'radial-gradient(circle, #7dd3fc, transparent 70%)' }}
+          />
+          {/* dark-mode: deep indigo orb */}
+          <div
+            className="absolute top-1/2 left-1/4 w-[400px] h-[300px] rounded-full opacity-0 dark:opacity-25 blur-[90px]"
+            style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
+          />
+        </div>
 
-          {/* Section header */}
-          <div className="mb-12 text-center">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
-              🛒 Live on FarmTrust
-            </span>
-            <h3 className="section-header dark:text-slate-100">Featured Products</h3>
-            <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
-              Hand-picked fresh produce from verified farmers — straight to you.
-            </p>
-          </div>
+        {/* ── Content wrapper: relative + z-10 keeps all sections above the
+             absolutely-positioned orb/overlay layers in the same stacking
+             context. Without this, CSS paint order renders absolute elements
+             on top of static flow, hiding the Explore button until hover
+             triggers scale-105 (which creates its own stacking context). */}
+        <div className="relative z-10">
 
-          {/* Desktop: cards + explore button in a single row
+        {/* ── Featured Products ─────────────────────────────────────────────── */}
+        <section className="pt-24 pb-12">
+          <div className="max-w-7xl mx-auto px-6">
+
+            {/* Section header */}
+            <div className="mb-12 text-center">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
+                🛒 Live on FarmTrust
+              </span>
+              <h3 className="section-header dark:text-slate-100">Featured Products</h3>
+              <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
+                Hand-picked fresh produce from verified farmers — straight to you.
+              </p>
+            </div>
+
+            {/* Desktop: cards + explore button in a single row
                Mobile : cards stacked, button at the bottom              */}
-          <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
 
-            {/* 3 product cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-              {FEATURED_PRODUCTS.map(product => {
-                const emoji = getCropEmoji(product.name);
-                return (
-                  <div
-                    key={product.id}
-                    className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-                  >
-                    {/* Image / Emoji area */}
-                    <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
-                          {emoji}
-                        </span>
-                      )}
+              {/* 3 live product cards — last 3 listings from the marketplace */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
 
-                      {/* Discount badge — top-left */}
-                      <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
-                        {product.discount}% Off
-                      </span>
-
-                      {/* Produce tag — bottom-left */}
-                      <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
-                        🌱 Fresh Produce
-                      </span>
-                    </div>
-
-                    {/* Details area */}
-                    <div className="flex flex-col flex-1 p-4 gap-3">
-                      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
-                        {product.name}
-                      </h3>
-
-                      <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
-                        Available: {product.quantity} kg
-                      </p>
-
-                      {/* Pricing row */}
-                      <div className="flex items-baseline gap-2 mt-auto">
-                        <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                          ${product.price.toFixed(2)}
-                          <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
-                        </span>
-                        <span className="text-sm text-slate-400 line-through">
-                          ${product.originalPrice.toFixed(2)}
-                        </span>
-                      </div>
-
-                      {/* Action buttons */}
-                      <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                        <Link
-                          to="/buyer"
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
-                        >
-                          🛒 Add to Cart
-                        </Link>
-                        <Link
-                          to="/buyer"
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg transition-all duration-200"
-                        >
-                          ⚡ Buy Now
-                        </Link>
+                {/* ── Skeleton shimmer while loading ── */}
+                {featuredLoading && [1, 2, 3].map(n => (
+                  <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
+                    <div className="h-48 bg-slate-200 dark:bg-slate-700" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
+                      <div className="flex gap-2 pt-1">
+                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
 
-            {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
-            <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
-              <Link
-                to={ctaConfig.route}
-                className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
-              >
-                {/* Animated arrow circle */}
-                <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
-                  <svg
-                    className="w-8 h-8 text-white transition-transform duration-300 group-hover:translate-x-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
-                <span className="text-base font-bold leading-tight">
-                  Explore<br />for more
-                </span>
-                <span className="text-xs text-white/70 font-medium">
-                  View all listings →
-                </span>
-              </Link>
-            </div>
+                {/* ── Empty state ── */}
+                {!featuredLoading && featuredProducts.length === 0 && (
+                  <div className="col-span-3 flex flex-col items-center justify-center py-16 text-center">
+                    <span className="text-6xl mb-4">🌾</span>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
+                  </div>
+                )}
 
+                {/* ── Real product cards ── */}
+                {!featuredLoading && featuredProducts.map(crop => (
+                  <CropCard
+                    key={crop.id}
+                    crop={crop}
+                    role="buyer"
+                    onAddToCart={() => navigate('/buyer')}
+                    onBuyNow={() => navigate('/buyer')}
+                  />
+                ))}
+              </div>
+
+              {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
+              <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
+                <Link
+                  to={ctaConfig.route}
+                  className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
+                >
+                  {/* Animated arrow circle */}
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
+                    <svg
+                      className="w-8 h-8 text-white transition-transform duration-300 group-hover:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                  <span className="text-base font-bold leading-tight">
+                    Explore<br />for more
+                  </span>
+                  <span className="text-xs text-white/70 font-medium">
+                    View all listings →
+                  </span>
+                </Link>
+              </div>
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* sectionRef on the outermost wrapper — py-24 padding + heading give it
+        {/* sectionRef on the outermost wrapper — py-12 padding + heading give it
           guaranteed intrinsic height so the observer fires early & reliably. */}
-      <section ref={sectionRef} className="py-24 bg-slate-50 dark:bg-slate-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <section ref={sectionRef} className="py-12">
+          <div className="max-w-7xl mx-auto px-6">
+            <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
 
-            {/* ── Card 1 — Transparent Pricing
+              {/* ── Card 1 — Transparent Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : none (fires first) */}
-            <div
-              className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+              <div
+                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgb(16,185,129,0.12)]
                 transition-all duration-1000 ease-out
                 ${isVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                }`}
-            >
-              <div className="feature-icon mb-4">⚖️</div>
-              <h4 className="dark:text-slate-100">Transparent Pricing</h4>
-              <p className="dark:text-slate-300">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
-            </div>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                  }`}
+              >
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <Scale className="w-7 h-7 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Transparent Pricing</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
+              </div>
 
-            {/* ── Card 2 — Secure Payments
+              {/* ── Card 2 — Secure Payments
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-            <div
-              className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+              <div
+                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]
                 transition-all duration-1000 ease-out delay-200
                 ${isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-20'
-                }`}
-            >
-              <div className="feature-icon mb-4">🔒</div>
-              <h4 className="dark:text-slate-100">Secure Payments</h4>
-              <p className="dark:text-slate-300">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
-            </div>
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-20'
+                  }`}
+              >
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 border border-violet-200 dark:border-violet-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+                  <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2} />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
+              </div>
 
-            {/* ── Card 3 — Verified Trust
+              {/* ── Card 3 — Verified Trust
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-            <div
-              className={`feature-card text-left dark:bg-slate-700/60 dark:border dark:border-slate-600
+              <div
+                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-sky-500/30 hover:shadow-[0_8px_30px_rgb(14,165,233,0.12)]
                 transition-all duration-1000 ease-out delay-400
                 ${isVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                }`}
-            >
-              <div className="feature-icon mb-4">✔️</div>
-              <h4 className="dark:text-slate-100">Verified Trust</h4>
-              <p className="dark:text-slate-300">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                  }`}
+              >
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 border border-sky-200 dark:border-sky-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <BadgeCheck className="w-7 h-7 text-sky-600 dark:text-sky-400" strokeWidth={2} />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Verified Trust</h4>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+              </div>
+
             </div>
-
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
-          intrinsic height (py-24 + heading), so the observer fires reliably. */}
-      <section ref={highlightsRef} className="py-24 bg-white dark:bg-slate-900 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
+          intrinsic height (pt-12 + heading), so the observer fires reliably. */}
+        <section ref={highlightsRef} className="pt-12 pb-24">
+          <div className="max-w-7xl mx-auto px-6">
+            <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
 
-            {/* Card 1 — Fair Pricing
+              {/* Card 1 — Fair Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : 100ms */}
-            <div
-              className={`glass-card text-center dark:bg-slate-800 dark:border dark:border-slate-700
+              <div
+                className={`glass-card text-center bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-100
                 ${isHighlightsVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                }`}
-            >
-              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                  }`}
+              >
+                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
+                <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
-              <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
-            </div>
 
-            {/* Card 2 — Secure Payments
+              {/* Card 2 — Direct Connection
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-            <div
-              className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
+              <div
+                className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-200
                 ${isHighlightsVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-20'
-                }`}
-            >
-              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-20'
+                  }`}
+              >
+                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Direct Connection</h4>
+                <p className="text-slate-600 dark:text-slate-300">Link directly with verified local farmers, ensuring the freshest produce while eliminating middleman delays.</p>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
-              <p className="text-slate-600 dark:text-slate-300">Safe, encrypted transactions with escrow and multiple payment options for peace of mind.</p>
-            </div>
 
-            {/* Card 3 — Trust Marks
+              {/* Card 3 — Trust Marks
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-            <div
-              className={`card-lg text-center hover:shadow-lg dark:bg-slate-800 dark:border dark:border-slate-700
+              <div
+                className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-400
                 ${isHighlightsVisible
-                  ? 'opacity-100 translate-x-0 translate-y-0'
-                  : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                }`}
-            >
-              <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                    ? 'opacity-100 translate-x-0 translate-y-0'
+                    : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                  }`}
+              >
+                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
+                <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
               </div>
-              <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
-              <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
-            </div>
 
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+        </div> {/* End of z-10 content wrapper */}
+      </div> {/* End of Middle Sections Gradient Wrapper */}
 
       {/* ── Premium CTA Section ─────────────────────────────────────────── */}
       <section className="relative py-24 md:py-28 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 dark:from-emerald-900 dark:to-teal-950 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
