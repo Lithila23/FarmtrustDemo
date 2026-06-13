@@ -27,6 +27,7 @@ const FarmerDashboard = () => {
     }
   };
 
+
   return (
     <div className="relative overflow-hidden min-h-screen transition-colors duration-300"
       style={{

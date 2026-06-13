@@ -48,8 +48,8 @@ router.get('/metrics', authMiddleware, adminOnly, async (req, res) => {
     return res.json({
       success: true,
       data: {
-        totalUsers:     totalUsers.toLocaleString(),  // e.g. "1,234"
-        activeCrops:    activeCrops.toLocaleString(), // e.g. "456"
+        totalUsers: totalUsers.toLocaleString(),  // e.g. "1,234"
+        activeCrops: activeCrops.toLocaleString(), // e.g. "456"
         transactions,                                 // e.g. "$12,890"
         platformHealth,
       },
