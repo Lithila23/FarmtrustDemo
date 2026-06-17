@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Users, Wheat, Banknote, ShieldCheck, LayoutDashboard, Settings, RefreshCw,
-  Search, ChevronDown, Plus, Pencil, Trash2, MapPin, ChevronRight, X, UserPlus, AlertTriangle, RotateCcw, Check
+  Search, ChevronDown, Plus, Pencil, Trash2, MapPin, X, UserPlus, AlertTriangle, RotateCcw, Check
 } from 'lucide-react';
 import client from '../api/client';
+import PortalMenu from '../components/PortalMenu';
 
 const RECENT_ACTIVITY = [
   { id: 1, event: 'New Farmer Registered', actor: 'Ravi Kumar', time: '2 min ago', status: 'success' },
@@ -44,22 +44,13 @@ const AdminPanel = () => {
   // Users local state initialized to match the screenshot
   const [users, setUsers] = useState([]);
 
-  // Crops local state
-  const [crops, setCrops] = useState([
-    { id: 'CRP-001', name: 'Basmati Rice', isOrganic: true, category: 'Grain', status: 'Active', price: '$2.40', qty: '5,200', farmerInitials: 'RP', farmerName: 'R. Perera', farmerColor: 'bg-blue-900 text-blue-200', location: 'Polonnaruwa', listed: 'May 12' },
-    { id: 'CRP-002', name: 'Red Onion', isOrganic: false, category: 'Vegetable', status: 'Active', price: '$1.10', qty: '3,100', farmerInitials: 'AS', farmerName: 'A. Silva', farmerColor: 'bg-green-900 text-green-200', location: 'Dambulla', listed: 'May 14' },
-    { id: 'CRP-003', name: 'Cinnamon', isOrganic: true, category: 'Spice', status: 'Pending', price: '$18.50', qty: '420', farmerInitials: 'NF', farmerName: 'N. Fernando', farmerColor: 'bg-purple-900 text-purple-200', location: 'Matale', listed: 'May 15' },
-    { id: 'CRP-004', name: 'Pineapple', isOrganic: false, category: 'Fruit', status: 'Active', price: '$0.85', qty: '8,700', farmerInitials: 'SW', farmerName: 'S. Wickrama', farmerColor: 'bg-orange-900 text-orange-200', location: 'Kurunegala', listed: 'May 10' },
-    { id: 'CRP-005', name: 'Black Pepper', isOrganic: false, category: 'Spice', status: 'Inactive', price: '$9.20', qty: '210', farmerInitials: 'KJ', farmerName: 'K. Jayawardena', farmerColor: 'bg-blue-900 text-blue-200', location: 'Kandy', listed: 'Apr 28' },
-    { id: 'CRP-006', name: 'Mango', isOrganic: true, category: 'Fruit', status: 'Active', price: '$1.65', qty: '6,400', farmerInitials: 'DB', farmerName: 'D. Bandara', farmerColor: 'bg-green-900 text-green-200', location: 'Gampola', listed: 'May 13' },
-    { id: 'CRP-007', name: 'Maize', isOrganic: false, category: 'Grain', status: 'Pending', price: '$0.55', qty: '12,000', farmerInitials: 'LR', farmerName: 'L. Rathnayake', farmerColor: 'bg-blue-900 text-blue-200', location: 'Anuradhapura', listed: 'May 16' },
-    { id: 'CRP-008', name: 'Bitter Gourd', isOrganic: true, category: 'Vegetable', status: 'Active', price: '$0.90', qty: '1,800', farmerInitials: 'MK', farmerName: 'M. Kumara', farmerColor: 'bg-pink-900 text-pink-200', location: 'Colombo', listed: 'May 11' },
-  ]);
+  // Crops state populated from the database
+  const [crops, setCrops] = useState([]);
 
   // Dashboard metrics state
   const [metrics, setMetrics] = useState({
     totalUsers: '0',
-    activeCrops: crops.filter(c => c.status === 'Active').length.toString(),
+    activeCrops: '0',
     transactions: '$0',
     platformHealth: '99.9%'
   });
@@ -115,6 +106,46 @@ const AdminPanel = () => {
     fetchAdminData();
   }, [lastRefreshed]);
 
+  useEffect(() => {
+    const fetchCrops = async () => {
+      try {
+        const res = await client.get('/crops');
+        const normalizedCrops = res.data.map((crop) => {
+          const farmerName = crop.farmer?.name || 'Farmer';
+          const farmerInitials = farmerName
+            .split(' ')
+            .slice(0, 2)
+            .map((part) => part?.[0] || '')
+            .join('')
+            .toUpperCase() || 'F';
+
+          return {
+            ...crop,
+            category: crop.description || 'General',
+            status: crop.quantity > 0 ? 'Active' : 'Inactive',
+            price: crop.price ? `$${parseFloat(crop.price).toFixed(2)}` : '$0.00',
+            qty: crop.quantity?.toLocaleString() || '0',
+            farmerInitials,
+            farmerName,
+            farmerColor: 'bg-emerald-900 text-emerald-200',
+            location: crop.district || 'Unknown',
+            listed: crop.createdAt ? formatDate(crop.createdAt) : 'Unknown',
+          };
+        });
+
+        setCrops(normalizedCrops);
+        setMetrics((prev) => ({
+          ...prev,
+          activeCrops: normalizedCrops.filter((crop) => crop.status === 'Active').length.toString(),
+        }));
+      } catch (err) {
+        console.error('Error fetching crops for admin panel:', err);
+      }
+    };
+
+    fetchCrops();
+  }, []);
+
   // Search & Filtering states
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('All Roles');
@@ -126,6 +157,7 @@ const AdminPanel = () => {
 
   // Crop status dropdown state
   const [openCropDropdownId, setOpenCropDropdownId] = useState(null);
+  const [cropAnchorEl, setCropAnchorEl] = useState(null);
   
   // Filter dropdown states
   const [openUserFilterDropdown, setOpenUserFilterDropdown] = useState(null);
@@ -799,9 +831,17 @@ const AdminPanel = () => {
                   </td>
                   <td className="px-6 py-4 text-[#94a3b8]">{crop.category}</td>
                   <td className="px-6 py-4">
-                    <div className="relative">
+                      <div className="relative">
                       <button
-                        onClick={() => setOpenCropDropdownId(openCropDropdownId === crop.id ? null : crop.id)}
+                        onClick={(e) => {
+                          if (openCropDropdownId === crop.id) {
+                            setOpenCropDropdownId(null);
+                            setCropAnchorEl(null);
+                          } else {
+                            setOpenCropDropdownId(crop.id);
+                            setCropAnchorEl(e.currentTarget);
+                          }
+                        }}
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-colors ${
                           crop.status === 'Active' ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50 hover:bg-emerald-900/40' : 
                           crop.status === 'Pending' ? 'bg-amber-950/40 text-amber-500 border border-amber-900/50 hover:bg-amber-900/40' : 
@@ -818,11 +858,14 @@ const AdminPanel = () => {
                         {crop.status}
                         <ChevronDown className="w-3 h-3 ml-0.5 opacity-70" />
                       </button>
-                      
+
                       {openCropDropdownId === crop.id && (
-                        <>
-                          <div className="fixed inset-0 z-40" onClick={() => setOpenCropDropdownId(null)} />
-                          <div className="absolute left-0 mt-2 w-48 bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl z-50">
+                        <PortalMenu
+                          anchorEl={cropAnchorEl}
+                          onClose={() => { setOpenCropDropdownId(null); setCropAnchorEl(null); }}
+                          className="w-48"
+                        >
+                          <div className="w-48 bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl">
                             <div className="px-4 py-3 border-b border-slate-700/50">
                               <span className="text-[10px] font-bold text-[#64748b] tracking-widest uppercase">Change Status</span>
                             </div>
@@ -847,7 +890,7 @@ const AdminPanel = () => {
                               ))}
                             </div>
                           </div>
-                        </>
+                        </PortalMenu>
                       )}
                     </div>
                   </td>
@@ -932,7 +975,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="relative overflow-hidden min-h-[calc(100vh-64px)] flex flex-col md:flex-row transition-colors duration-300"
+    <div className="relative overflow-visible min-h-[calc(100vh-64px)] flex flex-col md:flex-row transition-colors duration-300"
       style={{
         background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
       }}
