@@ -4,6 +4,7 @@ import {
   Users, Wheat, Banknote, ShieldCheck, LayoutDashboard, Settings, RefreshCw,
   Search, ChevronDown, Plus, Pencil, Trash2, MapPin, ChevronRight, X, UserPlus, AlertTriangle, RotateCcw, Check
 } from 'lucide-react';
+import client from '../api/client';
 
 const RECENT_ACTIVITY = [
   { id: 1, event: 'New Farmer Registered', actor: 'Ravi Kumar', time: '2 min ago', status: 'success' },
@@ -38,55 +39,10 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('users');
   const [lastRefreshed, setLastRefreshed] = useState(new Date().toLocaleTimeString());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
   // Users local state initialized to match the screenshot
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: 'albat',
-      email: 'ainstain1234@gmail.com',
-      role: 'buyer',
-      status: 'active',
-      registeredDate: 'May 20, 2026',
-      district: 'Colombo'
-    },
-    {
-      id: 2,
-      name: 'FarmTrust Admin',
-      email: 'admin@farmtrust.com',
-      role: 'admin',
-      status: 'active',
-      registeredDate: 'May 20, 2026',
-      district: 'Colombo'
-    },
-    {
-      id: 3,
-      name: 'John Farmer',
-      email: 'farmer@farmtrust.com',
-      role: 'farmer',
-      status: 'active',
-      registeredDate: 'May 20, 2026',
-      district: 'Anuradhapura'
-    },
-    {
-      id: 4,
-      name: 'Sarah Buyer',
-      email: 'buyer@farmtrust.com',
-      role: 'buyer',
-      status: 'active',
-      registeredDate: 'May 20, 2026',
-      district: 'Kandy'
-    },
-    {
-      id: 5,
-      name: 'Banuka',
-      email: 'banuka@gmail.com',
-      role: 'farmer',
-      status: 'active',
-      registeredDate: 'May 19, 2026',
-      district: 'Gampaha'
-    }
-  ]);
+  const [users, setUsers] = useState([]);
 
   // Crops local state
   const [crops, setCrops] = useState([
@@ -100,13 +56,64 @@ const AdminPanel = () => {
     { id: 'CRP-008', name: 'Bitter Gourd', isOrganic: true, category: 'Vegetable', status: 'Active', price: '$0.90', qty: '1,800', farmerInitials: 'MK', farmerName: 'M. Kumara', farmerColor: 'bg-pink-900 text-pink-200', location: 'Colombo', listed: 'May 11' },
   ]);
 
-  // Dashboard metrics
-  const metrics = {
-    totalUsers: users.length,
-    activeCrops: crops.filter(c => c.status === 'Active').length,
-    transactions: '$14,920',
+  // Dashboard metrics state
+  const [metrics, setMetrics] = useState({
+    totalUsers: '0',
+    activeCrops: crops.filter(c => c.status === 'Active').length.toString(),
+    transactions: '$0',
     platformHealth: '99.9%'
+  });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      setIsLoadingUsers(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          client.defaults.headers.common['x-auth-token'] = token;
+        }
+        
+        // Fetch active and trashed users in parallel
+        const [activeRes, trashRes] = await Promise.all([
+          client.get('/admin/users'),
+          client.get('/admin/users/trash'),
+        ]);
+        setUsers(activeRes.data);
+        setDeletedUsers(trashRes.data);
+        
+        // Fetch real-time dashboard metrics
+        try {
+          const metricsRes = await client.get('/admin/metrics');
+          if (metricsRes.data && metricsRes.data.success) {
+            setMetrics(metricsRes.data.data);
+          }
+        } catch (metricsErr) {
+          console.error('Error fetching admin metrics:', metricsErr);
+          // Fallback to local counts
+          setMetrics(prev => ({
+            ...prev,
+            totalUsers: activeRes.data.length.toString(),
+            transactions: '$14,920',
+            platformHealth: '99.9%'
+          }));
+        }
+      } catch (err) {
+        console.error('Error loading admin panel data:', err);
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    };
+    fetchAdminData();
+  }, [lastRefreshed]);
 
   // Search & Filtering states
   const [searchQuery, setSearchQuery] = useState('');
@@ -136,7 +143,7 @@ const AdminPanel = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteCropModalOpen, setIsDeleteCropModalOpen] = useState(false);
 
-  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'buyer', status: 'active', district: 'Colombo' });
+  const [newUser, setNewUser] = useState({ name: '', email: '', password: '', role: 'buyer', status: 'active', district: 'Colombo' });
   const [newCrop, setNewCrop] = useState({ name: '', category: 'Grain', price: '', qty: '', farmerName: '', location: '', listed: '' });
   const [editingUser, setEditingUser] = useState(null);
   const [editingCrop, setEditingCrop] = useState(null);
@@ -185,26 +192,7 @@ const AdminPanel = () => {
 
   // Trash bin states
   const [showTrash, setShowTrash] = useState(false);
-  const [deletedUsers, setDeletedUsers] = useState([
-    {
-      id: 101,
-      name: 'Samantha Silva',
-      email: 'samantha.s@gmail.com',
-      role: 'buyer',
-      status: 'inactive',
-      registeredDate: 'May 10, 2026',
-      district: 'Galle'
-    },
-    {
-      id: 102,
-      name: 'Ravi Wickrama',
-      email: 'ravi.wick@gmail.com',
-      role: 'farmer',
-      status: 'inactive',
-      registeredDate: 'May 12, 2026',
-      district: 'Kandy'
-    }
-  ]);
+  const [deletedUsers, setDeletedUsers] = useState([]);
   const [isPermanentDeleteModalOpen, setIsPermanentDeleteModalOpen] = useState(false);
   const [permanentDeletingUserId, setPermanentDeletingUserId] = useState(null);
   
@@ -221,70 +209,81 @@ const AdminPanel = () => {
   };
 
   // User Action Handlers
-  const handleAddUser = (e) => {
+  const handleAddUser = async (e) => {
     e.preventDefault();
-    if (!newUser.name || !newUser.email) return;
-
-    // Check for duplicate emails
-    const emailExists = users.some(u => u.email.toLowerCase() === newUser.email.toLowerCase()) || 
-                        deletedUsers.some(u => u.email.toLowerCase() === newUser.email.toLowerCase());
-    if (emailExists) {
-      setAddError('This email address already exists (either active or in trash).');
+    if (!newUser.name || !newUser.email || !newUser.password) {
+      setAddError('Name, email and password are required.');
       return;
     }
-    
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    
-    const createdUser = {
-      id: Date.now(),
-      ...newUser,
-      registeredDate: formattedDate
-    };
 
-    setUsers([createdUser, ...users]);
-    setNewUser({ name: '', email: '', role: 'buyer', status: 'active', district: 'Colombo' });
-    setAddError('');
-    setIsAddModalOpen(false);
+    try {
+      const res = await client.post('/admin/users', newUser);
+      setUsers([res.data, ...users]);
+      setNewUser({ name: '', email: '', password: '', role: 'buyer', status: 'active', district: 'Colombo' });
+      setAddError('');
+      setIsAddModalOpen(false);
+    } catch (err) {
+      setAddError(err.response?.data?.msg || 'Failed to create user. Please try again.');
+    }
   };
 
-  const handleEditUser = (e) => {
+  const handleEditUser = async (e) => {
     e.preventDefault();
     if (!editingUser.name || !editingUser.email) return;
 
-    // Check if email is used by another user
-    const emailExists = users.some(u => u.id !== editingUser.id && u.email.toLowerCase() === editingUser.email.toLowerCase()) ||
-                        deletedUsers.some(u => u.id !== editingUser.id && u.email.toLowerCase() === editingUser.email.toLowerCase());
-    if (emailExists) {
-      setEditError('This email is already registered to another user.');
-      return;
+    try {
+      const res = await client.put(`/admin/users/${editingUser.id}`, editingUser);
+      if (res.data.status === 'inactive') {
+        setDeletedUsers([res.data, ...deletedUsers]);
+        setUsers(users.filter(u => u.id !== editingUser.id));
+      } else {
+        setUsers(users.map(u => u.id === editingUser.id ? res.data : u));
+      }
+      setEditingUser(null);
+      setEditError('');
+      setIsEditModalOpen(false);
+    } catch (err) {
+      setEditError(err.response?.data?.msg || 'Failed to update user.');
     }
-
-    setUsers(users.map(u => u.id === editingUser.id ? editingUser : u));
-    setEditingUser(null);
-    setEditError('');
-    setIsEditModalOpen(false);
   };
 
-  const handleDeleteUser = () => {
-    const userToTrash = users.find(u => u.id === deletingUserId);
-    if (userToTrash) {
-      setDeletedUsers([{ ...userToTrash, status: 'inactive' }, ...deletedUsers]);
-      setUsers(users.filter(u => u.id !== deletingUserId));
+  const handleDeleteUser = async () => {
+    try {
+      await client.delete(`/admin/users/${deletingUserId}`);
+      const userToTrash = users.find(u => u.id === deletingUserId);
+      if (userToTrash) {
+        setDeletedUsers([{ ...userToTrash, status: 'inactive' }, ...deletedUsers]);
+        setUsers(users.filter(u => u.id !== deletingUserId));
+      }
+      setDeletingUserId(null);
+      setIsDeleteModalOpen(false);
+    } catch (err) {
+      console.error('Error trashing user:', err);
     }
-    setDeletingUserId(null);
-    setIsDeleteModalOpen(false);
   };
 
-  const handleRestoreUser = (user) => {
-    setUsers([{ ...user, status: 'active' }, ...users]);
-    setDeletedUsers(deletedUsers.filter(u => u.id !== user.id));
+  const handleRestoreUser = async (user) => {
+    try {
+      const res = await client.put(`/admin/users/${user.id}`, {
+        ...user,
+        status: 'active'
+      });
+      setUsers([res.data, ...users]);
+      setDeletedUsers(deletedUsers.filter(u => u.id !== user.id));
+    } catch (err) {
+      console.error('Error restoring user:', err);
+    }
   };
 
-  const handlePermanentDeleteUser = () => {
-    setDeletedUsers(deletedUsers.filter(u => u.id !== permanentDeletingUserId));
-    setPermanentDeletingUserId(null);
-    setIsPermanentDeleteModalOpen(false);
+  const handlePermanentDeleteUser = async () => {
+    try {
+      await client.delete(`/admin/users/${permanentDeletingUserId}/permanent`);
+      setDeletedUsers(deletedUsers.filter(u => u.id !== permanentDeletingUserId));
+      setPermanentDeletingUserId(null);
+      setIsPermanentDeleteModalOpen(false);
+    } catch (err) {
+      console.error('Error permanently deleting user:', err);
+    }
   };
 
   // Get initials for avatar
@@ -536,7 +535,24 @@ const AdminPanel = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/50">
-                {filteredUsers.length === 0 ? (
+                {isLoadingUsers ? (
+                  // Loading skeleton rows
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-slate-700/60" />
+                          <div className="h-3 w-28 bg-slate-700/60 rounded-full" />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4"><div className="h-3 w-40 bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-5 w-14 bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-5 w-14 bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-3 w-24 bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-3 w-12 bg-slate-700/60 rounded-full" /></td>
+                    </tr>
+                  ))
+                ) : filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="px-6 py-8 text-center text-[#64748b]">
                       {showTrash ? "No deleted users found in the trash." : "No users found matching filters."}
@@ -591,7 +607,7 @@ const AdminPanel = () => {
                       </td>
 
                       {/* REGISTERED DATE */}
-                      <td className="px-6 py-4 text-[#94a3b8] text-sm">{user.registeredDate}</td>
+                      <td className="px-6 py-4 text-[#94a3b8] text-sm">{user.registeredDate || formatDate(user.createdAt)}</td>
 
                       {/* ACTIONS */}
                       <td className="px-6 py-4">
@@ -1060,6 +1076,18 @@ const AdminPanel = () => {
                   onChange={(e) => { setAddError(''); setNewUser({ ...newUser, email: e.target.value }); }}
                   className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Password</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Set initial password"
+                  value={newUser.password}
+                  onChange={(e) => { setAddError(''); setNewUser({ ...newUser, password: e.target.value }); }}
+                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                />
                 {addError && (
                   <p className="mt-1 text-xs text-red-400 font-semibold flex items-center gap-1">
                     <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
@@ -1111,7 +1139,7 @@ const AdminPanel = () => {
               <div className="pt-4 flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={() => { setIsAddModalOpen(false); setAddError(''); }}
                   className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-semibold transition-colors"
                 >
                   Cancel
