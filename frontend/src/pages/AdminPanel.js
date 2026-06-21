@@ -81,11 +81,8 @@ const AdminPanel = () => {
       setIsLoadingUsers(true);
       try {
         const token = localStorage.getItem('token');
-        if (token) {
-          client.defaults.headers.common['x-auth-token'] = token;
-        }
-        
-        // Fetch active and trashed users in parallel
+        if (token) client.defaults.headers.common['x-auth-token'] = token;
+
         const [activeRes, trashRes] = await Promise.all([
           client.get('/admin/users'),
           client.get('/admin/users/trash'),
@@ -97,14 +94,7 @@ const AdminPanel = () => {
           const metricsRes = await client.get('/admin/metrics');
           if (metricsRes.data?.success) setMetrics(metricsRes.data.data);
         } catch (metricsErr) {
-          console.error('Error fetching admin metrics:', metricsErr);
-          // Fallback to local counts
-          setMetrics(prev => ({
-            ...prev,
-            totalUsers: activeRes.data.length.toString(),
-            transactions: '$14,920',
-            platformHealth: '99.9%'
-          }));
+          setMetrics(prev => ({ ...prev, totalUsers: activeRes.data.length.toString(), transactions: '$14,920' }));
         }
       } catch (err) {
         console.error('Error loading admin panel data:', err);
