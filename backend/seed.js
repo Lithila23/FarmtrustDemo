@@ -15,19 +15,22 @@ async function seedUsers() {
         name: 'FarmTrust Admin',
         email: 'admin@farmtrust.com',
         password: 'admin123',
-        role: 'admin'
+        role: 'admin',
+        district: 'Colombo'
       },
       {
         name: 'John Farmer',
         email: 'farmer@farmtrust.com',
         password: 'farmer123',
-        role: 'farmer'
+        role: 'farmer',
+        district: 'Kandy'
       },
       {
         name: 'Sarah Buyer',
         email: 'buyer@farmtrust.com',
         password: 'buyer123',
-        role: 'buyer'
+        role: 'buyer',
+        district: 'Galle'
       }
     ];
 
@@ -47,7 +50,8 @@ async function seedUsers() {
         name: userData.name,
         email: userData.email,
         password: userData.password,
-        role: userData.role
+        role: userData.role,
+        district: userData.district
       });
 
       console.log(`✅ ${userData.role} user created: ${userData.email}`);
