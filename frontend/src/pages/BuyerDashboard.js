@@ -31,10 +31,17 @@ const BuyerDashboard = () => {
   const [error, setError] = useState('');
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('card');
   const [quantity, setQuantity] = useState(1);
-  const [orderIntent, setOrderIntent] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [checkoutForm, setCheckoutForm] = useState({
+    deliveryAddress: '',
+    cardholderName: '',
+    cardNumber: '',
+    expiryMonth: '',
+    expiryYear: '',
+    cvv: '',
+  });
 
   const handleAuthFailure = (msg) => {
     if (msg === 'Token is not valid' || msg === 'No token, authorization denied') {
@@ -82,70 +89,82 @@ const BuyerDashboard = () => {
   const openPaymentWindow = (crop) => {
     setSelectedCrop(crop);
     setQuantity(1);
-    setPaymentMethod('card');
-    setOrderIntent(null);
     setError('');
+    setPaymentSuccess(false);
+    setCheckoutForm({
+      deliveryAddress: '',
+      cardholderName: '',
+      cardNumber: '',
+      expiryMonth: '',
+      expiryYear: '',
+      cvv: '',
+    });
     setPaymentModalOpen(true);
   };
 
   const closePaymentWindow = () => {
     setPaymentModalOpen(false);
     setSelectedCrop(null);
-    setOrderIntent(null);
     setPaymentLoading(false);
     setError('');
+    setPaymentSuccess(false);
   };
 
-  const createIntent = async () => {
+  const handleCheckoutChange = (field, value) => {
+    if (field === 'cardholderName') {
+      value = value.replace(/[^a-zA-Z\s]/g, '');
+    }
+
+    if (field === 'cardNumber' || field === 'cvv' || field === 'expiryMonth' || field === 'expiryYear') {
+      value = value.replace(/\D/g, '');
+    }
+
+    setCheckoutForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const submitMockPayment = async () => {
     if (!selectedCrop) return;
 
-    setPaymentLoading(true);
-    setError('');
-    try {
-      const res = await client.post(
-        '/orders/create-intent',
-        {
-          cropId: selectedCrop.id,
-          quantity,
-          paymentMethod
-        },
-        getAuthConfig()
-      );
-      setOrderIntent(res.data);
-    } catch (err) {
-      const msg = err.response?.data?.msg;
-      if (handleAuthFailure(msg)) return;
-      setError(msg || 'Failed to create payment intent');
-    } finally {
-      setPaymentLoading(false);
+    const trimmedAddress = checkoutForm.deliveryAddress.trim();
+    const trimmedName = checkoutForm.cardholderName.trim();
+    const digitsOnlyCard = checkoutForm.cardNumber.replace(/\D/g, '');
+    const digitsOnlyCvv = checkoutForm.cvv.replace(/\D/g, '');
+    const lettersOnlyName = checkoutForm.cardholderName.replace(/[^a-zA-Z\s]/g, '');
+
+    if (!trimmedAddress || !trimmedName || !digitsOnlyCard || !checkoutForm.expiryMonth || !checkoutForm.expiryYear || !digitsOnlyCvv) {
+      setError('Please complete the delivery address and card details.');
+      return;
     }
-  };
 
-  const completePayment = async (success) => {
-    if (!orderIntent?.orderId) return;
+    if (checkoutForm.cardholderName !== lettersOnlyName) {
+      setError('Cardholder name can only include letters and spaces.');
+      return;
+    }
+
+    if (digitsOnlyCard.length < 13 || digitsOnlyCard.length > 19) {
+      setError('Card number must contain 13 to 19 digits only.');
+      return;
+    }
+
+    if (digitsOnlyCvv.length < 3 || digitsOnlyCvv.length > 4) {
+      setError('CVV must contain 3 or 4 digits only.');
+      return;
+    }
+
+    if (checkoutForm.cardNumber !== digitsOnlyCard) {
+      setError('Card number can only include numbers.');
+      return;
+    }
 
     setPaymentLoading(true);
     setError('');
+
     try {
-      await client.post(
-        `/orders/${orderIntent.orderId}/complete`,
-        { success },
-        getAuthConfig()
-      );
-
-      await Promise.all([
-        client.get('/crops', getAuthConfig()),
-        client.get('/orders/my', getAuthConfig())
-      ]).then(([cropsRes, ordersRes]) => {
-        setCrops(cropsRes.data);
-        setOrders(ordersRes.data);
-      });
-
-      closePaymentWindow();
-    } catch (err) {
-      const msg = err.response?.data?.msg;
-      if (handleAuthFailure(msg)) return;
-      setError(msg || 'Payment processing failed');
+      await new Promise((resolve) => setTimeout(resolve, 900));
+      setPaymentSuccess(true);
     } finally {
       setPaymentLoading(false);
     }
@@ -156,6 +175,7 @@ const BuyerDashboard = () => {
   );
 
   const totalPreview = selectedCrop ? (Number(selectedCrop.price) * Number(quantity || 0)).toFixed(2) : '0.00';
+  const selectedCropPrice = selectedCrop ? Number(selectedCrop.price).toFixed(2) : '0.00';
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
@@ -274,9 +294,9 @@ const BuyerDashboard = () => {
 
       {paymentModalOpen && selectedCrop && (
         <div className="fixed inset-0 bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl dark:border dark:border-slate-700 p-6">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl dark:border dark:border-slate-700 p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Payment Window</h3>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Mock Payment Window</h3>
               <button type="button" onClick={closePaymentWindow} className="btn-secondary px-3 py-2">
                 Close
               </button>
@@ -291,58 +311,133 @@ const BuyerDashboard = () => {
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
                 <p className="font-semibold text-slate-900 dark:text-slate-100">Crop: {selectedCrop.name}</p>
-                <p className="text-slate-600 dark:text-slate-300">Unit price: ${Number(selectedCrop.price).toFixed(2)} / kg</p>
+                <p className="text-slate-600 dark:text-slate-300">Unit price: ${selectedCropPrice} / kg</p>
+                <p className="text-slate-600 dark:text-slate-300">Quantity: {quantity} kg</p>
+                <p className="text-slate-600 dark:text-slate-300 font-semibold">Total: ${totalPreview}</p>
               </div>
 
               <div>
                 <label className="form-label dark:text-slate-300">Quantity (kg)</label>
-                <input type="number" min="1" max={selectedCrop.quantity} value={quantity} onChange={(e) => setQuantity(e.target.value)} className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white" disabled={paymentLoading || !!orderIntent} />
+                <input
+                  type="number"
+                  min="1"
+                  max={selectedCrop.quantity}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  disabled={paymentLoading || paymentSuccess}
+                />
               </div>
 
               <div>
-                <label className="form-label dark:text-slate-300">Payment Method</label>
-                <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white" disabled={paymentLoading || !!orderIntent}>
-                  <option value="card">Card</option>
-                  <option value="upi">UPI</option>
-                  <option value="wallet">Wallet</option>
-                </select>
+                <label className="form-label dark:text-slate-300">Delivery Address</label>
+                <textarea
+                  rows="3"
+                  value={checkoutForm.deliveryAddress}
+                  onChange={(e) => handleCheckoutChange('deliveryAddress', e.target.value)}
+                  placeholder="Enter the delivery address"
+                  className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  disabled={paymentLoading || paymentSuccess}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="form-label dark:text-slate-300">Cardholder Name</label>
+                  <input
+                    type="text"
+                    pattern="[A-Za-z ]*"
+                    value={checkoutForm.cardholderName}
+                    onChange={(e) => handleCheckoutChange('cardholderName', e.target.value)}
+                    placeholder="Name on card"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">Card Number</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={19}
+                    value={checkoutForm.cardNumber}
+                    onChange={(e) => handleCheckoutChange('cardNumber', e.target.value)}
+                    placeholder="Numbers only"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">Expiry Month</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={2}
+                    value={checkoutForm.expiryMonth}
+                    onChange={(e) => handleCheckoutChange('expiryMonth', e.target.value)}
+                    placeholder="MM"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">Expiry Year</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    value={checkoutForm.expiryYear}
+                    onChange={(e) => handleCheckoutChange('expiryYear', e.target.value)}
+                    placeholder="YYYY"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">CVV</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    value={checkoutForm.cvv}
+                    onChange={(e) => handleCheckoutChange('cvv', e.target.value)}
+                    placeholder="3 or 4 digits"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
               </div>
 
               <div className="p-4 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800">
-                <p className="text-slate-700 dark:text-slate-300">Order total</p>
+                <p className="text-slate-700 dark:text-slate-300">This is a mock checkout only. No real payment gateway is connected.</p>
                 <p className="text-2xl font-bold text-primary-700">${totalPreview}</p>
               </div>
 
-              {!orderIntent ? (
+              {!paymentSuccess ? (
                 <button
                   type="button"
                   className="btn-primary w-full"
-                  onClick={createIntent}
+                  onClick={submitMockPayment}
                   disabled={paymentLoading}
                 >
-                  {paymentLoading ? 'Preparing payment...' : 'Continue to Pay'}
+                  {paymentLoading ? 'Processing mock payment...' : 'Cofirm Payment'}
                 </button>
               ) : (
                 <div className="space-y-3">
                   <div className="rounded-xl border border-slate-200 dark:border-slate-600 p-4 bg-slate-50 dark:bg-slate-700/50">
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">Order #{orderIntent.orderId} is ready</p>
-                    <p className="text-slate-600 dark:text-slate-400">Click an option below to simulate payment result.</p>
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">Mock payment completed</p>
+                    <p className="text-slate-600 dark:text-slate-400">Delivery address and card details were accepted locally.</p>
                   </div>
-                  <button
-                    type="button"
-                    className="btn-primary w-full"
-                    onClick={() => completePayment(true)}
-                    disabled={paymentLoading}
-                  >
-                    {paymentLoading ? 'Processing...' : 'Pay Successfully'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary w-full"
-                    onClick={() => completePayment(false)}
-                    disabled={paymentLoading}
-                  >
-                    Simulate Failed Payment
+                  <button type="button" className="btn-primary w-full" onClick={closePaymentWindow}>
+                    Close Window
                   </button>
                 </div>
               )}
