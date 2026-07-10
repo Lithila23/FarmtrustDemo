@@ -101,7 +101,7 @@ const AdminPanel = () => {
         name: crop.name,
         category: crop.district || 'Unspecified',
         status: crop.status || 'pending',
-        price: `$${Number(crop.price).toFixed(2)}`,
+        price: `Rs. ${Number(crop.price).toFixed(2)}`,
         qty: Number(crop.quantity).toLocaleString(),
         farmerName: crop.farmer?.name || 'Unknown Farmer',
         farmerColor: 'bg-emerald-900 text-emerald-200',
@@ -123,7 +123,7 @@ const AdminPanel = () => {
   const metrics = {
     totalUsers: users.length,
     activeCrops: crops.filter(c => c.status === 'approved').length,
-    transactions: '$14,920',
+    transactions: 'Rs. 14,920',
     platformHealth: '99.9%'
   };
 

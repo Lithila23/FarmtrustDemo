@@ -476,11 +476,11 @@ const Home = () => {
                         {/* Pricing row */}
                         <div className="flex items-baseline gap-2 mt-auto">
                           <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                            ${offerPrice.toFixed(2)}
+                            Rs. {offerPrice.toFixed(2)}
                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
                           </span>
                           <span className="text-sm text-slate-400 line-through">
-                            ${originalPrice}
+                            Rs. {originalPrice}
                           </span>
                         </div>
 

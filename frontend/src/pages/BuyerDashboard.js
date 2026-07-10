@@ -253,11 +253,11 @@ const BuyerDashboard = () => {
                     {/* Pricing row */}
                     <div className="flex items-baseline gap-2 mt-auto">
                       <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                        ${offerPrice.toFixed(2)}
+                        Rs. {offerPrice.toFixed(2)}
                         <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
                       </span>
                       <span className="text-sm text-slate-400 line-through">
-                        ${originalPrice}
+                        Rs. {originalPrice}
                       </span>
                     </div>
 
@@ -311,9 +311,9 @@ const BuyerDashboard = () => {
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
                 <p className="font-semibold text-slate-900 dark:text-slate-100">Crop: {selectedCrop.name}</p>
-                <p className="text-slate-600 dark:text-slate-300">Unit price: ${selectedCropPrice} / kg</p>
+                <p className="text-slate-600 dark:text-slate-300">Unit price: Rs. {selectedCropPrice} / kg</p>
                 <p className="text-slate-600 dark:text-slate-300">Quantity: {quantity} kg</p>
-                <p className="text-slate-600 dark:text-slate-300 font-semibold">Total: ${totalPreview}</p>
+                <p className="text-slate-600 dark:text-slate-300 font-semibold">Total: Rs. {totalPreview}</p>
               </div>
 
               <div>
@@ -418,7 +418,7 @@ const BuyerDashboard = () => {
 
               <div className="p-4 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800">
                 <p className="text-slate-700 dark:text-slate-300">This is a mock checkout only. No real payment gateway is connected.</p>
-                <p className="text-2xl font-bold text-primary-700">${totalPreview}</p>
+                <p className="text-2xl font-bold text-primary-700">Rs. {totalPreview}</p>
               </div>
 
               {!paymentSuccess ? (

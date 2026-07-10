@@ -141,7 +141,7 @@ const FarmerDashboard = () => {
                   <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} placeholder="e.g., 100 kg" required min="1" className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400" />
                 </div>
                 <div>
-                  <label className="form-label dark:text-slate-300">Price per Unit ($)</label>
+                  <label className="form-label dark:text-slate-300">Price per Unit (Rs.)</label>
                   <input type="number" name="price" value={formData.price} onChange={handleInputChange} placeholder="e.g., 2.50" required min="0.01" step="0.01" className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400" />
                 </div>
                 <div>
@@ -251,11 +251,11 @@ const FarmerDashboard = () => {
                     {/* Pricing row */}
                     <div className="flex items-baseline gap-2 mt-auto">
                       <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                        ${offerPrice.toFixed(2)}
+                        Rs. {offerPrice.toFixed(2)}
                         <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
                       </span>
                       <span className="text-sm text-slate-400 line-through">
-                        ${originalPrice}
+                        Rs. {originalPrice}
                       </span>
                       <span className="ml-auto text-xs font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">
                         Listed

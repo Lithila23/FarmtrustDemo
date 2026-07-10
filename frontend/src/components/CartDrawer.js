@@ -175,7 +175,7 @@ const CartDrawer = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>Total Price:</span>
-                    <span className="font-bold text-primary-600 dark:text-primary-400">${Number(order.totalAmount).toFixed(2)}</span>
+                    <span className="font-bold text-primary-600 dark:text-primary-400">Rs. {Number(order.totalAmount).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Method:</span>
@@ -237,7 +237,7 @@ const CartDrawer = () => {
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
                 <p className="font-semibold text-slate-900 dark:text-slate-100">Crop: {selectedOrder.crop?.name || 'Crop'}</p>
                 <p className="text-slate-600 dark:text-slate-300">Quantity: {selectedOrder.quantity} kg</p>
-                <p className="text-slate-600 dark:text-slate-300">Total: ${Number(selectedOrder.totalAmount).toFixed(2)}</p>
+                <p className="text-slate-600 dark:text-slate-300">Total: Rs. {Number(selectedOrder.totalAmount).toFixed(2)}</p>
               </div>
 
               <div>

@@ -36,12 +36,10 @@ router.get('/metrics', authMiddleware, adminOnly, async (req, res) => {
     const rawRevenue = parseFloat(revenueResult?.totalRevenue || 0);
 
     // Format as currency string, e.g. "$12,890"
-    const transactions = rawRevenue.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    const transactions = `Rs. ${rawRevenue.toLocaleString('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    });
+    })}`;
 
     // 4. Platform health — hardcoded until a real uptime monitor is wired in
     const platformHealth = '99.9%';
