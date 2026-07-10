@@ -195,7 +195,7 @@ const FarmerDashboard = () => {
               const emoji = getCropEmoji(crop.name);
               return (
                 <div
-                  key={crop._id}
+                  key={crop.id}
                   className="group relative flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
                 >
                   {/* ── Image / Emoji Area ── */}
@@ -218,8 +218,14 @@ const FarmerDashboard = () => {
                     </span>
 
                     {/* Status tag – bottom-left */}
-                    <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
-                      ✅ Active Listing
+                    <span className={`absolute bottom-3 left-3 backdrop-blur-sm text-xs font-semibold px-2.5 py-1 rounded-full border shadow ${
+                      crop.status === 'approved'
+                        ? 'bg-emerald-50/95 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200/70 dark:border-emerald-700'
+                        : crop.status === 'rejected'
+                          ? 'bg-rose-50/95 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 border-rose-200/70 dark:border-rose-700'
+                          : 'bg-amber-50/95 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border-amber-200/70 dark:border-amber-700'
+                    }`}>
+                      {crop.status === 'approved' ? 'Approved' : crop.status === 'rejected' ? 'Rejected' : 'Pending review'}
                     </span>
                   </div>
 

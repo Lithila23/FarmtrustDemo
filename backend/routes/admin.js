@@ -2,6 +2,7 @@ const express = require('express');
 const { fn, col, literal } = require('sequelize');
 const { User, Crop, Order } = require('../models');
 const authMiddleware = require('../middleware/auth');
+const { sendNewListingAlert } = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -57,6 +58,99 @@ router.get('/metrics', authMiddleware, adminOnly, async (req, res) => {
   } catch (err) {
     console.error('[GET /api/admin/metrics] Error:', err);
     return res.status(500).json({ success: false, msg: 'Server error fetching metrics' });
+  }
+});
+
+// ── GET /api/admin/crops ────────────────────────────────────────────────────
+// Returns all crop listings with farmer information for moderation.
+router.get('/crops', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const crops = await Crop.findAll({
+      include: [{
+        model: User,
+        as: 'farmer',
+        attributes: ['id', 'name', 'email', 'district'],
+      }],
+      order: [['createdAt', 'DESC']],
+    });
+
+    return res.json(crops);
+  } catch (err) {
+    console.error('[GET /api/admin/crops] Error:', err);
+    return res.status(500).json({ msg: 'Server error fetching crops' });
+  }
+});
+
+// ── PUT /api/admin/crops/:id/approve ────────────────────────────────────────
+router.put('/crops/:id/approve', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const crop = await Crop.findByPk(req.params.id, {
+      include: [{
+        model: User,
+        as: 'farmer',
+        attributes: ['id', 'name', 'email', 'district'],
+      }],
+    });
+
+    if (!crop) {
+      return res.status(404).json({ msg: 'Crop not found' });
+    }
+
+    await crop.update({ status: 'approved' });
+
+    if (crop.district) {
+      try {
+        const buyers = await User.findAll({
+          where: {
+            role: 'buyer',
+            district: crop.district,
+          },
+          attributes: ['email', 'name'],
+        });
+
+        const productDetails = {
+          cropName: crop.name,
+          quantity: crop.quantity,
+          price: crop.price,
+          farmerName: crop.farmer?.name || 'A local farmer',
+        };
+
+        await Promise.allSettled(
+          buyers.map((buyer) => sendNewListingAlert(buyer.email, buyer.name, productDetails))
+        );
+      } catch (notificationError) {
+        console.error('[PUT /api/admin/crops/:id/approve] Buyer alert error:', notificationError);
+      }
+    }
+
+    return res.json({
+      msg: 'Crop approved successfully',
+      crop: {
+        ...crop.toJSON(),
+        status: 'approved',
+      },
+    });
+  } catch (err) {
+    console.error('[PUT /api/admin/crops/:id/approve] Error:', err);
+    return res.status(500).json({ msg: 'Server error approving crop' });
+  }
+});
+
+// ── PUT /api/admin/crops/:id/reject ─────────────────────────────────────────
+router.put('/crops/:id/reject', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const crop = await Crop.findByPk(req.params.id);
+
+    if (!crop) {
+      return res.status(404).json({ msg: 'Crop not found' });
+    }
+
+    await crop.update({ status: 'rejected' });
+
+    return res.json({ msg: 'Crop rejected successfully' });
+  } catch (err) {
+    console.error('[PUT /api/admin/crops/:id/reject] Error:', err);
+    return res.status(500).json({ msg: 'Server error rejecting crop' });
   }
 });
 

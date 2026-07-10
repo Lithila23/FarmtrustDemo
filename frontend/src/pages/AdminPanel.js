@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import client from '../api/client';
 import {
   Users, Wheat, Banknote, ShieldCheck, LayoutDashboard, Settings, RefreshCw,
-  Search, ChevronDown, Plus, Pencil, Trash2, MapPin, ChevronRight, X, UserPlus, AlertTriangle
+  Search, ChevronDown, Plus, Pencil, Trash2, ChevronRight, X, UserPlus, AlertTriangle
 } from 'lucide-react';
 
 const RECENT_ACTIVITY = [
@@ -38,6 +39,7 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('users');
   const [lastRefreshed, setLastRefreshed] = useState(new Date().toLocaleTimeString());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [cropActionLoading, setCropActionLoading] = useState(null);
 
   // Users local state initialized to match the screenshot
   const [users, setUsers] = useState([
@@ -89,21 +91,38 @@ const AdminPanel = () => {
   ]);
 
   // Crops local state
-  const [crops, setCrops] = useState([
-    { id: 'CRP-001', name: 'Basmati Rice', isOrganic: true, category: 'Grain', status: 'Active', price: '$2.40', qty: '5,200', farmerInitials: 'RP', farmerName: 'R. Perera', farmerColor: 'bg-blue-900 text-blue-200', location: 'Polonnaruwa', listed: 'May 12' },
-    { id: 'CRP-002', name: 'Red Onion', isOrganic: false, category: 'Vegetable', status: 'Active', price: '$1.10', qty: '3,100', farmerInitials: 'AS', farmerName: 'A. Silva', farmerColor: 'bg-green-900 text-green-200', location: 'Dambulla', listed: 'May 14' },
-    { id: 'CRP-003', name: 'Cinnamon', isOrganic: true, category: 'Spice', status: 'Pending', price: '$18.50', qty: '420', farmerInitials: 'NF', farmerName: 'N. Fernando', farmerColor: 'bg-purple-900 text-purple-200', location: 'Matale', listed: 'May 15' },
-    { id: 'CRP-004', name: 'Pineapple', isOrganic: false, category: 'Fruit', status: 'Active', price: '$0.85', qty: '8,700', farmerInitials: 'SW', farmerName: 'S. Wickrama', farmerColor: 'bg-orange-900 text-orange-200', location: 'Kurunegala', listed: 'May 10' },
-    { id: 'CRP-005', name: 'Black Pepper', isOrganic: false, category: 'Spice', status: 'Inactive', price: '$9.20', qty: '210', farmerInitials: 'KJ', farmerName: 'K. Jayawardena', farmerColor: 'bg-blue-900 text-blue-200', location: 'Kandy', listed: 'Apr 28' },
-    { id: 'CRP-006', name: 'Mango', isOrganic: true, category: 'Fruit', status: 'Active', price: '$1.65', qty: '6,400', farmerInitials: 'DB', farmerName: 'D. Bandara', farmerColor: 'bg-green-900 text-green-200', location: 'Gampola', listed: 'May 13' },
-    { id: 'CRP-007', name: 'Maize', isOrganic: false, category: 'Grain', status: 'Pending', price: '$0.55', qty: '12,000', farmerInitials: 'LR', farmerName: 'L. Rathnayake', farmerColor: 'bg-blue-900 text-blue-200', location: 'Anuradhapura', listed: 'May 16' },
-    { id: 'CRP-008', name: 'Bitter Gourd', isOrganic: true, category: 'Vegetable', status: 'Active', price: '$0.90', qty: '1,800', farmerInitials: 'MK', farmerName: 'M. Kumara', farmerColor: 'bg-pink-900 text-pink-200', location: 'Colombo', listed: 'May 11' },
-  ]);
+  const [crops, setCrops] = useState([]);
+
+  const loadCrops = async () => {
+    try {
+      const res = await client.get('/admin/crops');
+      const mapped = res.data.map((crop) => ({
+        id: crop.id,
+        name: crop.name,
+        category: crop.district || 'Unspecified',
+        status: crop.status || 'pending',
+        price: `$${Number(crop.price).toFixed(2)}`,
+        qty: Number(crop.quantity).toLocaleString(),
+        farmerName: crop.farmer?.name || 'Unknown Farmer',
+        farmerColor: 'bg-emerald-900 text-emerald-200',
+        location: crop.farmer?.district || crop.district || 'Unknown',
+        listed: crop.createdAt ? new Date(crop.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Unknown',
+      }));
+
+      setCrops(mapped);
+    } catch (error) {
+      console.error('Error loading crops:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadCrops();
+  }, []);
 
   // Dashboard metrics
   const metrics = {
     totalUsers: users.length,
-    activeCrops: crops.filter(c => c.status === 'Active').length,
+    activeCrops: crops.filter(c => c.status === 'approved').length,
     transactions: '$14,920',
     platformHealth: '99.9%'
   };
@@ -115,7 +134,7 @@ const AdminPanel = () => {
 
   const [cropSearchQuery, setCropSearchQuery] = useState('');
   const [cropStatusFilter, setCropStatusFilter] = useState('All Status');
-  const [cropCategoryFilter, setCropCategoryFilter] = useState('All Categories');
+  const [cropCategoryFilter, setCropCategoryFilter] = useState('All Districts');
 
   // Modals management states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -128,10 +147,10 @@ const AdminPanel = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    setTimeout(() => {
+    loadCrops().finally(() => {
       setLastRefreshed(new Date().toLocaleTimeString());
       setIsRefreshing(false);
-    }, 600);
+    });
   };
 
   // User Action Handlers
@@ -166,6 +185,20 @@ const AdminPanel = () => {
     setUsers(users.filter(u => u.id !== deletingUserId));
     setDeletingUserId(null);
     setIsDeleteModalOpen(false);
+  };
+
+  const handleCropAction = async (cropId, action) => {
+    setCropActionLoading(cropId);
+    try {
+      await client.put(`/admin/crops/${cropId}/${action}`);
+      await loadCrops();
+      setLastRefreshed(new Date().toLocaleTimeString());
+    } catch (error) {
+      console.error(`Error ${action} crop:`, error);
+      alert(`Failed to ${action} crop. Please try again.`);
+    } finally {
+      setCropActionLoading(null);
+    }
   };
 
   // Get initials for avatar
@@ -479,9 +512,9 @@ const AdminPanel = () => {
               className="flex items-center gap-2 bg-[#0f172a] border border-slate-700/70 text-white px-4 py-2 rounded-lg text-sm appearance-none focus:outline-none focus:border-emerald-500 cursor-pointer pr-8"
             >
               <option value="All Status">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Pending">Pending</option>
-              <option value="Inactive">Inactive</option>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
             </select>
             <ChevronDown className="w-4 h-4 text-[#94a3b8] absolute right-3 top-3 pointer-events-none" />
           </div>
@@ -491,11 +524,10 @@ const AdminPanel = () => {
               onChange={(e) => setCropCategoryFilter(e.target.value)}
               className="flex items-center gap-2 bg-[#0f172a] border border-slate-700/70 text-white px-4 py-2 rounded-lg text-sm appearance-none focus:outline-none focus:border-emerald-500 cursor-pointer pr-8"
             >
-              <option value="All Categories">All Categories</option>
-              <option value="Grain">Grain</option>
-              <option value="Vegetable">Vegetable</option>
-              <option value="Fruit">Fruit</option>
-              <option value="Spice">Spice</option>
+              <option value="All Districts">All Districts</option>
+              {DISTRICTS.map((district) => (
+                <option key={district} value={district}>{district}</option>
+              ))}
             </select>
             <ChevronDown className="w-4 h-4 text-[#94a3b8] absolute right-3 top-3 pointer-events-none" />
           </div>
@@ -508,13 +540,13 @@ const AdminPanel = () => {
           <thead className="bg-[#1e293b]/90 border-b border-slate-700/50">
             <tr>
               <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Crop</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Category</th>
+              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">District</th>
               <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Status</th>
               <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Price</th>
               <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Qty (KG)</th>
               <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Farmer</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Location</th>
               <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Listed</th>
+              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/50">
@@ -522,7 +554,7 @@ const AdminPanel = () => {
               .filter(c => {
                 const matchesSearch = c.name.toLowerCase().includes(cropSearchQuery.toLowerCase()) || c.farmerName.toLowerCase().includes(cropSearchQuery.toLowerCase()) || c.location.toLowerCase().includes(cropSearchQuery.toLowerCase());
                 const matchesStatus = cropStatusFilter === 'All Status' || c.status === cropStatusFilter;
-                const matchesCategory = cropCategoryFilter === 'All Categories' || c.category === cropCategoryFilter;
+                const matchesCategory = cropCategoryFilter === 'All Districts' || c.category === cropCategoryFilter;
                 return matchesSearch && matchesStatus && matchesCategory;
               })
               .map((crop) => (
@@ -531,9 +563,9 @@ const AdminPanel = () => {
                   <td className="px-6 py-4 text-[#94a3b8]">{crop.category}</td>
                   <td className="px-6 py-4">
                     <span className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider ${
-                      crop.status === 'Active' ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50' : 
-                      crop.status === 'Pending' ? 'bg-amber-950/40 text-amber-500 border border-amber-900/50' : 
-                      'bg-slate-800 text-[#94a3b8] border border-slate-700'
+                      crop.status === 'approved' ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50' : 
+                      crop.status === 'pending' ? 'bg-amber-950/40 text-amber-500 border border-amber-900/50' : 
+                      'bg-rose-950/40 text-rose-400 border border-rose-900/50'
                     }`}>
                       {crop.status}
                     </span>
@@ -541,13 +573,31 @@ const AdminPanel = () => {
                   <td className="px-6 py-4 text-white font-medium">{crop.price} <span className="text-slate-500 text-xs">/kg</span></td>
                   <td className="px-6 py-4">{crop.qty}</td>
                   <td className="px-6 py-4">{crop.farmerName}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5 text-[#94a3b8]">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{crop.location}</span>
-                    </div>
-                  </td>
                   <td className="px-6 py-4 text-[#94a3b8]">{crop.listed}</td>
+                  <td className="px-6 py-4">
+                    {crop.status === 'pending' ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={cropActionLoading === crop.id}
+                          onClick={() => handleCropAction(crop.id, 'approve')}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold disabled:opacity-60"
+                        >
+                          {cropActionLoading === crop.id ? 'Working...' : 'Approve'}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={cropActionLoading === crop.id}
+                          onClick={() => handleCropAction(crop.id, 'reject')}
+                          className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold disabled:opacity-60"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-[#94a3b8]">No action needed</span>
+                    )}
+                  </td>
                 </tr>
               ))}
           </tbody>

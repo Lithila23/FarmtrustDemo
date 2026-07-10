@@ -1,14 +1,48 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
 const { Crop, User } = require('../models');
-const { sendNewListingAlert } = require('../utils/emailService');
-
 const router = express.Router();
+
+const getRequester = (req) => {
+  const token = req.header('x-auth-token');
+  if (!token) return null;
+
+  const secrets = [];
+  if (process.env.JWT_SECRET) secrets.push(process.env.JWT_SECRET);
+  secrets.push('secret');
+
+  for (const secret of secrets) {
+    try {
+      const decoded = jwt.verify(token, secret);
+      return decoded.user || null;
+    } catch (err) {
+      // Try the next secret.
+    }
+  }
+
+  return null;
+};
 
 // Get all crops
 router.get('/', async (req, res) => {
   try {
+    const requester = getRequester(req);
+    const isAdmin = requester?.id === 'admin_1';
+
+    const whereClause = isAdmin
+      ? {}
+      : requester
+        ? {
+            [require('sequelize').Op.or]: [
+              { status: 'approved' },
+              { farmerId: requester.id },
+            ],
+          }
+        : { status: 'approved' };
+
     const crops = await Crop.findAll({
+      where: whereClause,
       include: [{
         model: User,
         as: 'farmer',
@@ -32,6 +66,7 @@ router.post('/', auth, async (req, res) => {
       quantity: parseInt(quantity),
       price: parseFloat(price),
       description,
+      status: 'pending',
       district,
       farmerId: req.user.id
     });
@@ -47,42 +82,11 @@ router.post('/', auth, async (req, res) => {
 
     // ── 1. Immediate Response ───────────────────────────────────────────────
     // Return early to ensure the UI feels lightning fast
-    res.status(201).json(cropWithFarmer);
-
-    // ── 2. Background Fire-and-Forget Task ──────────────────────────────────
-    if (cropWithFarmer && cropWithFarmer.district) {
-      const farmerName = cropWithFarmer.farmer ? cropWithFarmer.farmer.name : 'A local farmer';
-      const cropDistrict = cropWithFarmer.district;
-      
-      User.findAll({
-        where: {
-          role: 'buyer',
-          district: cropDistrict
-        },
-        attributes: ['email', 'name']
-      }).then(buyers => {
-        if (buyers.length > 0) {
-          const productDetails = {
-            cropName: cropWithFarmer.name,
-            quantity: cropWithFarmer.quantity,
-            price: cropWithFarmer.price,
-            farmerName: farmerName
-          };
-
-          // Map over buyers and send emails concurrently
-          Promise.allSettled(
-            buyers.map(buyer => 
-              sendNewListingAlert(buyer.email, buyer.name, productDetails)
-            )
-          ).then(results => {
-             const successful = results.filter(r => r.status === 'fulfilled').length;
-             console.log(`[Alerts] Sent ${successful}/${buyers.length} new listing alerts in ${cropDistrict}`);
-          });
-        }
-      }).catch(err => {
-         console.error('[Alerts] Background task failed to fetch buyers:', err);
-      });
-    }
+    res.status(201).json({
+      ...cropWithFarmer.toJSON(),
+      status: cropWithFarmer.status,
+      msg: 'Crop submitted for admin approval',
+    });
 
   } catch (err) {
     console.error('Add crop error:', err);
