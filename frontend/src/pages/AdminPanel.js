@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Users, Wheat, Banknote, ShieldCheck, LayoutDashboard, Settings, RefreshCw,
   Search, ChevronDown, Pencil, Trash2, MapPin, X, UserPlus, AlertTriangle, RotateCcw, Check, ThumbsUp, ThumbsDown,
-  Save, Phone, Mail, Globe, Clock, FileText, Info, MessageCircle
+  Save, FileText, Info, MessageCircle
 } from 'lucide-react';
 import client from '../api/client';
 
@@ -174,6 +174,8 @@ const AdminPanel = () => {
   const [isEditCropModalOpen, setIsEditCropModalOpen] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState(null);
   const [deletingCropId, setDeletingCropId] = useState(null);
+  const [isRestoreCropModalOpen, setIsRestoreCropModalOpen] = useState(false);
+  const [restoringCropId, setRestoringCropId] = useState(null);
 
   const handleEditCrop = (e) => {
     e.preventDefault();
@@ -186,6 +188,18 @@ const AdminPanel = () => {
 
   const handleDeleteCrop = () => {
     if (deletingCropId) handleAdminDeleteCrop(deletingCropId);
+  };
+
+  const handleRestoreCrop = async () => {
+    if (!restoringCropId) return;
+    try {
+      await client.put(`/admin/crops/${restoringCropId}/approve`);
+      setCrops(crops.map(c => c.id === restoringCropId ? { ...c, status: 'approved' } : c));
+      setIsRestoreCropModalOpen(false);
+      setRestoringCropId(null);
+    } catch (err) {
+      console.error('Error restoring crop:', err);
+    }
   };
 
   const handleAddCrop = (e) => {
