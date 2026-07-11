@@ -1,17 +1,53 @@
 const express = require('express');
 const { Op } = require('sequelize');
+const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
 const { Crop, User } = require('../models');
-const { sendNewListingAlert } = require('../utils/emailService');
-
 const router = express.Router();
+
+// Helper: Try to decode the JWT token from the request header without requiring auth.
+// Used to allow farmers to see their own pending/rejected crops and admins to see all.
+const getRequester = (req) => {
+  const token = req.header('x-auth-token');
+  if (!token) return null;
+
+  const secrets = [];
+  if (process.env.JWT_SECRET) secrets.push(process.env.JWT_SECRET);
+  secrets.push('secret');
+
+  for (const secret of secrets) {
+    try {
+      const decoded = jwt.verify(token, secret);
+      return decoded.user || null;
+    } catch (err) {
+      // Try the next secret.
+    }
+  }
+
+  return null;
+};
 
 // ── GET /api/crops ────────────────────────────────────────────────────────────
 // Public / buyer-facing: only approved crops are shown in the marketplace.
+// Farmers see their own crops at any status. Admins see all.
 router.get('/', async (req, res) => {
   try {
+    const requester = getRequester(req);
+    const isAdmin = requester?.id === 'admin_1';
+
+    const whereClause = isAdmin
+      ? {}
+      : requester
+        ? {
+            [Op.or]: [
+              { status: 'approved' },
+              { farmerId: requester.id },
+            ],
+          }
+        : { status: 'approved' };
+
     const crops = await Crop.findAll({
-      where: { status: 'approved' },
+      where: whereClause,
       include: [{ model: User, as: 'farmer', attributes: ['id', 'name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
@@ -48,17 +84,24 @@ router.post('/', auth, async (req, res) => {
       quantity: parseInt(quantity),
       price: parseFloat(price),
       description,
+      status: 'pending',  // Must be approved by admin before going live
       district,
       discount: discount ? parseInt(discount) : 0,
       farmerId: req.user.id,
-      status: 'pending'   // Must be approved by admin before going live
     });
 
     const cropWithFarmer = await Crop.findByPk(crop.id, {
       include: [{ model: User, as: 'farmer', attributes: ['id', 'name', 'email', 'district'] }]
     });
 
-    res.status(201).json(cropWithFarmer);
+    // ── Immediate Response ───────────────────────────────────────────────────
+    // Return early to ensure the UI feels lightning fast
+    res.status(201).json({
+      ...cropWithFarmer.toJSON(),
+      status: cropWithFarmer.status,
+      msg: 'Crop submitted for admin approval',
+    });
+
   } catch (err) {
     console.error('Add crop error:', err);
     if (!res.headersSent) res.status(500).json({ msg: 'Server error' });

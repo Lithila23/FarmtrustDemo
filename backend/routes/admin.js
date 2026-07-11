@@ -2,6 +2,7 @@ const express = require('express');
 const { fn, col, literal } = require('sequelize');
 const { User, Crop, Order } = require('../models');
 const authMiddleware = require('../middleware/auth');
+const { sendNewListingAlert } = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -46,13 +47,11 @@ router.get('/metrics', authMiddleware, adminOnly, async (req, res) => {
     });
     const rawRevenue = parseFloat(revenueResult?.totalRevenue || 0);
 
-    // Format as currency string, e.g. "$12,890"
-    const transactions = rawRevenue.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    // Format as currency string, e.g. "Rs. 12,890"
+    const transactions = `Rs. ${rawRevenue.toLocaleString('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    });
+    })}`;
 
     // 4. Platform health — hardcoded until a real uptime monitor is wired in
     const platformHealth = '99.9%';
@@ -62,7 +61,7 @@ router.get('/metrics', authMiddleware, adminOnly, async (req, res) => {
       data: {
         totalUsers:     totalUsers.toLocaleString(),  // e.g. "1,234"
         activeCrops:    activeCrops.toLocaleString(), // e.g. "456"
-        transactions,                                 // e.g. "$12,890"
+        transactions,                                 // e.g. "Rs. 12,890"
         platformHealth,
       },
     });
@@ -71,7 +70,6 @@ router.get('/metrics', authMiddleware, adminOnly, async (req, res) => {
     return res.status(500).json({ success: false, msg: 'Server error fetching metrics' });
   }
 });
-
 
 // ────────────────────────────────────────────────────────────────────────────
 // ADMIN USERS CRUD ENDPOINTS
@@ -217,13 +215,14 @@ router.delete('/users/:id/permanent', authMiddleware, adminOnly, async (req, res
 router.get('/crops', authMiddleware, adminOnly, async (req, res) => {
   try {
     const crops = await Crop.findAll({
-      include: [{ model: User, as: 'farmer', attributes: ['id', 'name', 'email', 'district'] }],
-      order: [
-        // Pending crops first so admin sees what needs review immediately
-        [require('sequelize').literal("FIELD(Crop.status,'pending','rejected','approved')")],
-        ['createdAt', 'DESC']
-      ]
+      include: [{
+        model: User,
+        as: 'farmer',
+        attributes: ['id', 'name', 'email', 'district'],
+      }],
+      order: [['createdAt', 'DESC']],
     });
+
     return res.json(crops);
   } catch (err) {
     console.error('[GET /api/admin/crops] Error:', err);
@@ -234,26 +233,52 @@ router.get('/crops', authMiddleware, adminOnly, async (req, res) => {
 // 2. PUT /api/admin/crops/:id/approve - Approve a pending crop
 router.put('/crops/:id/approve', authMiddleware, adminOnly, async (req, res) => {
   try {
-    const crop = await Crop.findByPk(req.params.id);
-    if (!crop) return res.status(404).json({ msg: 'Crop not found' });
-    crop.status = 'approved';
-    await crop.save();
+    const crop = await Crop.findByPk(req.params.id, {
+      include: [{
+        model: User,
+        as: 'farmer',
+        attributes: ['id', 'name', 'email', 'district'],
+      }],
+    });
 
-    // Fire-and-forget: notify buyers in the same district
-    if (crop.district) {
-      const { sendNewListingAlert } = require('../utils/emailService');
-      User.findAll({ where: { role: 'buyer', district: crop.district }, attributes: ['email', 'name'] })
-        .then(buyers => {
-          if (buyers.length) {
-            const farmerName = 'A local farmer';
-            const details = { cropName: crop.name, quantity: crop.quantity, price: crop.price, farmerName };
-            Promise.allSettled(buyers.map(b => sendNewListingAlert(b.email, b.name, details)))
-              .then(results => console.log(`[Alerts] Sent ${results.filter(r => r.status === 'fulfilled').length}/${buyers.length} listing alerts`));
-          }
-        }).catch(err => console.error('[Alerts] Failed to fetch buyers:', err));
+    if (!crop) {
+      return res.status(404).json({ msg: 'Crop not found' });
     }
 
-    return res.json({ msg: 'Crop approved', crop });
+    await crop.update({ status: 'approved' });
+
+    if (crop.district) {
+      try {
+        const buyers = await User.findAll({
+          where: {
+            role: 'buyer',
+            district: crop.district,
+          },
+          attributes: ['email', 'name'],
+        });
+
+        const productDetails = {
+          cropName: crop.name,
+          quantity: crop.quantity,
+          price: crop.price,
+          farmerName: crop.farmer?.name || 'A local farmer',
+        };
+
+        await Promise.allSettled(
+          buyers.map((buyer) => sendNewListingAlert(buyer.email, buyer.name, productDetails))
+        );
+      } catch (notificationError) {
+        console.error('[PUT /api/admin/crops/:id/approve] Buyer alert error:', notificationError);
+      }
+    }
+
+    return res.json({
+      msg: 'Crop approved successfully',
+      crop: {
+        ...crop.toJSON(),
+        status: 'approved',
+      },
+    });
   } catch (err) {
     console.error('[PUT /api/admin/crops/:id/approve] Error:', err);
     return res.status(500).json({ msg: 'Server error approving crop' });
@@ -264,10 +289,14 @@ router.put('/crops/:id/approve', authMiddleware, adminOnly, async (req, res) => 
 router.put('/crops/:id/reject', authMiddleware, adminOnly, async (req, res) => {
   try {
     const crop = await Crop.findByPk(req.params.id);
-    if (!crop) return res.status(404).json({ msg: 'Crop not found' });
-    crop.status = 'rejected';
-    await crop.save();
-    return res.json({ msg: 'Crop rejected', crop });
+
+    if (!crop) {
+      return res.status(404).json({ msg: 'Crop not found' });
+    }
+
+    await crop.update({ status: 'rejected' });
+
+    return res.json({ msg: 'Crop rejected successfully' });
   } catch (err) {
     console.error('[PUT /api/admin/crops/:id/reject] Error:', err);
     return res.status(500).json({ msg: 'Server error rejecting crop' });
@@ -288,4 +317,3 @@ router.delete('/crops/:id', authMiddleware, adminOnly, async (req, res) => {
 });
 
 module.exports = router;
-

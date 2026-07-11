@@ -6,6 +6,19 @@ import { useCart } from '../context/CartContext';
 const CartDrawer = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { cartItems, removeFromCart, processPayment } = useCart();
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [checkoutForm, setCheckoutForm] = useState({
+    deliveryAddress: '',
+    cardholderName: '',
+    cardNumber: '',
+    expiryMonth: '',
+    expiryYear: '',
+    cvv: '',
+  });
 
   useEffect(() => {
     const handleOpenCart = () => setIsCartOpen(true);
@@ -24,6 +37,90 @@ const CartDrawer = () => {
       document.body.style.overflow = '';
     };
   }, [isCartOpen]);
+
+  const openPaymentWindow = (order) => {
+    setSelectedOrder(order);
+    setPaymentModalOpen(true);
+    setPaymentSuccess(false);
+    setError('');
+    setCheckoutForm({
+      deliveryAddress: '',
+      cardholderName: '',
+      cardNumber: '',
+      expiryMonth: '',
+      expiryYear: '',
+      cvv: '',
+    });
+  };
+
+  const closePaymentWindow = () => {
+    setPaymentModalOpen(false);
+    setSelectedOrder(null);
+    setPaymentLoading(false);
+    setPaymentSuccess(false);
+    setError('');
+  };
+
+  const handleCheckoutChange = (field, value) => {
+    if (field === 'cardholderName') {
+      value = value.replace(/[^a-zA-Z\s]/g, '');
+    }
+
+    if (['cardNumber', 'cvv', 'expiryMonth', 'expiryYear'].includes(field)) {
+      value = value.replace(/\D/g, '');
+    }
+
+    setCheckoutForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const submitMockPayment = async () => {
+    if (!selectedOrder) return;
+
+    const trimmedAddress = checkoutForm.deliveryAddress.trim();
+    const trimmedName = checkoutForm.cardholderName.trim();
+    const digitsOnlyCard = checkoutForm.cardNumber.replace(/\D/g, '');
+    const digitsOnlyCvv = checkoutForm.cvv.replace(/\D/g, '');
+    const lettersOnlyName = checkoutForm.cardholderName.replace(/[^a-zA-Z\s]/g, '');
+
+    if (!trimmedAddress || !trimmedName || !digitsOnlyCard || !checkoutForm.expiryMonth || !checkoutForm.expiryYear || !digitsOnlyCvv) {
+      setError('Please complete the delivery address and card details.');
+      return;
+    }
+
+    if (checkoutForm.cardholderName !== lettersOnlyName) {
+      setError('Cardholder name can only include letters and spaces.');
+      return;
+    }
+
+    if (digitsOnlyCard.length < 13 || digitsOnlyCard.length > 19) {
+      setError('Card number must contain 13 to 19 digits only.');
+      return;
+    }
+
+    if (digitsOnlyCvv.length < 3 || digitsOnlyCvv.length > 4) {
+      setError('CVV must contain 3 or 4 digits only.');
+      return;
+    }
+
+    if (checkoutForm.cardNumber !== digitsOnlyCard) {
+      setError('Card number can only include numbers.');
+      return;
+    }
+
+    setPaymentLoading(true);
+    setError('');
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 900));
+      processPayment(selectedOrder.id);
+      setPaymentSuccess(true);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
 
   return createPortal(
     <>
@@ -96,10 +193,10 @@ const CartDrawer = () => {
                 <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">
                   {order.paymentStatus === 'pending' ? (
                     <button 
-                      onClick={() => processPayment(order.id)}
+                      onClick={() => openPaymentWindow(order)}
                       className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm transition-colors flex items-center justify-center gap-2"
                     >
-                      <CheckCircle2 size={16} /> Pay Now
+                      <CheckCircle2 size={16} /> Checkout
                     </button>
                   ) : (
                     <div className="w-full py-2 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-md font-semibold text-sm flex items-center justify-center gap-2 cursor-not-allowed">
@@ -119,6 +216,145 @@ const CartDrawer = () => {
           )}
         </div>
       </div>
+
+      {paymentModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[120] bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl dark:border dark:border-slate-700 p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Mock Payment Window</h3>
+              <button type="button" onClick={closePaymentWindow} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-4 text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+                <p className="font-semibold text-slate-900 dark:text-slate-100">Crop: {selectedOrder.crop?.name || 'Crop'}</p>
+                <p className="text-slate-600 dark:text-slate-300">Quantity: {selectedOrder.quantity} kg</p>
+                <p className="text-slate-600 dark:text-slate-300">Total: Rs. {Number(selectedOrder.totalAmount).toFixed(2)}</p>
+              </div>
+
+              <div>
+                <label className="form-label dark:text-slate-300">Delivery Address</label>
+                <textarea
+                  rows="3"
+                  value={checkoutForm.deliveryAddress}
+                  onChange={(e) => handleCheckoutChange('deliveryAddress', e.target.value)}
+                  placeholder="Enter the delivery address"
+                  className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  disabled={paymentLoading || paymentSuccess}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="form-label dark:text-slate-300">Cardholder Name</label>
+                  <input
+                    type="text"
+                    pattern="[A-Za-z ]*"
+                    value={checkoutForm.cardholderName}
+                    onChange={(e) => handleCheckoutChange('cardholderName', e.target.value)}
+                    placeholder="Name on card"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">Card Number</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={19}
+                    value={checkoutForm.cardNumber}
+                    onChange={(e) => handleCheckoutChange('cardNumber', e.target.value)}
+                    placeholder="Numbers only"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">Expiry Month</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={2}
+                    value={checkoutForm.expiryMonth}
+                    onChange={(e) => handleCheckoutChange('expiryMonth', e.target.value)}
+                    placeholder="MM"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">Expiry Year</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    value={checkoutForm.expiryYear}
+                    onChange={(e) => handleCheckoutChange('expiryYear', e.target.value)}
+                    placeholder="YYYY"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label dark:text-slate-300">CVV</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    value={checkoutForm.cvv}
+                    onChange={(e) => handleCheckoutChange('cvv', e.target.value)}
+                    placeholder="3 or 4 digits"
+                    className="input-field dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    disabled={paymentLoading || paymentSuccess}
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800">
+                <p className="text-slate-700 dark:text-slate-300">This is a mock checkout only. No real payment gateway is connected.</p>
+              </div>
+
+              {!paymentSuccess ? (
+                <button
+                  type="button"
+                  className="btn-primary w-full"
+                  onClick={submitMockPayment}
+                  disabled={paymentLoading}
+                >
+                  {paymentLoading ? 'Processing mock payment...' : 'Cofirm Payment'}
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-600 p-4 bg-slate-50 dark:bg-slate-700/50">
+                    <p className="font-semibold text-slate-900 dark:text-slate-100">Mock payment completed</p>
+                    <p className="text-slate-600 dark:text-slate-400">The cart item was marked as paid locally.</p>
+                  </div>
+                  <button type="button" className="btn-primary w-full" onClick={closePaymentWindow}>
+                    Close Window
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>,
     document.body
   );

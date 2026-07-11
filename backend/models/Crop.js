@@ -29,6 +29,11 @@ const Crop = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    status: {
+      type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+      allowNull: false,
+      defaultValue: 'pending'
+    },
     district: {
       type: DataTypes.ENUM(
         'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo',
