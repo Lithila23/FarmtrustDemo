@@ -84,9 +84,9 @@ Order.belongsTo(Crop, {
 // Test connection and sync
 sequelize.authenticate()
   .then(() => console.log(`${sequelize.getDialect().toUpperCase()} connected`))
-  .catch(err => console.log('MySQL connection error:', err));
+  .catch(err => console.log('Database connection error:', err));
 
-// Sync database (create tables)
+// Sync database (create tables if they don't exist; use migration scripts for schema changes)
 sequelize.sync({ alter: true })
   .then(async () => {
     console.log('Database synchronized');

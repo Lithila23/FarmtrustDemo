@@ -44,6 +44,15 @@ const Crop = (sequelize) => {
       ),
       allowNull: false
     },
+    discount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+      validate: {
+        min: 0,
+        max: 100
+      }
+    },
     farmerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -51,6 +60,11 @@ const Crop = (sequelize) => {
         model: 'Users',
         key: 'id'
       }
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+      allowNull: false,
+      defaultValue: 'pending'
     }
   }, {
     timestamps: true

@@ -3,8 +3,19 @@ const bcrypt    = require('bcryptjs');
 const jwt       = require('jsonwebtoken');
 const { sendOTPEmail } = require('../utils/emailService');
 const { User }  = require('../models');
+const { OAuth2Client } = require('google-auth-library');
 
 const router = express.Router();
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// In-memory store for pending OTP registrations
+const otpStore = new Map();
+const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes code validity
+
+// Helper to generate a random 6-digit numeric OTP code
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 // Note: Nodemailer logic and templates are now centralized in utils/emailService.js
 
@@ -20,9 +31,11 @@ router.post('/send-otp', async (req, res) => {
     return res.status(400).json({ msg: 'Name, email, password and district are required.' });
   }
 
+  const cleanEmail = email.trim().toLowerCase();
+
   try {
     // Check for existing verified account
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({ where: { email: cleanEmail } });
     if (existingUser) {
       return res.status(400).json({ msg: 'An account with this email already exists.' });
     }
@@ -31,10 +44,10 @@ router.post('/send-otp', async (req, res) => {
     const otp       = generateOTP();
     const expiresAt = Date.now() + OTP_TTL_MS;
 
-    otpStore.set(email.toLowerCase(), {
+    otpStore.set(cleanEmail, {
       otp,
       name,
-      email,
+      email:      cleanEmail,
       password,   // plain-text — will be hashed only after OTP verification
       role:       role || 'buyer',
       district,
@@ -42,9 +55,9 @@ router.post('/send-otp', async (req, res) => {
     });
 
     // Send email
-    await sendOTPEmail(email, name, otp);
+    await sendOTPEmail(cleanEmail, name, otp);
 
-    console.log(`[OTP] Sent to ${email} | OTP: ${otp} | Expires: ${new Date(expiresAt).toISOString()}`);
+    console.log(`[OTP] Sent to ${cleanEmail} | OTP: ${otp} | Expires: ${new Date(expiresAt).toISOString()}`);
 
     return res.status(200).json({
       msg: 'Verification code sent! Please check your inbox (and spam folder).',
@@ -141,14 +154,15 @@ router.post('/verify-otp', async (req, res) => {
 router.post('/register', async (req, res) => {
   const { name, email, password, role, district } = req.body;
   try {
-    const existingUser = await User.findOne({ where: { email } });
+    const cleanEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({ where: { email: cleanEmail } });
     if (existingUser) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
     const user = await User.create({
       name,
-      email,
+      email: cleanEmail,
       password,   // hashed by model's beforeCreate hook
       role: role || 'buyer',
       district,
@@ -174,12 +188,17 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
+    if (!email || !password) {
+      return res.status(400).json({ msg: 'Email and password are required' });
+    }
+    const cleanEmail = email.trim().toLowerCase();
+
     // ── Master Admin credential check (intercept BEFORE any DB query) ────────
     // Admins cannot self-register; this is the sole entry point for admin auth.
-    const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'admin@farmtrust.com';
+    const ADMIN_EMAIL    = (process.env.ADMIN_EMAIL    || 'admin@farmtrust.com').trim().toLowerCase();
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    if (cleanEmail === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       const adminPayload = { user: { id: 'admin_1' } };
       return jwt.sign(
         adminPayload,
@@ -204,7 +223,7 @@ router.post('/login', async (req, res) => {
     }
 
     // ── Standard DB-backed login (Farmer / Buyer) ─────────────────────────────
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email: cleanEmail } });
     if (!user) {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
@@ -237,6 +256,74 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+// ── POST /api/auth/google ──────────────────────────────────────────────────
+// Receive Google ID Token -> verify with Google -> find or create User -> return JWT
+router.post('/google', async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ msg: 'Google token is required' });
+  }
+
+  try {
+    // Verify the Google ID token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    if (!email) {
+      return res.status(400).json({ msg: 'Email not provided by Google account' });
+    }
+
+    // Find user by googleId, or by email to link them
+    let user = await User.findOne({ where: { googleId } });
+    if (!user) {
+      user = await User.findOne({ where: { email: email.toLowerCase() } });
+      if (user) {
+        // Link Google ID to existing user if they have the same email
+        user.googleId = googleId;
+        await user.save();
+        console.log(`[Google Auth] Linked existing user: ${email}`);
+      } else {
+        // Create a new user with buyer role by default
+        user = await User.create({
+          name: name || email.split('@')[0],
+          email: email.toLowerCase(),
+          googleId,
+          role: 'buyer', // Default role
+          // district and password will be null
+        });
+        console.log(`[Google Auth] Created new user: ${email}`);
+      }
+    }
+
+    // Issue JWT token (same as email/password login)
+    const jwtPayload = { user: { id: user.id } };
+    jwt.sign(
+      jwtPayload,
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '7d' },
+      (err, jwtToken) => {
+        if (err) throw err;
+        res.json({
+          token: jwtToken,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role
+          }
+        });
+      }
+    );
+  } catch (err) {
+    console.error('Google login error:', err);
+    res.status(500).json({ msg: 'Google authentication failed' });
   }
 });
 
