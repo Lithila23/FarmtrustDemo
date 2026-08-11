@@ -43,8 +43,8 @@ const CropCard = ({ crop, role = 'buyer', onAddToCart, onBuyNow, onEdit, onDelet
         ) : (
           <div />
         )}
-        <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-white/60 dark:border-slate-600 shadow-sm">
-          🌱 Fresh Produce
+        <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-white/60 dark:border-slate-600 shadow-sm max-w-[140px] truncate">
+          {crop.description || '🌱 Fresh Produce'}
         </span>
       </div>
 
@@ -89,12 +89,6 @@ const CropCard = ({ crop, role = 'buyer', onAddToCart, onBuyNow, onEdit, onDelet
               : `Available: ${crop.quantity} kg`
             }
           </p>
-
-          {crop.description && (
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 line-clamp-1">
-              {crop.description}
-            </p>
-          )}
 
           {/* Rejected reason hint */}
           {role === 'farmer' && crop.status === 'rejected' && (

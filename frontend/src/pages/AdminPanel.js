@@ -15,9 +15,9 @@ const RECENT_ACTIVITY = [
 ];
 
 const STATUS_STYLES = {
-  success: 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50',
-  info: 'bg-blue-950/40 text-blue-400 border border-blue-900/50',
-  warning: 'bg-amber-950/40 text-amber-500 border border-amber-900/50',
+  success: 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50',
+  info: 'bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50',
+  warning: 'bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-500 border border-amber-200 dark:border-amber-900/50',
 };
 
 // NAV_ITEMS is built dynamically below so we can inject the pending badge count
@@ -340,15 +340,15 @@ const AdminPanel = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
-          { label: 'Total Users', value: metrics.totalUsers, icon: <Users className="w-6 h-6" />, color: 'bg-blue-900/30 text-blue-400 border border-blue-800/50' },
-          { label: 'Active Crops', value: metrics.activeCrops, icon: <Wheat className="w-6 h-6" />, color: 'bg-emerald-900/30 text-emerald-400 border border-emerald-800/50' },
-          { label: 'Transactions', value: metrics.transactions, icon: <Banknote className="w-6 h-6" />, color: 'bg-amber-900/30 text-amber-400 border border-amber-800/50' },
-          { label: 'Platform Health', value: metrics.platformHealth, icon: <ShieldCheck className="w-6 h-6" />, color: 'bg-purple-900/30 text-purple-400 border border-purple-800/50' },
+          { label: 'Total Users', value: metrics.totalUsers, icon: <Users className="w-6 h-6" />, color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50' },
+          { label: 'Active Crops', value: metrics.activeCrops, icon: <Wheat className="w-6 h-6" />, color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50' },
+          { label: 'Transactions', value: metrics.transactions, icon: <Banknote className="w-6 h-6" />, color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50' },
+          { label: 'Platform Health', value: metrics.platformHealth, icon: <ShieldCheck className="w-6 h-6" />, color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/50' },
         ].map((card, idx) => (
-          <div key={idx} className="bg-[#1e293b]/70 border border-slate-700/50 backdrop-blur-md rounded-2xl p-6 flex items-center justify-between shadow-lg">
+          <div key={idx} className="bg-white/60 dark:bg-[#1e293b]/70 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md rounded-2xl p-6 flex items-center justify-between shadow-lg">
             <div>
-              <p className="text-[#94a3b8] text-sm font-medium mb-1">{card.label}</p>
-              <p className="text-2xl font-bold text-white">{card.value}</p>
+              <p className="text-slate-600 dark:text-[#94a3b8] text-sm font-medium mb-1">{card.label}</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{card.value}</p>
             </div>
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${card.color}`}>
               {card.icon}
@@ -358,52 +358,52 @@ const AdminPanel = () => {
       </div>
 
       {/* System Overview Card */}
-      <div className="bg-[#1e293b]/70 border border-slate-700/50 backdrop-blur-md rounded-2xl p-6 shadow-lg">
-        <h3 className="text-lg font-bold text-white mb-6">System Overview</h3>
+      <div className="bg-white/60 dark:bg-[#1e293b]/70 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md rounded-2xl p-6 shadow-lg">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">System Overview</h3>
         <div className="space-y-4">
           <div className="flex items-start">
             <div className="flex-1">
-              <p className="font-semibold text-white mb-1">Platform Performance</p>
-              <p className="text-[#94a3b8] text-sm">All systems operational. No active alerts.</p>
+              <p className="font-semibold text-slate-900 dark:text-white mb-1">Platform Performance</p>
+              <p className="text-slate-600 dark:text-[#94a3b8] text-sm">All systems operational. No active alerts.</p>
             </div>
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-900/50">Good</span>
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">Good</span>
           </div>
-          <div className="border-t border-slate-700/50 my-4"></div>
+          <div className="border-t border-slate-200 dark:border-slate-700/50 my-4"></div>
           <div className="flex items-start">
             <div className="flex-1">
-              <p className="font-semibold text-white mb-1">Database Status</p>
-              <p className="text-[#94a3b8] text-sm">MySQL connection stable. 45 GB used.</p>
+              <p className="font-semibold text-slate-900 dark:text-white mb-1">Database Status</p>
+              <p className="text-slate-600 dark:text-[#94a3b8] text-sm">MySQL connection stable. 45 GB used.</p>
             </div>
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-900/50">Connected</span>
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">Connected</span>
           </div>
         </div>
       </div>
 
       {/* Recent Platform Activity */}
-      <div className="bg-[#1e293b]/70 border border-slate-700/50 backdrop-blur-md rounded-2xl p-6 shadow-lg">
+      <div className="bg-white/60 dark:bg-[#1e293b]/70 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md rounded-2xl p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-white">Recent Platform Activity</h3>
-          <span className="text-xs text-[#94a3b8] font-medium">Last 24 hours</span>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Platform Activity</h3>
+          <span className="text-xs text-slate-600 dark:text-[#94a3b8] font-medium">Last 24 hours</span>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-700/50">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white/60 dark:bg-transparent backdrop-blur-sm">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-800/50 border-b border-slate-700/50 text-left">
-                <th className="px-4 py-3 font-semibold text-[#94a3b8] w-8">#</th>
-                <th className="px-4 py-3 font-semibold text-[#94a3b8]">Event</th>
-                <th className="px-4 py-3 font-semibold text-[#94a3b8]">Actor</th>
-                <th className="px-4 py-3 font-semibold text-[#94a3b8]">Time</th>
-                <th className="px-4 py-3 font-semibold text-[#94a3b8] text-center">Status</th>
+              <tr className="bg-slate-100/90 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700/50 text-left">
+                <th className="px-4 py-3 font-semibold text-slate-600 dark:text-[#94a3b8] w-8">#</th>
+                <th className="px-4 py-3 font-semibold text-slate-600 dark:text-[#94a3b8]">Event</th>
+                <th className="px-4 py-3 font-semibold text-slate-600 dark:text-[#94a3b8]">Actor</th>
+                <th className="px-4 py-3 font-semibold text-slate-600 dark:text-[#94a3b8]">Time</th>
+                <th className="px-4 py-3 font-semibold text-slate-600 dark:text-[#94a3b8] text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
               {RECENT_ACTIVITY.map((item, idx) => (
-                <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="px-4 py-3 text-[#64748b] font-mono">{idx + 1}</td>
-                  <td className="px-4 py-3 font-medium text-white">{item.event}</td>
-                  <td className="px-4 py-3 text-[#94a3b8]">{item.actor}</td>
-                  <td className="px-4 py-3 text-[#94a3b8] whitespace-nowrap">{item.time}</td>
+                <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="px-4 py-3 text-slate-500 dark:text-[#64748b] font-mono">{idx + 1}</td>
+                  <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{item.event}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-[#94a3b8]">{item.actor}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-[#94a3b8] whitespace-nowrap">{item.time}</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_STYLES[item.status]}`}>
                       {item.status}
@@ -445,17 +445,17 @@ const AdminPanel = () => {
     return (
       <div className="space-y-6 animate-pageSlideFade">
         {/* Search & Filter Bar */}
-        <div className="bg-[#1e293b]/90 border border-slate-700/50 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="bg-white dark:bg-[#1e293b]/90 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="relative w-full md:flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-[#94a3b8]" />
+              <Search className="h-4 w-4 text-slate-600 dark:text-[#94a3b8]" />
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={showTrash ? "Search trash by name or email..." : "Search users by name or email..."}
-              className="block w-full pl-10 pr-4 py-2 bg-[#0f172a] border border-slate-700/70 rounded-lg text-sm text-white placeholder-[#64748b] focus:outline-none focus:border-emerald-500 transition-colors"
+              className="block w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/70 rounded-lg text-sm text-slate-900 dark:text-white placeholder-[#64748b] focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
 
@@ -464,15 +464,15 @@ const AdminPanel = () => {
             <div className="relative w-full md:w-40">
               <button
                 onClick={() => setOpenUserFilterDropdown(openUserFilterDropdown === 'role' ? null : 'role')}
-                className="flex items-center justify-between w-full px-3 py-2 bg-[#0f172a] border border-slate-700/70 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
+                className="flex items-center justify-between w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/70 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
               >
                 <span className="capitalize">{roleFilter === 'All Roles' ? 'All Roles' : roleFilter}</span>
-                <ChevronDown className="h-4 w-4 text-[#94a3b8]" />
+                <ChevronDown className="h-4 w-4 text-slate-600 dark:text-[#94a3b8]" />
               </button>
               {openUserFilterDropdown === 'role' && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setOpenUserFilterDropdown(null)} />
-                  <div className="absolute left-0 mt-2 w-full bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden">
+                  <div className="absolute left-0 mt-2 w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden">
                     <div className="p-1.5 flex flex-col gap-0.5">
                       {['All Roles', 'buyer', 'farmer', 'admin'].map((opt) => (
                         <button
@@ -495,15 +495,15 @@ const AdminPanel = () => {
               <div className="relative w-full md:w-40">
                 <button
                   onClick={() => setOpenUserFilterDropdown(openUserFilterDropdown === 'status' ? null : 'status')}
-                  className="flex items-center justify-between w-full px-3 py-2 bg-[#0f172a] border border-slate-700/70 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
+                  className="flex items-center justify-between w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/70 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
                 >
                   <span>{statusFilter}</span>
-                  <ChevronDown className="h-4 w-4 text-[#94a3b8]" />
+                  <ChevronDown className="h-4 w-4 text-slate-600 dark:text-[#94a3b8]" />
                 </button>
                 {openUserFilterDropdown === 'status' && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setOpenUserFilterDropdown(null)} />
-                    <div className="absolute left-0 mt-2 w-full bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden">
+                    <div className="absolute left-0 mt-2 w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden">
                       <div className="p-1.5 flex flex-col gap-0.5">
                         {['All Statuses', 'Active Only', 'Inactive Only'].map((opt) => (
                           <button
@@ -528,7 +528,7 @@ const AdminPanel = () => {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all border whitespace-nowrap ${
                 showTrash 
                   ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400 hover:bg-emerald-900/30' 
-                  : 'bg-[#1e293b] border-slate-700 text-[#94a3b8] hover:text-white hover:bg-slate-800'
+                  : 'bg-white dark:bg-[#1e293b] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-[#94a3b8] hover:text-slate-900 dark:hover:text-white hover:bg-slate-800'
               }`}
             >
               {showTrash ? (
@@ -546,7 +546,7 @@ const AdminPanel = () => {
             {!showTrash && (
               <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center gap-2 bg-[#10b981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-emerald-900/30 whitespace-nowrap"
+                className="flex items-center gap-2 bg-[#10b981] hover:bg-[#059669] text-slate-900 dark:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-emerald-900/30 whitespace-nowrap"
               >
                 <UserPlus className="w-4 h-4" /> Add User
               </button>
@@ -555,73 +555,73 @@ const AdminPanel = () => {
         </div>
 
         {/* User Table Card */}
-        <div className="bg-[#1e293b]/70 border border-slate-700/50 backdrop-blur-md rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white/60 dark:bg-[#1e293b]/70 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md rounded-2xl overflow-hidden shadow-sm dark:shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-[#1e293b]/90 border-b border-slate-700/50">
+              <thead className="bg-slate-100/90 dark:bg-[#1e293b]/90 border-b border-slate-200 dark:border-slate-700/50">
                 <tr>
-                  <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">User</th>
-                  <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Registered Date</th>
-                  <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">User</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Registered Date</th>
+                  <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
                 {isLoadingUsers ? (
                   // Loading skeleton rows
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-slate-700/60" />
-                          <div className="h-3 w-28 bg-slate-700/60 rounded-full" />
+                          <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700/60" />
+                          <div className="h-3 w-28 bg-slate-200 dark:bg-slate-700/60 rounded-full" />
                         </div>
                       </td>
-                      <td className="px-6 py-4"><div className="h-3 w-40 bg-slate-700/60 rounded-full" /></td>
-                      <td className="px-6 py-4"><div className="h-5 w-14 bg-slate-700/60 rounded-full" /></td>
-                      <td className="px-6 py-4"><div className="h-5 w-14 bg-slate-700/60 rounded-full" /></td>
-                      <td className="px-6 py-4"><div className="h-3 w-24 bg-slate-700/60 rounded-full" /></td>
-                      <td className="px-6 py-4"><div className="h-3 w-12 bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-3 w-40 bg-slate-200 dark:bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-5 w-14 bg-slate-200 dark:bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-5 w-14 bg-slate-200 dark:bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-3 w-24 bg-slate-200 dark:bg-slate-700/60 rounded-full" /></td>
+                      <td className="px-6 py-4"><div className="h-3 w-12 bg-slate-200 dark:bg-slate-700/60 rounded-full" /></td>
                     </tr>
                   ))
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-8 text-center text-[#64748b]">
+                    <td colSpan="6" className="px-6 py-8 text-center text-slate-500 dark:text-[#64748b]">
                       {showTrash ? "No deleted users found in the trash." : "No users found matching filters."}
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-slate-800/30 transition-colors">
+                    <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                       {/* USER */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white shadow-sm border border-slate-600">
+                          <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-emerald-700 dark:text-white shadow-sm border border-emerald-200 dark:border-slate-600">
                             {getInitials(user.name)}
                           </div>
-                          <span className="font-bold text-white text-base">{user.name}</span>
+                          <span className="font-bold text-slate-900 dark:text-white text-base">{user.name}</span>
                         </div>
                       </td>
 
                       {/* EMAIL */}
-                      <td className="px-6 py-4 text-[#94a3b8] text-sm">{user.email}</td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-[#94a3b8] text-sm">{user.email}</td>
 
                       {/* ROLE */}
                       <td className="px-6 py-4">
                         {user.role === 'admin' && (
-                          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-blue-950/40 text-blue-400 border border-blue-900/50">
+                          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
                             Admin
                           </span>
                         )}
                         {user.role === 'farmer' && (
-                          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-emerald-950/40 text-emerald-400 border border-emerald-900/50">
+                          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
                             Farmer
                           </span>
                         )}
                         {user.role === 'buyer' && (
-                          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-amber-950/40 text-amber-500 border border-amber-900/50">
+                          <span className="inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-900/50">
                             Buyer
                           </span>
                         )}
@@ -631,17 +631,17 @@ const AdminPanel = () => {
                       <td className="px-6 py-4">
                         <span className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider ${
                           showTrash 
-                            ? 'bg-rose-950/40 text-rose-400 border border-rose-900/50'
+                            ? 'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
                             : user.status === 'active' 
-                              ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50' 
-                              : 'bg-rose-950/40 text-rose-400 border border-rose-900/50'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50' 
+                              : 'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
                         }`}>
                           {showTrash ? 'deleted' : user.status}
                         </span>
                       </td>
 
                       {/* REGISTERED DATE */}
-                      <td className="px-6 py-4 text-[#94a3b8] text-sm">{user.registeredDate || formatDate(user.createdAt)}</td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-[#94a3b8] text-sm">{user.registeredDate || formatDate(user.createdAt)}</td>
 
                       {/* ACTIONS */}
                       <td className="px-6 py-4">
@@ -649,14 +649,14 @@ const AdminPanel = () => {
                           <div className="flex items-center gap-3">
                             <button
                               onClick={() => handleRestoreUser(user)}
-                              className="p-1 text-emerald-500 hover:text-emerald-400 transition-colors"
+                              className="p-1 text-emerald-600 hover:text-emerald-500 dark:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
                               title="Restore User"
                             >
                               <RotateCcw className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => { setPermanentDeletingUserId(user.id); setIsPermanentDeleteModalOpen(true); }}
-                              className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                              className="p-1 text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors"
                               title="Delete Permanently"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -666,14 +666,14 @@ const AdminPanel = () => {
                           <div className="flex items-center gap-3">
                             <button
                               onClick={() => { setEditingUser(user); setIsEditModalOpen(true); }}
-                              className="p-1 text-[#94a3b8] hover:text-white transition-colors"
+                              className="p-1 text-slate-400 hover:text-slate-700 dark:text-slate-600 dark:text-[#94a3b8] dark:hover:text-slate-900 dark:hover:text-white transition-colors"
                               title="Edit User"
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => { setDeletingUserId(user.id); setIsDeleteModalOpen(true); }}
-                              className="p-1 text-slate-500 hover:text-red-400 transition-colors"
+                              className="p-1 text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors"
                               title="Delete User"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -706,17 +706,17 @@ const AdminPanel = () => {
       )}
 
       {/* Toolbar */}
-      <div className="bg-[#1e293b]/90 border border-slate-700/50 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white dark:bg-[#1e293b]/90 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative w-full md:flex-1">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-[#94a3b8]" />
+            <Search className="h-4 w-4 text-slate-600 dark:text-[#94a3b8]" />
           </div>
           <input
             type="text"
             placeholder="Search by crop name, farmer, district..."
             value={cropSearchQuery}
             onChange={(e) => setCropSearchQuery(e.target.value)}
-            className="block w-full pl-10 pr-4 py-2 bg-[#0f172a] border border-slate-700/70 rounded-lg text-sm text-white placeholder-[#64748b] focus:outline-none focus:border-emerald-500 transition-colors"
+            className="block w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/70 rounded-lg text-sm text-slate-900 dark:text-white placeholder-[#64748b] focus:outline-none focus:border-emerald-500 transition-colors"
           />
         </div>
         <div className="flex w-full md:w-auto items-center gap-3">
@@ -724,15 +724,15 @@ const AdminPanel = () => {
           <div className="relative w-full sm:w-40">
             <button
               onClick={() => setOpenCropFilterDropdown(openCropFilterDropdown === 'status' ? null : 'status')}
-              className="flex items-center justify-between w-full bg-[#0f172a] border border-slate-700/70 text-white px-4 py-2 rounded-lg text-sm focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
+              className="flex items-center justify-between w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/70 text-slate-900 dark:text-white px-4 py-2 rounded-lg text-sm focus:outline-none focus:border-emerald-500 cursor-pointer transition-colors"
             >
               <span>{cropStatusFilter}</span>
-              <ChevronDown className="w-4 h-4 text-[#94a3b8]" />
+              <ChevronDown className="w-4 h-4 text-slate-600 dark:text-[#94a3b8]" />
             </button>
             {openCropFilterDropdown === 'status' && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setOpenCropFilterDropdown(null)} />
-                <div className="absolute left-0 mt-2 w-full bg-[#0f172a] border border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden">
+                <div className="absolute left-0 mt-2 w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden">
                   <div className="p-1.5 flex flex-col gap-0.5">
                     {['All Status', 'pending', 'approved', 'rejected'].map((opt) => (
                       <button
@@ -752,7 +752,7 @@ const AdminPanel = () => {
           <button
             onClick={fetchCrops}
             disabled={isLoadingCrops}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1e293b] text-[#94a3b8] hover:bg-slate-800 hover:text-white transition-colors border border-slate-700 text-sm font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-[#1e293b] text-slate-600 dark:text-[#94a3b8] hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors border border-slate-200 dark:border-slate-700 text-sm font-semibold disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${isLoadingCrops ? 'animate-spin' : ''}`} />
             Refresh
@@ -761,26 +761,26 @@ const AdminPanel = () => {
       </div>
 
       {/* Data Table */}
-      <div className="overflow-x-auto border border-slate-700/50 rounded-xl">
+      <div className="overflow-x-auto border border-slate-200 dark:border-slate-700/50 rounded-xl bg-white/60 dark:bg-transparent backdrop-blur-sm shadow-sm">
         <table className="w-full text-left text-sm whitespace-nowrap">
-          <thead className="bg-[#1e293b]/90 border-b border-slate-700/50">
+          <thead className="bg-slate-100/90 dark:bg-[#1e293b]/90 border-b border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">
             <tr>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Crop</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Price</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Qty (KG)</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Farmer</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">District</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider">Listed</th>
-              <th className="px-6 py-4 font-bold text-[#94a3b8] text-xs uppercase tracking-wider text-center">Actions</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Crop</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Price</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Qty (KG)</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Farmer</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">District</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider">Listed</th>
+              <th className="px-6 py-4 font-bold text-slate-600 dark:text-[#94a3b8] text-xs uppercase tracking-wider text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-700/50">
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
             {isLoadingCrops ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
                   {Array.from({ length: 8 }).map((__, j) => (
-                    <td key={j} className="px-6 py-4"><div className="h-3 bg-slate-700/60 rounded-full" /></td>
+                    <td key={j} className="px-6 py-4"><div className="h-3 bg-slate-200 dark:bg-slate-700/60 rounded-full" /></td>
                   ))}
                 </tr>
               ))
@@ -801,83 +801,83 @@ const AdminPanel = () => {
                   const farmerName = crop.farmer?.name || 'Unknown';
                   const farmerInitials = farmerName.slice(0, 2).toUpperCase();
                   return (
-                    <tr key={crop.id} className={`hover:bg-slate-800/30 transition-colors ${
+                    <tr key={crop.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors ${
                       crop.status === 'pending' ? 'border-l-2 border-amber-500/50' : ''
                     }`}>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-[#0f172a] border border-slate-700 flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-200 dark:border-slate-700 flex items-center justify-center flex-shrink-0">
                             <Wheat className="w-5 h-5 text-emerald-500" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-semibold text-white">{crop.name}</span>
-                            <span className="text-xs text-slate-500 mt-0.5">#{crop.id}</span>
+                            <span className="font-semibold text-slate-900 dark:text-white">{crop.name}</span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">#{crop.id}</span>
                           </div>
                         </div>
                       </td>
 
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
-                          crop.status === 'approved' ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50' :
-                          crop.status === 'pending'  ? 'bg-amber-950/40 text-amber-400 border border-amber-900/50' :
-                          'bg-rose-950/40 text-rose-400 border border-rose-900/50'
+                          crop.status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50' :
+                          crop.status === 'pending'  ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50' :
+                          'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50'
                         }`}>
                           <div className={`w-1.5 h-1.5 rounded-full ${
-                            crop.status === 'approved' ? 'bg-emerald-400' :
-                            crop.status === 'pending'  ? 'bg-amber-400 animate-pulse' :
-                            'bg-rose-400'
+                            crop.status === 'approved' ? 'bg-emerald-500 dark:bg-emerald-400' :
+                            crop.status === 'pending'  ? 'bg-amber-500 dark:bg-amber-400 animate-pulse' :
+                            'bg-rose-500 dark:bg-rose-400'
                           }`} />
                           {crop.status}
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 text-white font-medium">
-                        Rs. {Number(crop.price).toFixed(2)} <span className="text-slate-500 text-xs">/kg</span>
+                      <td className="px-6 py-4 text-slate-900 dark:text-white font-medium">
+                        Rs. {Number(crop.price).toFixed(2)} <span className="text-slate-500 dark:text-slate-400 text-xs">/kg</span>
                       </td>
-                      <td className="px-6 py-4 text-white font-medium">{crop.quantity}</td>
+                      <td className="px-6 py-4 text-slate-900 dark:text-white font-medium">{crop.quantity}</td>
 
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300">
+                          <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300">
                             {farmerInitials}
                           </div>
-                          <span className="text-slate-300 font-medium">{farmerName}</span>
+                          <span className="text-slate-700 dark:text-slate-300 font-medium">{farmerName}</span>
                         </div>
                       </td>
 
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 text-[#94a3b8]">
+                        <div className="flex items-center gap-1.5 text-slate-600 dark:text-[#94a3b8]">
                           <MapPin className="w-3.5 h-3.5" />
                           <span>{crop.district}</span>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-[#94a3b8]">
+                      <td className="px-6 py-4 text-slate-600 dark:text-[#94a3b8]">
                         {new Date(crop.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </td>
 
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           {/* Approve */}
-                          {crop.status !== 'approved' && (
+                          {crop.status === 'pending' && (
                             <button
                               onClick={() => handleApproveCrop(crop.id)}
                               disabled={isActioning}
                               title="Approve"
-                              className="p-1.5 rounded-lg bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/60 border border-emerald-900/50 transition-colors disabled:opacity-40"
+                              className="p-1.5 rounded-lg bg-emerald-100/50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-900/50 transition-colors disabled:opacity-40"
                             >
-                              <ThumbsUp className="w-3.5 h-3.5" />
+                              <Check className="w-3.5 h-3.5" />
                             </button>
                           )}
                           {/* Reject */}
-                          {crop.status !== 'rejected' && (
+                          {crop.status === 'pending' && (
                             <button
                               onClick={() => handleRejectCrop(crop.id)}
                               disabled={isActioning}
                               title="Reject"
-                              className="p-1.5 rounded-lg bg-rose-950/40 text-rose-400 hover:bg-rose-900/60 border border-rose-900/50 transition-colors disabled:opacity-40"
+                              className="p-1.5 rounded-lg bg-rose-100/50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-200 dark:hover:bg-rose-900/60 border border-rose-200/50 dark:border-rose-900/50 transition-colors disabled:opacity-40"
                             >
-                              <ThumbsDown className="w-3.5 h-3.5" />
+                              <X className="w-3.5 h-3.5" />
                             </button>
                           )}
                           {/* Delete */}
@@ -885,7 +885,7 @@ const AdminPanel = () => {
                             onClick={() => { setDeletingCropId(crop.id); setIsDeleteCropModalOpen(true); }}
                             disabled={isActioning}
                             title="Delete"
-                            className="p-1.5 text-slate-500 hover:text-rose-400 transition-colors disabled:opacity-40"
+                            className="p-1.5 text-slate-400 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400 transition-colors disabled:opacity-40"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -906,7 +906,7 @@ const AdminPanel = () => {
               );
             }).length === 0 && (
               <tr>
-                <td colSpan="8" className="px-6 py-10 text-center text-[#64748b]">
+                <td colSpan="8" className="px-6 py-10 text-center text-slate-500 dark:text-[#64748b]">
                   No crops found matching the current filters.
                 </td>
               </tr>
@@ -934,9 +934,9 @@ const AdminPanel = () => {
 
     return (
       <div className="space-y-6 animate-pageSlideFade">
-        <div className="bg-[#1e293b]/90 border border-slate-700/50 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row gap-6 items-start justify-between">
+        <div className="bg-white dark:bg-[#1e293b]/90 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row gap-6 items-start justify-between">
           <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
               <Settings className="w-7 h-7 text-emerald-400" />
               Platform Settings
             </h2>
@@ -948,81 +948,81 @@ const AdminPanel = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Contact Information Card */}
-          <div className="bg-[#1e293b]/70 border border-slate-700/50 backdrop-blur-md rounded-2xl p-6 md:p-8 text-slate-300 shadow-lg h-full flex flex-col">
+          <div className="bg-white/60 dark:bg-[#1e293b]/70 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md rounded-2xl p-6 md:p-8 text-slate-300 shadow-lg h-full flex flex-col">
             <div className="flex items-center gap-4 mb-2">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
                 <MessageCircle className="w-6 h-6 text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">Support Contact Info</h3>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Support Contact Info</h3>
                 <p className="text-sm text-slate-400 mt-0.5">Displayed on Contact and Help pages</p>
               </div>
             </div>
             
             <div className="space-y-5 mt-6 flex-1">
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Support Email</label>
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Support Email</label>
                 <input
                   type="email"
                   value={contact.email}
                   onChange={(e) => setContact({...contact, email: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Phone Number</label>
+                  <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Phone Number</label>
                   <input
                     type="tel"
                     value={contact.phone}
                     onChange={(e) => setContact({...contact, phone: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#94a3b8] mb-2">WhatsApp Number</label>
+                  <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">WhatsApp Number</label>
                   <input
                     type="tel"
                     value={contact.whatsapp}
                     onChange={(e) => setContact({...contact, whatsapp: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Office Address</label>
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Office Address</label>
                 <input
                   type="text"
                   value={contact.address}
                   onChange={(e) => setContact({...contact, address: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Support Hours</label>
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Support Hours</label>
                 <input
                   type="text"
                   value={contact.hours}
                   onChange={(e) => setContact({...contact, hours: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
             </div>
-            <button onClick={handleSaveContact} className="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 text-sm">
+            <button onClick={handleSaveContact} className="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 text-sm">
               <Save className="w-4 h-4" />
               Save Contact Info
             </button>
           </div>
 
           {/* Terms & Policies Card */}
-          <div className="bg-[#1e293b]/70 border border-slate-700/50 backdrop-blur-md rounded-2xl p-6 md:p-8 text-slate-300 shadow-lg h-full flex flex-col">
+          <div className="bg-white/60 dark:bg-[#1e293b]/70 border border-slate-200 dark:border-slate-700/50 backdrop-blur-md rounded-2xl p-6 md:p-8 text-slate-300 shadow-lg h-full flex flex-col">
             <div className="flex items-center gap-4 mb-2">
               <div className="w-12 h-12 rounded-xl bg-blue-600/20 flex items-center justify-center shrink-0">
                 <FileText className="w-6 h-6 text-blue-400" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-bold text-white">Terms & Policies</h3>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Terms & Policies</h3>
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full">New</span>
                 </div>
                 <p className="text-sm text-slate-400 mt-0.5">Legal links shown during signup & footer</p>
@@ -1036,41 +1036,41 @@ const AdminPanel = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Terms of Service URL</label>
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Terms of Service URL</label>
                 <input
                   type="url"
                   defaultValue="https://farmtrust.lk/terms"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Privacy Policy URL</label>
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Privacy Policy URL</label>
                 <input
                   type="url"
                   defaultValue="https://farmtrust.lk/privacy"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">
                   Refund Policy URL <span className="text-slate-500 font-normal ml-1">(optional)</span>
                 </label>
                 <input
                   type="url"
                   defaultValue="https://farmtrust.lk/refunds"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-[#94a3b8] mb-2">Last Updated Date</label>
+                <label className="block text-sm font-semibold text-slate-600 dark:text-[#94a3b8] mb-2">Last Updated Date</label>
                 <input
                   type="date"
                   defaultValue="2025-05-01"
-                  className="w-full sm:w-fit px-4 py-3 rounded-xl bg-[#0f172a] border border-slate-700 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  className="w-full sm:w-fit px-4 py-3 rounded-xl bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
                 />
               </div>
             </div>
-            <button className="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 text-sm">
+            <button className="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 text-slate-900 dark:text-white font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 text-sm">
               <Save className="w-4 h-4" />
               Save Policies
             </button>
@@ -1130,9 +1130,9 @@ const AdminPanel = () => {
 
       <div className="relative z-10 flex flex-col md:flex-row w-full h-full">
       {/* Left Sidebar */}
-      <aside className="w-full md:w-64 bg-[#0f172a] border-b md:border-b-0 md:border-r border-slate-800 flex flex-col flex-shrink-0 shadow-xl">
-        <div className="px-6 py-5 border-b border-slate-800 flex justify-between items-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#64748b]">
+      <aside className="w-full md:w-64 bg-white/80 dark:bg-[#0f172a] backdrop-blur-md border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 flex flex-col flex-shrink-0 shadow-sm dark:shadow-xl">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-[#64748b]">
             Admin Control Console
           </p>
         </div>
@@ -1149,15 +1149,15 @@ const AdminPanel = () => {
                   relative flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold
                   transition-all duration-200 text-left overflow-hidden
                   ${isActive
-                    ? 'bg-emerald-900/10 text-[#10b981] border-l-4 border-[#10b981]'
-                    : 'text-[#94a3b8] hover:bg-slate-800/50 hover:text-white border-l-4 border-transparent'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-[#10b981] border-l-4 border-emerald-500 dark:border-[#10b981]'
+                    : 'text-slate-600 dark:text-[#94a3b8] hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-900 dark:hover:text-white border-l-4 border-transparent'
                   }
                 `}
               >
                 <span className="text-base leading-none">{item.icon}</span>
                 <span className="whitespace-nowrap flex-1">{item.label}</span>
                 {item.badge && (
-                  <span className="flex-shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-amber-500 text-[10px] font-bold text-white flex items-center justify-center">
+                  <span className="flex-shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-amber-500 text-[10px] font-bold text-slate-900 dark:text-white flex items-center justify-center">
                     {item.badge}
                   </span>
                 )}
@@ -1167,8 +1167,8 @@ const AdminPanel = () => {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="hidden md:block px-5 py-4 border-t border-slate-800">
-          <p className="text-xs text-[#64748b] leading-relaxed">
+        <div className="hidden md:block px-5 py-4 border-t border-slate-200 dark:border-slate-800">
+          <p className="text-xs text-slate-500 dark:text-[#64748b] leading-relaxed">
             FarmTrust Admin Panel v2.0<br />
             {lastRefreshed && <span>Sync: {lastRefreshed}</span>}
           </p>
@@ -1184,7 +1184,7 @@ const AdminPanel = () => {
             <h1 className="text-2xl font-bold text-[#10b981] tracking-tight">
               Admin Control Center
             </h1>
-            <p className="text-xs text-[#94a3b8] mt-1 uppercase font-semibold tracking-wider">
+            <p className="text-xs text-slate-600 dark:text-[#94a3b8] mt-1 uppercase font-semibold tracking-wider">
               {activeTab === 'users' ? 'Users Management' : 
                activeTab === 'crops' ? 'Crop Listings Management' : 
                `${activeTab} Management`}
@@ -1194,7 +1194,7 @@ const AdminPanel = () => {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1e293b] text-[#94a3b8] hover:bg-slate-800 hover:text-white transition-colors border border-slate-700 shadow-sm text-sm font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-[#1e293b] text-slate-600 dark:text-[#94a3b8] hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-semibold disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             Refresh Data
@@ -1214,50 +1214,50 @@ const AdminPanel = () => {
       {/* 1. Add User Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
-            <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-[#182232]">
-              <h3 className="font-bold text-lg text-white flex items-center gap-2">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-[#182232]">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-emerald-400" /> Add New User
               </h3>
               <button onClick={() => setIsAddModalOpen(false)} className="p-1 hover:bg-slate-700 rounded transition-colors">
-                <X className="w-5 h-5 text-[#94a3b8]" />
+                <X className="w-5 h-5 text-slate-600 dark:text-[#94a3b8]" />
               </button>
             </div>
             
             <form onSubmit={handleAddUser} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Full Name</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Full Name</label>
                 <input
                   type="text"
                   required
                   placeholder="Enter name"
                   value={newUser.name}
                   onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Email Address</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Email Address</label>
                 <input
                   type="email"
                   required
                   placeholder="Enter email"
                   value={newUser.email}
                   onChange={(e) => { setAddError(''); setNewUser({ ...newUser, email: e.target.value }); }}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Password</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Password</label>
                 <input
                   type="password"
                   required
                   placeholder="Set initial password"
                   value={newUser.password}
                   onChange={(e) => { setAddError(''); setNewUser({ ...newUser, password: e.target.value }); }}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
                 {addError && (
                   <p className="mt-1 text-xs text-red-400 font-semibold flex items-center gap-1">
@@ -1269,11 +1269,11 @@ const AdminPanel = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Role</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Role</label>
                   <select
                     value={newUser.role}
                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="buyer">Buyer</option>
                     <option value="farmer">Farmer</option>
@@ -1282,11 +1282,11 @@ const AdminPanel = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Status</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Status</label>
                   <select
                     value={newUser.status}
                     onChange={(e) => setNewUser({ ...newUser, status: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -1295,11 +1295,11 @@ const AdminPanel = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">District</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">District</label>
                 <select
                   value={newUser.district}
                   onChange={(e) => setNewUser({ ...newUser, district: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                 >
                   {DISTRICTS.map((d, i) => (
                     <option key={i} value={d}>{d}</option>
@@ -1330,36 +1330,36 @@ const AdminPanel = () => {
       {/* 2. Edit User Modal */}
       {isEditModalOpen && editingUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
-            <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-[#182232]">
-              <h3 className="font-bold text-lg text-white flex items-center gap-2">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-[#182232]">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 <Pencil className="w-5 h-5 text-emerald-400" /> Edit User
               </h3>
               <button onClick={() => setIsEditModalOpen(false)} className="p-1 hover:bg-slate-700 rounded transition-colors">
-                <X className="w-5 h-5 text-[#94a3b8]" />
+                <X className="w-5 h-5 text-slate-600 dark:text-[#94a3b8]" />
               </button>
             </div>
             
             <form onSubmit={handleEditUser} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Full Name</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Full Name</label>
                 <input
                   type="text"
                   required
                   value={editingUser.name}
                   onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Email Address</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Email Address</label>
                 <input
                   type="email"
                   required
                   value={editingUser.email}
                   onChange={(e) => { setEditError(''); setEditingUser({ ...editingUser, email: e.target.value }); }}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
                 {editError && (
                   <p className="mt-1 text-xs text-red-400 font-semibold flex items-center gap-1">
@@ -1371,11 +1371,11 @@ const AdminPanel = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Role</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Role</label>
                   <select
                     value={editingUser.role}
                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="buyer">Buyer</option>
                     <option value="farmer">Farmer</option>
@@ -1384,11 +1384,11 @@ const AdminPanel = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Status</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Status</label>
                   <select
                     value={editingUser.status}
                     onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -1397,11 +1397,11 @@ const AdminPanel = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">District</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">District</label>
                 <select
                   value={editingUser.district}
                   onChange={(e) => setEditingUser({ ...editingUser, district: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                 >
                   {DISTRICTS.map((d, i) => (
                     <option key={i} value={d}>{d}</option>
@@ -1432,10 +1432,10 @@ const AdminPanel = () => {
       {/* 3. Delete Confirmation Dialog */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
             <div className="flex items-center gap-3 text-red-400">
               <AlertTriangle className="w-6 h-6 flex-shrink-0" />
-              <h3 className="font-bold text-lg text-white">Delete User</h3>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Delete User</h3>
             </div>
             <p className="text-sm text-slate-300">
               Are you sure you want to delete this user? They will be moved to the Trash Bin.
@@ -1461,10 +1461,10 @@ const AdminPanel = () => {
       {/* 4. Permanent Delete Confirmation Dialog */}
       {isPermanentDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
             <div className="flex items-center gap-3 text-red-500">
               <AlertTriangle className="w-6 h-6 flex-shrink-0 animate-bounce" />
-              <h3 className="font-bold text-lg text-white">Delete Permanently</h3>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Delete Permanently</h3>
             </div>
             <p className="text-sm text-slate-300 font-medium">
               Are you sure you want to permanently delete this account? This action is permanent and cannot be undone.
@@ -1490,30 +1490,30 @@ const AdminPanel = () => {
       {/* 5. Add Crop Modal */}
       {isAddCropModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
-            <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-[#182232]">
-              <h3 className="font-bold text-lg text-white">Add New Crop</h3>
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-[#182232]">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Add New Crop</h3>
             </div>
             
             <form onSubmit={handleAddCrop} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Crop Name</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Crop Name</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Basmati rice"
                   value={newCrop.name}
                   onChange={(e) => setNewCrop({ ...newCrop, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Category</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Category</label>
                 <select
                   value={newCrop.category}
                   onChange={(e) => setNewCrop({ ...newCrop, category: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                 >
                   <option value="Grain">Grain</option>
                   <option value="Vegetable">Vegetable</option>
@@ -1524,49 +1524,49 @@ const AdminPanel = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Price</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Price</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. $2.45"
                     value={newCrop.price}
                     onChange={(e) => setNewCrop({ ...newCrop, price: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Qty (KG)</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Qty (KG)</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. 52"
                     value={newCrop.qty}
                     onChange={(e) => setNewCrop({ ...newCrop, qty: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Farmer</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Farmer</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. R. Premadasa"
                   value={newCrop.farmerName}
                   onChange={(e) => setNewCrop({ ...newCrop, farmerName: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Location</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Location</label>
                   <select
                     value={newCrop.location || 'Colombo'}
                     onChange={(e) => setNewCrop({ ...newCrop, location: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
                     {DISTRICTS.map((d, i) => (
                       <option key={i} value={d}>{d}</option>
@@ -1575,14 +1575,14 @@ const AdminPanel = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Listed Date</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Listed Date</label>
                   <input
                     type="text"
                     required
                     placeholder="Jun 4"
                     value={newCrop.listed}
                     onChange={(e) => setNewCrop({ ...newCrop, listed: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
               </div>
@@ -1597,7 +1597,7 @@ const AdminPanel = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition-colors text-white shadow-lg shadow-emerald-500/20"
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition-colors text-slate-900 dark:text-white shadow-lg shadow-emerald-500/20"
                 >
                   Save
                 </button>
@@ -1610,13 +1610,13 @@ const AdminPanel = () => {
       {/* 6. Delete Crop Modal */}
       {isDeleteCropModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
             <div className="flex items-center gap-3 text-red-400">
               <AlertTriangle className="w-6 h-6 flex-shrink-0" />
-              <h3 className="font-bold text-lg text-white">Delete Crop</h3>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Delete Crop</h3>
             </div>
             <p className="text-sm text-slate-300">
-              Are you sure you want to delete <span className="font-semibold text-white">{crops.find(c => c.id === deletingCropId)?.name}</span>? It will be moved to the Trash Bin.
+              Are you sure you want to delete <span className="font-semibold text-slate-900 dark:text-white">{crops.find(c => c.id === deletingCropId)?.name}</span>? It will be moved to the Trash Bin.
             </p>
             <div className="flex justify-end gap-3 pt-2">
               <button
@@ -1639,13 +1639,13 @@ const AdminPanel = () => {
       {/* Restore Crop Confirmation Modal */}
       {isRestoreCropModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-sm shadow-2xl p-6 animate-pageSlideFade space-y-4">
             <div className="flex items-center gap-3 text-emerald-400">
               <RotateCcw className="w-6 h-6 flex-shrink-0" />
-              <h3 className="font-bold text-lg text-white">Restore Crop</h3>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Restore Crop</h3>
             </div>
             <p className="text-sm text-slate-300">
-              Do you need to restore <span className="font-semibold text-white">{crops.find(c => c.id === restoringCropId)?.name}</span>?
+              Do you need to restore <span className="font-semibold text-slate-900 dark:text-white">{crops.find(c => c.id === restoringCropId)?.name}</span>?
             </p>
             <div className="flex justify-end gap-3 pt-2">
               <button
@@ -1668,34 +1668,34 @@ const AdminPanel = () => {
       {/* 7. Edit Crop Modal */}
       {isEditCropModalOpen && editingCrop && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1e293b] border border-slate-700 text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
-            <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-[#182232]">
-              <h3 className="font-bold text-lg text-white flex items-center gap-2">
+          <div className="bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-pageSlideFade">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-[#182232]">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                 <Pencil className="w-5 h-5 text-emerald-400" /> Edit Crop
               </h3>
               <button onClick={() => setIsEditCropModalOpen(false)} className="p-1 hover:bg-slate-700 rounded transition-colors">
-                <X className="w-5 h-5 text-[#94a3b8]" />
+                <X className="w-5 h-5 text-slate-600 dark:text-[#94a3b8]" />
               </button>
             </div>
             
             <form onSubmit={handleEditCrop} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Crop Name</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Crop Name</label>
                 <input
                   type="text"
                   required
                   value={editingCrop.name}
                   onChange={(e) => setEditingCrop({ ...editingCrop, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Category</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Category</label>
                 <select
                   value={editingCrop.category}
                   onChange={(e) => setEditingCrop({ ...editingCrop, category: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                 >
                   <option value="Grain">Grain</option>
                   <option value="Vegetable">Vegetable</option>
@@ -1706,46 +1706,46 @@ const AdminPanel = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Price</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Price</label>
                   <input
                     type="text"
                     required
                     value={editingCrop.price}
                     onChange={(e) => setEditingCrop({ ...editingCrop, price: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Qty (KG)</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Qty (KG)</label>
                   <input
                     type="text"
                     required
                     value={editingCrop.qty}
                     onChange={(e) => setEditingCrop({ ...editingCrop, qty: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Farmer</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Farmer</label>
                 <input
                   type="text"
                   required
                   value={editingCrop.farmerName}
                   onChange={(e) => setEditingCrop({ ...editingCrop, farmerName: e.target.value })}
-                  className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Location</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Location</label>
                   <select
                     value={editingCrop.location}
                     onChange={(e) => setEditingCrop({ ...editingCrop, location: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                   >
                     {DISTRICTS.map((d, i) => (
                       <option key={i} value={d}>{d}</option>
@@ -1754,13 +1754,13 @@ const AdminPanel = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#94a3b8] mb-1">Listed Date</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-[#94a3b8] mb-1">Listed Date</label>
                   <input
                     type="text"
                     required
                     value={editingCrop.listed}
                     onChange={(e) => setEditingCrop({ ...editingCrop, listed: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#0f172a] border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                 </div>
               </div>
@@ -1775,7 +1775,7 @@ const AdminPanel = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition-colors text-white shadow-lg shadow-emerald-500/20"
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition-colors text-slate-900 dark:text-white shadow-lg shadow-emerald-500/20"
                 >
                   Save Changes
                 </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { ShoppingCart, LogOut } from 'lucide-react';
 import CartDrawer from './CartDrawer';
 import ThemeToggle from './ThemeToggle';
@@ -20,8 +21,9 @@ const NAV_LINKS_BY_ROLE = {
     { href: '/ai-predictions', label: 'Future Prices' },
   ],
   farmer:   [
-    { href: '/farmer',     label: 'Dashboard'    },
-    { href: '/farmer',     label: 'My Products'  },
+    { href: '/farmer',          label: 'My Products'  },
+    { href: '/buyer',           label: 'Marketplace'  },
+    { href: '/ai-predictions',  label: 'AI Insights'  },
   ],
   admin:    [],
 };
@@ -56,6 +58,9 @@ const Navbar = () => {
 
   // Consume AuthContext — zero prop-drilling required
   const { user, logout } = useAuth();
+  
+  // Consume CartContext to get cart items count
+  const { cartItems } = useCart();
 
   // Derive the correct link list for the current auth state / role
   const role        = user?.role ?? '';
@@ -183,10 +188,15 @@ const Navbar = () => {
               {role === 'buyer' && (
                 <button
                   onClick={() => window.dispatchEvent(new Event('openCart'))}
-                  className={`p-2 transition-all duration-300 flex items-center justify-center rounded-full ${effectiveIsScrolled ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-white/90 hover:text-white hover:bg-white/15'}`}
+                  className={`p-2 transition-all duration-300 flex items-center justify-center rounded-full relative ${effectiveIsScrolled ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' : 'text-white/90 hover:text-white hover:bg-white/15'}`}
                   aria-label="Open Cart"
                 >
                   <ShoppingCart size={20} />
+                  {cartItems && cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm">
+                      {cartItems.length}
+                    </span>
+                  )}
                 </button>
               )}
               <button
@@ -253,7 +263,14 @@ const Navbar = () => {
                     }}
                     className="flex items-center gap-3 w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                   >
-                    <ShoppingCart size={18} />
+                    <div className="relative">
+                      <ShoppingCart size={18} />
+                      {cartItems && cartItems.length > 0 && (
+                        <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-1 ring-white dark:ring-slate-900">
+                          {cartItems.length}
+                        </span>
+                      )}
+                    </div>
                     View Cart / Orders
                   </button>
                 )}

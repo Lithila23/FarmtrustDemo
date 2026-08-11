@@ -87,7 +87,7 @@ sequelize.authenticate()
   .catch(err => console.log('Database connection error:', err));
 
 // Sync database (create tables if they don't exist; use migration scripts for schema changes)
-sequelize.sync({ alter: true })
+sequelize.sync(useMySql ? { alter: true } : {})
   .then(async () => {
     console.log('Database synchronized');
 

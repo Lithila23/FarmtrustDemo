@@ -39,7 +39,7 @@ function AnimatedRoutes() {
         <Route
           path="/buyer"
           element={
-            <ProtectedRoute allowedRoles={['buyer', 'admin']}>
+            <ProtectedRoute allowedRoles={['buyer', 'farmer', 'admin']}>
               <BuyerDashboard />
             </ProtectedRoute>
           }

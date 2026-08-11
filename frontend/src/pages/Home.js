@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import CropCard from '../components/CropCard';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import client from '../api/client';
@@ -115,6 +116,7 @@ const headingWordVariants = {
 
 const Home = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Derive the primary CTA text + route from the current auth role
   const ctaConfig = CTA_CONFIG[user?.role ?? ''] ?? CTA_CONFIG[''];
@@ -133,8 +135,8 @@ const Home = () => {
     const fetchFeatured = async () => {
       try {
         const res = await client.get('/crops');
-        // API returns newest-first; take the first 3
-        setFeaturedProducts(res.data.slice(0, 3));
+        // API returns newest-first; take the first 4 to fit a 5-column single row with the CTA
+        setFeaturedProducts(res.data.slice(0, 4));
       } catch (err) {
         console.error('Failed to fetch featured products:', err);
       } finally {
@@ -226,7 +228,38 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+    <div className="relative overflow-hidden min-h-screen transition-colors duration-300"
+      style={{
+        background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
+      }}
+    >
+      {/* Dark mode overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none hidden dark:block"
+        style={{
+          background: 'linear-gradient(180deg, #1e0a2e 0%, #1a1040 35%, #0d1f3c 70%, #022c22 100%)'
+        }}
+      />
+      {/* Ambient glow blobs (light: subtle pastels, dark: deep jewel tones) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div
+          className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+          style={{ background: 'radial-gradient(circle, #f9a8d4, transparent 70%)' }}
+        />
+        <div
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-25 dark:opacity-15 blur-[120px]"
+          style={{ background: 'radial-gradient(circle, #c4b5fd, transparent 70%)' }}
+        />
+        <div
+          className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+          style={{ background: 'radial-gradient(circle, #7dd3fc, transparent 70%)' }}
+        />
+        <div
+          className="absolute top-1/2 left-1/4 w-[400px] h-[300px] rounded-full opacity-0 dark:opacity-25 blur-[90px]"
+          style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
+        />
+      </div>
+
 
       {/* Hero Section — sliding image background; h-screen because Navbar is now fixed+transparent */}
       <section className="relative h-screen w-full overflow-hidden">
@@ -390,131 +423,54 @@ const Home = () => {
               </p>
             </div>
 
-            {/* Desktop: cards + explore button in a single row
-               Mobile : cards stacked, button at the bottom              */}
-            <div className="flex flex-col lg:flex-row lg:items-stretch gap-6">
+            {/* Grid layout for cards and CTA */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
 
-              {/* 3 live product cards — last 3 listings from the marketplace */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 flex-1">
-
-                {/* ── Skeleton shimmer while loading ── */}
-                {featuredLoading && [1, 2, 3].map(n => (
-                  <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
-                    <div className="h-48 bg-slate-200 dark:bg-slate-700" />
-                    <div className="p-4 space-y-3">
-                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
-                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
-                      <div className="flex gap-2 pt-1">
-                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
-                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
-                      </div>
+              {/* ── Skeleton shimmer while loading ── */}
+              {featuredLoading && [1, 2, 3, 4].map(n => (
+                <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
+                  <div className="h-48 bg-slate-200 dark:bg-slate-700" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+                    <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
+                    <div className="flex gap-2 pt-1">
+                      <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                      <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
 
-                {/* ── Empty state ── */}
-                {!featuredLoading && featuredProducts.length === 0 && (
-                  <div className="col-span-3 flex flex-col items-center justify-center py-16 text-center">
-                    <span className="text-6xl mb-4">🌾</span>
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
-                  </div>
-                )}
+              {/* ── Empty state ── */}
+              {!featuredLoading && featuredProducts.length === 0 && (
+                <div className="col-span-1 sm:col-span-2 md:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-16 text-center">
+                  <span className="text-6xl mb-4">🌾</span>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
+                </div>
+              )}
 
-                {/* ── Real product cards ── */}
-                {!featuredLoading && featuredProducts.map(crop => {
-                  const offerPrice  = Number(crop.price);
-                  const originalPrice = (offerPrice * 1.25).toFixed(2);
-                  const emoji = getCropEmoji(crop.name);
-                  return (
-                    <div
-                      key={crop.id}
-                      className="group relative flex flex-col rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-white/60 dark:border-slate-600/50 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-                    >
-                      {/* Image / Emoji area */}
-                      <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-                        {crop.image ? (
-                          <img
-                            src={crop.image}
-                            alt={crop.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <span className="text-7xl select-none group-hover:scale-110 transition-transform duration-300">
-                            {emoji}
-                          </span>
-                        )}
+              {/* ── Real product cards ── */}
+              {!featuredLoading && featuredProducts.map(crop => (
+                <CropCard
+                  key={crop.id}
+                  crop={crop}
+                  role="buyer"
+                  onAddToCart={() => navigate('/buyer')}
+                  onBuyNow={() => navigate('/buyer')}
+                />
+              ))}
 
-                        {/* Discount badge — top-left */}
-                        <span className="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
-                          20% Off
-                        </span>
-
-                        {/* Produce tag — bottom-left */}
-                        <span className="absolute bottom-3 left-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-200 text-xs font-semibold px-2.5 py-1 rounded-full border border-white/60 dark:border-slate-600 shadow">
-                          🌱 Fresh Produce
-                        </span>
-                      </div>
-
-                      {/* Details area */}
-                      <div className="flex flex-col flex-1 p-4 gap-3">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 line-clamp-2 leading-snug">
-                          {crop.name}
-                        </h3>
-
-                        <p className="text-sm text-slate-500 dark:text-slate-400 -mt-1">
-                          Available: {crop.quantity} kg
-                        </p>
-
-                        {/* Description snippet if available */}
-                        {crop.description && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                            {crop.description}
-                          </p>
-                        )}
-
-                        {/* Pricing row */}
-                        <div className="flex items-baseline gap-2 mt-auto">
-                          <span className="text-xl font-extrabold text-primary-700 dark:text-primary-400">
-                            Rs. {offerPrice.toFixed(2)}
-                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">/kg</span>
-                          </span>
-                          <span className="text-sm text-slate-400 line-through">
-                            Rs. {originalPrice}
-                          </span>
-                        </div>
-
-                        {/* Action buttons — both navigate to buyer marketplace */}
-                        <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                          <Link
-                            to="/buyer"
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 text-sm font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all duration-200"
-                          >
-                            🛒 Add to Cart
-                          </Link>
-                          <Link
-                            to="/buyer"
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg transition-all duration-200"
-                          >
-                            ⚡ Buy Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* "Explore for more" CTA — right column on desktop, bottom on mobile */}
-              <div className="flex lg:flex-col items-center justify-center lg:justify-center lg:w-48 shrink-0">
+              {/* "Explore for more" CTA — integrated as a compact rounded grid item */}
+              <div className="flex items-center justify-center h-full">
                 <Link
                   to={ctaConfig.route}
-                  className="group flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full text-center"
+                  className="group flex flex-col items-center justify-center gap-3 p-6 rounded-[2.5rem] bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full max-w-[220px] aspect-square text-center"
                 >
                   {/* Animated arrow circle */}
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
+                  <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
                     <svg
-                      className="w-8 h-8 text-white transition-transform duration-300 group-hover:translate-x-1"
+                      className="w-7 h-7 text-white transition-transform duration-300 group-hover:translate-x-1"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -523,12 +479,14 @@ const Home = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
-                  <span className="text-base font-bold leading-tight">
-                    Explore<br />for more
-                  </span>
-                  <span className="text-xs text-white/70 font-medium">
-                    View all listings →
-                  </span>
+                  <div>
+                    <span className="block text-sm font-bold leading-tight mb-1">
+                      Explore for more
+                    </span>
+                    <span className="block text-[10px] text-white/70 font-medium uppercase tracking-wider">
+                      View all listings →
+                    </span>
+                  </div>
                 </Link>
               </div>
 

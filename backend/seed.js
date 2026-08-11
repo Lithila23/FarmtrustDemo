@@ -7,7 +7,8 @@ async function seedUsers() {
     console.log('Seeding users...');
 
     // Ensure database is synced
-    await sequelize.sync({ alter: true });
+    const useMySql = String(process.env.DB_DIALECT || '').toLowerCase() === 'mysql';
+    await sequelize.sync(useMySql ? { alter: true } : {});
     console.log('Database synchronized');
 
     const users = [
