@@ -14,7 +14,6 @@ import ThemeToggle from './ThemeToggle';
 const NAV_LINKS_BY_ROLE = {
   '':       [
     { href: '/',           label: 'Home'        },
-    { href: '/buyer',      label: 'Marketplace' },
   ],
   buyer:    [
     { href: '/buyer',          label: 'Marketplace' },
