@@ -229,443 +229,443 @@ const Home = () => {
 
   return (
     <>
-    <div className="relative overflow-hidden min-h-screen transition-colors duration-300"
-      style={{
-        background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
-      }}
-    >
-      {/* Dark mode overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none hidden dark:block"
-        style={{
-          background: 'linear-gradient(180deg, #1e0a2e 0%, #1a1040 35%, #0d1f3c 70%, #022c22 100%)'
-        }}
-      />
-      {/* Ambient glow blobs (light: subtle pastels, dark: deep jewel tones) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div
-          className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #f9a8d4, transparent 70%)' }}
-        />
-        <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-25 dark:opacity-15 blur-[120px]"
-          style={{ background: 'radial-gradient(circle, #c4b5fd, transparent 70%)' }}
-        />
-        <div
-          className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
-          style={{ background: 'radial-gradient(circle, #7dd3fc, transparent 70%)' }}
-        />
-        <div
-          className="absolute top-1/2 left-1/4 w-[400px] h-[300px] rounded-full opacity-0 dark:opacity-25 blur-[90px]"
-          style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
-        />
-      </div>
-
-
-      {/* Hero Section — sliding image background; h-screen because Navbar is now fixed+transparent */}
-      <section className="relative h-screen w-full overflow-hidden">
-
-        {/* ── Overflow-hidden viewport (clips the sliding track) ────────── */}
-        <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-          <AnimatePresence initial={false}>
-            <motion.div
-              key={currentIndex}
-              initial={{ x: '100%', scale: 1.1, opacity: 0.5 }}
-              animate={{ x: 0, scale: 1, opacity: 1 }}
-              exit={{ x: '-100%', opacity: 0 }}
-              transition={{
-                x: { duration: 0.8, ease: 'easeInOut' },
-                opacity: { duration: 0.8, ease: 'easeInOut' },
-                scale: { duration: 5, ease: 'linear' }
-              }}
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{
-                backgroundImage: `url('${HERO_SLIDES[currentIndex].url}')`
-              }}
-              role="img"
-              aria-label={HERO_SLIDES[currentIndex].alt}
-            />
-          </AnimatePresence>
-        </div>{/* end viewport */}
-
-        {/* ── Dark scrim: bg-black/40 = 40% opacity, sits in background ─ */}
-        <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
-
-        {/* ── Protective fade overlay: bottom-to-top gradient to protect contrast ─ */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/40 to-transparent z-0 pointer-events-none" />
-
-        {/* ── Content — sits securely above the background carousel ─────── */}
-        <div className="relative z-10 h-full flex flex-col justify-end pb-16 md:pb-24 w-full max-w-7xl mx-auto px-6 text-center text-white">
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="flex flex-col items-center"
-            >
-              {/* Slide-specific Tagline Pill */}
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 text-emerald-300 font-semibold text-sm mb-4 tracking-wide shadow-sm">
-                {HERO_SLIDES[currentIndex].tag}
-              </span>
-
-              {/* Slide-specific Heading */}
-              <h2 className="text-4xl md:text-6xl font-hero-display font-bold italic mb-4 tracking-tight leading-tight max-w-4xl drop-shadow-md">
-                {HERO_SLIDES[currentIndex].title}
-              </h2>
-
-              {/* Slide-specific Paragraph */}
-              <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-md leading-relaxed">
-                {HERO_SLIDES[currentIndex].description}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* ── Buttons: fade-up once on mount ── */}
-          <motion.div
-            className="flex flex-col sm:flex-row justify-center gap-4 z-20"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.5 }}
-          >
-            {/* Primary CTA — rich gradient, inner glow, outer shadow, and animated arrow */}
-            <Link
-              to={ctaConfig.route}
-              className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-bold text-white rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),_0_4px_20px_rgba(16,185,129,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),_0_6px_25px_rgba(16,185,129,0.6)] hover:-translate-y-1"
-            >
-              {ctaConfig.label}
-              <svg
-                className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-            {/* Secondary CTA — premium frosted glassmorphism */}
-            {!user && (
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center px-8 py-3.5 text-sm font-bold text-white rounded-full bg-white/10 backdrop-blur-md border border-white/30 transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:-translate-y-1 active:scale-95"
-              >
-                Get Started Free
-              </Link>
-            )}
-          </motion.div>
-        </div>
-
-      </section>
-
-      {/* ── Middle Sections (Ambient Gradient Flow) ──────────────────────────
-           A rich 3-colour pastel gradient: rose → violet/lavender → sky (light)
-           deep-purple → indigo → teal (dark).  The About & Premium CTA sections
-           are NOT wrapped here, so they keep their own styles unchanged. */}
-      <div className="relative overflow-hidden transition-colors duration-300"
+      <div className="relative overflow-hidden min-h-screen transition-colors duration-300"
         style={{
           background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
         }}
       >
-        {/* dark-mode override via a pseudo-layer — Tailwind can't do multi-stop
-            inline gradients, so we use a CSS-variable trick: an absolutely
-            positioned dark overlay that is hidden in light mode */}
+        {/* Dark mode overlay */}
         <div
           className="absolute inset-0 pointer-events-none hidden dark:block"
           style={{
             background: 'linear-gradient(180deg, #1e0a2e 0%, #1a1040 35%, #0d1f3c 70%, #022c22 100%)'
           }}
         />
-        {/* Decorative ambient orbs — give the "glowing colour blob" look */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* top-left rose orb */}
+        {/* Ambient glow blobs (light: subtle pastels, dark: deep jewel tones) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div
             className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
             style={{ background: 'radial-gradient(circle, #f9a8d4, transparent 70%)' }}
           />
-          {/* centre violet orb */}
           <div
             className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-25 dark:opacity-15 blur-[120px]"
             style={{ background: 'radial-gradient(circle, #c4b5fd, transparent 70%)' }}
           />
-          {/* bottom-right sky orb */}
           <div
             className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
             style={{ background: 'radial-gradient(circle, #7dd3fc, transparent 70%)' }}
           />
-          {/* dark-mode: deep indigo orb */}
           <div
             className="absolute top-1/2 left-1/4 w-[400px] h-[300px] rounded-full opacity-0 dark:opacity-25 blur-[90px]"
             style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
           />
         </div>
 
-        {/* ── Content wrapper: relative + z-10 keeps all sections above the
+
+        {/* Hero Section — sliding image background; h-screen because Navbar is now fixed+transparent */}
+        <section className="relative h-screen w-full overflow-hidden">
+
+          {/* ── Overflow-hidden viewport (clips the sliding track) ────────── */}
+          <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
+            <AnimatePresence initial={false}>
+              <motion.div
+                key={currentIndex}
+                initial={{ x: '100%', scale: 1.1, opacity: 0.5 }}
+                animate={{ x: 0, scale: 1, opacity: 1 }}
+                exit={{ x: '-100%', opacity: 0 }}
+                transition={{
+                  x: { duration: 0.8, ease: 'easeInOut' },
+                  opacity: { duration: 0.8, ease: 'easeInOut' },
+                  scale: { duration: 5, ease: 'linear' }
+                }}
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: `url('${HERO_SLIDES[currentIndex].url}')`
+                }}
+                role="img"
+                aria-label={HERO_SLIDES[currentIndex].alt}
+              />
+            </AnimatePresence>
+          </div>{/* end viewport */}
+
+          {/* ── Dark scrim: bg-black/40 = 40% opacity, sits in background ─ */}
+          <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
+
+          {/* ── Protective fade overlay: bottom-to-top gradient to protect contrast ─ */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/40 to-transparent z-0 pointer-events-none" />
+
+          {/* ── Content — sits securely above the background carousel ─────── */}
+          <div className="relative z-10 h-full flex flex-col justify-end pb-16 md:pb-24 w-full max-w-7xl mx-auto px-6 text-center text-white">
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                className="flex flex-col items-center"
+              >
+                {/* Slide-specific Tagline Pill */}
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 text-emerald-300 font-semibold text-sm mb-4 tracking-wide shadow-sm">
+                  {HERO_SLIDES[currentIndex].tag}
+                </span>
+
+                {/* Slide-specific Heading */}
+                <h2 className="text-4xl md:text-6xl font-hero-display font-bold italic mb-4 tracking-tight leading-tight max-w-4xl drop-shadow-md">
+                  {HERO_SLIDES[currentIndex].title}
+                </h2>
+
+                {/* Slide-specific Paragraph */}
+                <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-md leading-relaxed">
+                  {HERO_SLIDES[currentIndex].description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* ── Buttons: fade-up once on mount ── */}
+            <motion.div
+              className="flex flex-col sm:flex-row justify-center gap-4 z-20"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut', delay: 0.5 }}
+            >
+              {/* Primary CTA — rich gradient, inner glow, outer shadow, and animated arrow */}
+              <Link
+                to={ctaConfig.route}
+                className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-bold text-white rounded-full overflow-hidden transition-all duration-300 active:scale-95 bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),_0_4px_20px_rgba(16,185,129,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),_0_6px_25px_rgba(16,185,129,0.6)] hover:-translate-y-1"
+              >
+                {ctaConfig.label}
+                <svg
+                  className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+              {/* Secondary CTA — premium frosted glassmorphism */}
+              {!user && (
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center px-8 py-3.5 text-sm font-bold text-white rounded-full bg-white/10 backdrop-blur-md border border-white/30 transition-all duration-300 hover:bg-white/20 hover:border-white/50 hover:-translate-y-1 active:scale-95"
+                >
+                  Get Started Free
+                </Link>
+              )}
+            </motion.div>
+          </div>
+
+        </section>
+
+        {/* ── Middle Sections (Ambient Gradient Flow) ──────────────────────────
+           A rich 3-colour pastel gradient: rose → violet/lavender → sky (light)
+           deep-purple → indigo → teal (dark).  The About & Premium CTA sections
+           are NOT wrapped here, so they keep their own styles unchanged. */}
+        <div className="relative overflow-hidden transition-colors duration-300"
+          style={{
+            background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
+          }}
+        >
+          {/* dark-mode override via a pseudo-layer — Tailwind can't do multi-stop
+            inline gradients, so we use a CSS-variable trick: an absolutely
+            positioned dark overlay that is hidden in light mode */}
+          <div
+            className="absolute inset-0 pointer-events-none hidden dark:block"
+            style={{
+              background: 'linear-gradient(180deg, #1e0a2e 0%, #1a1040 35%, #0d1f3c 70%, #022c22 100%)'
+            }}
+          />
+          {/* Decorative ambient orbs — give the "glowing colour blob" look */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* top-left rose orb */}
+            <div
+              className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+              style={{ background: 'radial-gradient(circle, #f9a8d4, transparent 70%)' }}
+            />
+            {/* centre violet orb */}
+            <div
+              className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full opacity-25 dark:opacity-15 blur-[120px]"
+              style={{ background: 'radial-gradient(circle, #c4b5fd, transparent 70%)' }}
+            />
+            {/* bottom-right sky orb */}
+            <div
+              className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full opacity-30 dark:opacity-20 blur-[100px]"
+              style={{ background: 'radial-gradient(circle, #7dd3fc, transparent 70%)' }}
+            />
+            {/* dark-mode: deep indigo orb */}
+            <div
+              className="absolute top-1/2 left-1/4 w-[400px] h-[300px] rounded-full opacity-0 dark:opacity-25 blur-[90px]"
+              style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
+            />
+          </div>
+
+          {/* ── Content wrapper: relative + z-10 keeps all sections above the
              absolutely-positioned orb/overlay layers in the same stacking
              context. Without this, CSS paint order renders absolute elements
              on top of static flow, hiding the Explore button until hover
              triggers scale-105 (which creates its own stacking context). */}
-        <div className="relative z-10">
+          <div className="relative z-10">
 
-          {/* ── Featured Products ─────────────────────────────────────────────── */}
-          <section className="pt-24 pb-12">
-            <div className="max-w-7xl mx-auto px-6">
+            {/* ── Featured Products ─────────────────────────────────────────────── */}
+            <section className="pt-24 pb-12">
+              <div className="max-w-7xl mx-auto px-6">
 
-              {/* Section header */}
-              <div className="mb-12 text-center">
-                <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
-                  🛒 Live on FarmTrust
-                </span>
-                <h3 className="section-header dark:text-slate-100">Featured Products</h3>
-                <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
-                  Hand-picked fresh produce from verified farmers — straight to you.
-                </p>
-              </div>
-
-              {/* Grid layout for cards and CTA */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
-
-                {/* ── Skeleton shimmer while loading ── */}
-                {featuredLoading && [1, 2, 3, 4].map(n => (
-                  <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
-                    <div className="h-48 bg-slate-200 dark:bg-slate-700" />
-                    <div className="p-4 space-y-3">
-                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
-                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
-                      <div className="flex gap-2 pt-1">
-                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
-                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* ── Empty state ── */}
-                {!featuredLoading && featuredProducts.length === 0 && (
-                  <div className="col-span-1 sm:col-span-2 md:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-16 text-center">
-                    <span className="text-6xl mb-4">🌾</span>
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
-                  </div>
-                )}
-
-                {/* ── Real product cards ── */}
-                {!featuredLoading && featuredProducts.map(crop => (
-                  <CropCard
-                    key={crop.id}
-                    crop={crop}
-                    role="buyer"
-                    onAddToCart={() => navigate('/buyer')}
-                    onBuyNow={() => navigate('/buyer')}
-                  />
-                ))}
-
-                {/* "Explore for more" CTA — integrated as a compact rounded grid item */}
-                <div className="flex items-center justify-center h-full">
-                  <Link
-                    to={ctaConfig.route}
-                    className="group flex flex-col items-center justify-center gap-3 p-6 rounded-[2.5rem] bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full max-w-[220px] aspect-square text-center"
-                  >
-                    {/* Animated arrow circle */}
-                    <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
-                      <svg
-                        className="w-7 h-7 text-white transition-transform duration-300 group-hover:translate-x-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </div>
-                    <div>
-                      <span className="block text-sm font-bold leading-tight mb-1">
-                        Explore for more
-                      </span>
-                      <span className="block text-[10px] text-white/70 font-medium uppercase tracking-wider">
-                        View all listings →
-                      </span>
-                    </div>
-                  </Link>
+                {/* Section header */}
+                <div className="mb-12 text-center">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
+                    🛒 Live on FarmTrust
+                  </span>
+                  <h3 className="section-header dark:text-slate-100">Featured Products</h3>
+                  <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
+                    Hand-picked fresh produce from verified farmers — straight to you.
+                  </p>
                 </div>
 
+                {/* Grid layout for cards and CTA */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+
+                  {/* ── Skeleton shimmer while loading ── */}
+                  {featuredLoading && [1, 2, 3, 4].map(n => (
+                    <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
+                      <div className="h-48 bg-slate-200 dark:bg-slate-700" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+                        <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
+                        <div className="flex gap-2 pt-1">
+                          <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                          <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* ── Empty state ── */}
+                  {!featuredLoading && featuredProducts.length === 0 && (
+                    <div className="col-span-1 sm:col-span-2 md:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-16 text-center">
+                      <span className="text-6xl mb-4">🌾</span>
+                      <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
+                    </div>
+                  )}
+
+                  {/* ── Real product cards ── */}
+                  {!featuredLoading && featuredProducts.map(crop => (
+                    <CropCard
+                      key={crop.id}
+                      crop={crop}
+                      role="buyer"
+                      onAddToCart={() => navigate('/buyer')}
+                      onBuyNow={() => navigate('/buyer')}
+                    />
+                  ))}
+
+                  {/* "Explore for more" CTA — integrated as a compact rounded grid item */}
+                  <div className="flex items-center justify-center h-full">
+                    <Link
+                      to={ctaConfig.route}
+                      className="group flex flex-col items-center justify-center gap-3 p-6 rounded-[2.5rem] bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full max-w-[220px] aspect-square text-center"
+                    >
+                      {/* Animated arrow circle */}
+                      <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
+                        <svg
+                          className="w-7 h-7 text-white transition-transform duration-300 group-hover:translate-x-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                      <div>
+                        <span className="block text-sm font-bold leading-tight mb-1">
+                          Explore for more
+                        </span>
+                        <span className="block text-[10px] text-white/70 font-medium uppercase tracking-wider">
+                          View all listings →
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* sectionRef on the outermost wrapper — py-12 padding + heading give it
+            {/* sectionRef on the outermost wrapper — py-12 padding + heading give it
           guaranteed intrinsic height so the observer fires early & reliably. */}
-          <section ref={sectionRef} className="py-12">
-            <div className="max-w-7xl mx-auto px-6">
-              <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <section ref={sectionRef} className="py-12">
+              <div className="max-w-7xl mx-auto px-6">
+                <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
 
-                {/* ── Card 1 — Transparent Pricing
+                  {/* ── Card 1 — Transparent Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : none (fires first) */}
-                <div
-                  className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgb(16,185,129,0.12)]
+                  <div
+                    className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgb(16,185,129,0.12)]
                 transition-all duration-1000 ease-out
                 ${isVisible
-                      ? 'opacity-100 translate-x-0 translate-y-0'
-                      : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                    }`}
-                >
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                    <Scale className="w-7 h-7 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+                        ? 'opacity-100 translate-x-0 translate-y-0'
+                        : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                      }`}
+                  >
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                      <Scale className="w-7 h-7 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Transparent Pricing</h4>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Transparent Pricing</h4>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
-                </div>
 
-                {/* ── Card 2 — Secure Payments
+                  {/* ── Card 2 — Secure Payments
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-                <div
-                  className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]
+                  <div
+                    className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]
                 transition-all duration-1000 ease-out delay-200
                 ${isVisible
-                      ? 'opacity-100 translate-y-0'
-                      : 'opacity-0 translate-y-10 md:translate-y-20'
-                    }`}
-                >
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 border border-violet-200 dark:border-violet-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-                    <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2} />
+                        ? 'opacity-100 translate-y-0'
+                        : 'opacity-0 translate-y-10 md:translate-y-20'
+                      }`}
+                  >
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 border border-violet-200 dark:border-violet-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+                      <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2} />
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
-                </div>
 
-                {/* ── Card 3 — Verified Trust
+                  {/* ── Card 3 — Verified Trust
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-                <div
-                  className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-sky-500/30 hover:shadow-[0_8px_30px_rgb(14,165,233,0.12)]
+                  <div
+                    className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-sky-500/30 hover:shadow-[0_8px_30px_rgb(14,165,233,0.12)]
                 transition-all duration-1000 ease-out delay-400
                 ${isVisible
-                      ? 'opacity-100 translate-x-0 translate-y-0'
-                      : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                    }`}
-                >
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 border border-sky-200 dark:border-sky-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                    <BadgeCheck className="w-7 h-7 text-sky-600 dark:text-sky-400" strokeWidth={2} />
+                        ? 'opacity-100 translate-x-0 translate-y-0'
+                        : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                      }`}
+                  >
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 border border-sky-200 dark:border-sky-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                      <BadgeCheck className="w-7 h-7 text-sky-600 dark:text-sky-400" strokeWidth={2} />
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Verified Trust</h4>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Verified Trust</h4>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+
                 </div>
-
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
+            {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
           intrinsic height (pt-12 + heading), so the observer fires reliably. */}
-          <section ref={highlightsRef} className="pt-12 pb-24">
-            <div className="max-w-7xl mx-auto px-6">
-              <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            <section ref={highlightsRef} className="pt-12 pb-24">
+              <div className="max-w-7xl mx-auto px-6">
+                <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
 
-                {/* Card 1 — Fair Pricing
+                  {/* Card 1 — Fair Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : 100ms */}
-                <div
-                  className={`glass-card text-center bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
+                  <div
+                    className={`glass-card text-center bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-100
                 ${isHighlightsVisible
-                      ? 'opacity-100 translate-x-0 translate-y-0'
-                      : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                    }`}
-                >
-                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+                        ? 'opacity-100 translate-x-0 translate-y-0'
+                        : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                      }`}
+                  >
+                    <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
+                    <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
-                  <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
-                </div>
 
-                {/* Card 2 — Direct Connection
+                  {/* Card 2 — Direct Connection
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-                <div
-                  className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
+                  <div
+                    className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-200
                 ${isHighlightsVisible
-                      ? 'opacity-100 translate-y-0'
-                      : 'opacity-0 translate-y-10 md:translate-y-20'
-                    }`}
-                >
-                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
+                        ? 'opacity-100 translate-y-0'
+                        : 'opacity-0 translate-y-10 md:translate-y-20'
+                      }`}
+                  >
+                    <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Direct Connection</h4>
+                    <p className="text-slate-600 dark:text-slate-300">Link directly with verified local farmers, ensuring the freshest produce while eliminating middleman delays.</p>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Direct Connection</h4>
-                  <p className="text-slate-600 dark:text-slate-300">Link directly with verified local farmers, ensuring the freshest produce while eliminating middleman delays.</p>
-                </div>
 
-                {/* Card 3 — Trust Marks
+                  {/* Card 3 — Trust Marks
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-                <div
-                  className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
+                  <div
+                    className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-400
                 ${isHighlightsVisible
-                      ? 'opacity-100 translate-x-0 translate-y-0'
-                      : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                    }`}
-                >
-                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                        ? 'opacity-100 translate-x-0 translate-y-0'
+                        : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                      }`}
+                  >
+                    <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
+                    <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
                   </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
-                  <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
+
                 </div>
-
               </div>
-            </div>
-          </section>
-        </div> {/* End of z-10 content wrapper */}
-      </div> {/* End of Middle Sections Gradient Wrapper */}
+            </section>
+          </div> {/* End of z-10 content wrapper */}
+        </div> {/* End of Middle Sections Gradient Wrapper */}
 
-      {/* ── Premium CTA Section ─────────────────────────────────────────── */}
-      <section className="relative py-24 md:py-28 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 dark:from-emerald-900 dark:to-teal-950 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        {/* Subtle glowing orbs for depth */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/10 blur-[120px] rounded-full"></div>
-        </div>
-
-        <div className="relative max-w-4xl mx-auto px-6 text-center z-10">
-          <h3 className="text-3xl md:text-5xl font-display font-extrabold text-white mb-6 tracking-tight leading-tight">
-            Cultivate Your Future with FarmTrust.
-          </h3>
-          <p className="text-lg md:text-xl mb-10 text-primary-100 dark:text-teal-100/90 max-w-2xl mx-auto font-medium leading-relaxed">
-            Connect directly with verified buyers and trusted farmers. Experience transparent pricing, secure transactions, and a thriving digital community.
-          </p>
-          <div className="flex justify-center">
-            <Link
-              to={user ? ctaConfig.route : "/register"}
-              className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-primary-700 dark:text-emerald-900 font-bold text-lg shadow-lg hover:bg-slate-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-            >
-              {user ? ctaConfig.label : "Create Your Free Account"}
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
+        {/* ── Premium CTA Section ─────────────────────────────────────────── */}
+        <section className="relative py-24 md:py-28 overflow-hidden bg-gradient-to-br from-primary-600 to-primary-800 dark:from-emerald-900 dark:to-teal-950 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
+          {/* Subtle glowing orbs for depth */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/10 blur-[120px] rounded-full"></div>
           </div>
-        </div>
-      </section>
 
-    </div> {/* ── End of outer hero/gradient wrapper ── */}
+          <div className="relative max-w-4xl mx-auto px-6 text-center z-10">
+            <h3 className="text-3xl md:text-5xl font-display font-extrabold text-white mb-6 tracking-tight leading-tight">
+              Cultivate Your Future with FarmTrust.
+            </h3>
+            <p className="text-lg md:text-xl mb-10 text-primary-100 dark:text-teal-100/90 max-w-2xl mx-auto font-medium leading-relaxed">
+              Connect directly with verified buyers and trusted farmers. Experience transparent pricing, secure transactions, and a thriving digital community.
+            </p>
+            <div className="flex justify-center">
+              <Link
+                to={user ? ctaConfig.route : "/register"}
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white text-primary-700 dark:text-emerald-900 font-bold text-lg shadow-lg hover:bg-slate-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                {user ? ctaConfig.label : "Create Your Free Account"}
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+      </div> {/* ── End of outer hero/gradient wrapper ── */}
 
       {/* ── About Section ───────────────────────────────────────────────── */}
       <section id="about" className="relative py-24 overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -705,7 +705,7 @@ const Home = () => {
                   FarmTrust was founded to eliminate the opacity that plagues agricultural trade. Farmers deserve fair compensation; buyers deserve genuine quality. We built a platform where both sides can transact with complete confidence.
                 </p>
                 <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Our AI-driven pricing engine, blockchain-anchored trust scores, and escrow-backed payments mean that every deal on FarmTrust is transparent, safe, and mutually beneficial.
+                  Our AI-driven pricing engine and escrow-backed payments mean that every deal on FarmTrust is transparent, safe, and mutually beneficial.
                 </p>
               </div>
               <div className="p-8 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none backdrop-blur-sm">
