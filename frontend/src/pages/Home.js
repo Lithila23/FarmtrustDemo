@@ -664,6 +664,92 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ── About Section ───────────────────────────────────────────────── */}
+      <section id="about" className="relative py-24 overflow-hidden bg-slate-950 transition-colors duration-300">
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute -top-40 left-1/4 w-[600px] h-[400px] rounded-full opacity-10 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #34d399, transparent 70%)' }}
+          />
+          <div
+            className="absolute -bottom-40 right-1/4 w-[600px] h-[400px] rounded-full opacity-10 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #6366f1, transparent 70%)' }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold text-sm mb-4 tracking-wide">
+              🌿 Who We Are
+            </span>
+            <h2 className="text-4xl md:text-5xl font-display font-extrabold text-white mb-5 tracking-tight leading-tight">
+              About <span className="text-emerald-400">FarmTrust</span>
+            </h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              Born from a vision to revolutionise how food moves from field to fork — with fairness, technology, and trust at every step.
+            </p>
+          </div>
+
+          {/* Two-column layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+            {/* Left — Story */}
+            <div className="space-y-6">
+              <div className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <h3 className="text-2xl font-bold text-white mb-4">Our Mission</h3>
+                <p className="text-slate-400 leading-relaxed mb-4">
+                  FarmTrust was founded to eliminate the opacity that plagues agricultural trade. Farmers deserve fair compensation; buyers deserve genuine quality. We built a platform where both sides can transact with complete confidence.
+                </p>
+                <p className="text-slate-400 leading-relaxed">
+                  Our AI-driven pricing engine, blockchain-anchored trust scores, and escrow-backed payments mean that every deal on FarmTrust is transparent, safe, and mutually beneficial.
+                </p>
+              </div>
+              <div className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <h3 className="text-2xl font-bold text-white mb-4">Our Vision</h3>
+                <p className="text-slate-400 leading-relaxed">
+                  A world where every farmer — regardless of geography or resources — has access to fair markets, and every buyer can trace their food back to the hands that grew it. We are building the digital backbone of sustainable agriculture.
+                </p>
+              </div>
+            </div>
+
+            {/* Right — Stats grid */}
+            <div className="grid grid-cols-2 gap-6">
+              {[
+                { value: '5,000+', label: 'Verified Farmers', icon: '🌾', color: 'from-emerald-500/20 to-emerald-600/10', border: 'border-emerald-500/20' },
+                { value: '12,000+', label: 'Active Buyers', icon: '🛒', color: 'from-sky-500/20 to-sky-600/10', border: 'border-sky-500/20' },
+                { value: '₹50Cr+', label: 'Transactions Processed', icon: '🔒', color: 'from-violet-500/20 to-violet-600/10', border: 'border-violet-500/20' },
+                { value: '4.9★', label: 'Average Platform Rating', icon: '⭐', color: 'from-amber-500/20 to-amber-600/10', border: 'border-amber-500/20' },
+              ].map(({ value, label, icon, color, border }) => (
+                <div
+                  key={label}
+                  className={`p-6 rounded-3xl bg-gradient-to-br ${color} border ${border} backdrop-blur-sm text-center group hover:scale-105 transition-transform duration-300`}
+                >
+                  <div className="text-4xl mb-3">{icon}</div>
+                  <div className="text-3xl font-extrabold text-white mb-1">{value}</div>
+                  <div className="text-sm text-slate-400 font-medium">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Values strip */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { title: 'Transparency First', desc: 'Every price, every transaction, every review is visible and verifiable by all parties.', icon: '🔍' },
+              { title: 'Farmer Empowerment', desc: 'We give growers the tools, data, and connections to command better prices and grow sustainably.', icon: '💪' },
+              { title: 'Technology for Good', desc: 'AI and blockchain aren\'t buzzwords here — they\'re practical tools that solve real agricultural problems.', icon: '🤖' },
+            ].map(({ title, desc, icon }) => (
+              <div key={title} className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/8 hover:border-emerald-500/30 transition-all duration-300">
+                <span className="text-3xl mb-3 block">{icon}</span>
+                <h4 className="text-lg font-bold text-white mb-2">{title}</h4>
+                <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-slate-950 text-slate-300 py-16 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
