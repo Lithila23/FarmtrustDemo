@@ -408,231 +408,231 @@ const Home = () => {
              triggers scale-105 (which creates its own stacking context). */}
         <div className="relative z-10">
 
-        {/* ── Featured Products ─────────────────────────────────────────────── */}
-        <section className="pt-24 pb-12">
-          <div className="max-w-7xl mx-auto px-6">
+          {/* ── Featured Products ─────────────────────────────────────────────── */}
+          <section className="pt-24 pb-12">
+            <div className="max-w-7xl mx-auto px-6">
 
-            {/* Section header */}
-            <div className="mb-12 text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
-                🛒 Live on FarmTrust
-              </span>
-              <h3 className="section-header dark:text-slate-100">Featured Products</h3>
-              <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
-                Hand-picked fresh produce from verified farmers — straight to you.
-              </p>
-            </div>
-
-            {/* Grid layout for cards and CTA */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
-
-              {/* ── Skeleton shimmer while loading ── */}
-              {featuredLoading && [1, 2, 3, 4].map(n => (
-                <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
-                  <div className="h-48 bg-slate-200 dark:bg-slate-700" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
-                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
-                    <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
-                    <div className="flex gap-2 pt-1">
-                      <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
-                      <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {/* ── Empty state ── */}
-              {!featuredLoading && featuredProducts.length === 0 && (
-                <div className="col-span-1 sm:col-span-2 md:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-16 text-center">
-                  <span className="text-6xl mb-4">🌾</span>
-                  <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
-                </div>
-              )}
-
-              {/* ── Real product cards ── */}
-              {!featuredLoading && featuredProducts.map(crop => (
-                <CropCard
-                  key={crop.id}
-                  crop={crop}
-                  role="buyer"
-                  onAddToCart={() => navigate('/buyer')}
-                  onBuyNow={() => navigate('/buyer')}
-                />
-              ))}
-
-              {/* "Explore for more" CTA — integrated as a compact rounded grid item */}
-              <div className="flex items-center justify-center h-full">
-                <Link
-                  to={ctaConfig.route}
-                  className="group flex flex-col items-center justify-center gap-3 p-6 rounded-[2.5rem] bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full max-w-[220px] aspect-square text-center"
-                >
-                  {/* Animated arrow circle */}
-                  <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
-                    <svg
-                      className="w-7 h-7 text-white transition-transform duration-300 group-hover:translate-x-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="block text-sm font-bold leading-tight mb-1">
-                      Explore for more
-                    </span>
-                    <span className="block text-[10px] text-white/70 font-medium uppercase tracking-wider">
-                      View all listings →
-                    </span>
-                  </div>
-                </Link>
+              {/* Section header */}
+              <div className="mb-12 text-center">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-semibold mb-3">
+                  🛒 Live on FarmTrust
+                </span>
+                <h3 className="section-header dark:text-slate-100">Featured Products</h3>
+                <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg max-w-xl mx-auto">
+                  Hand-picked fresh produce from verified farmers — straight to you.
+                </p>
               </div>
 
+              {/* Grid layout for cards and CTA */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+
+                {/* ── Skeleton shimmer while loading ── */}
+                {featuredLoading && [1, 2, 3, 4].map(n => (
+                  <div key={n} className="rounded-2xl overflow-hidden bg-white/80 dark:bg-slate-800/70 border border-white/60 dark:border-slate-600/50 shadow-md animate-pulse">
+                    <div className="h-48 bg-slate-200 dark:bg-slate-700" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
+                      <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/3 mt-4" />
+                      <div className="flex gap-2 pt-1">
+                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex-1" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* ── Empty state ── */}
+                {!featuredLoading && featuredProducts.length === 0 && (
+                  <div className="col-span-1 sm:col-span-2 md:col-span-3 xl:col-span-4 flex flex-col items-center justify-center py-16 text-center">
+                    <span className="text-6xl mb-4">🌾</span>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">No listings yet — check back soon!</p>
+                  </div>
+                )}
+
+                {/* ── Real product cards ── */}
+                {!featuredLoading && featuredProducts.map(crop => (
+                  <CropCard
+                    key={crop.id}
+                    crop={crop}
+                    role="buyer"
+                    onAddToCart={() => navigate('/buyer')}
+                    onBuyNow={() => navigate('/buyer')}
+                  />
+                ))}
+
+                {/* "Explore for more" CTA — integrated as a compact rounded grid item */}
+                <div className="flex items-center justify-center h-full">
+                  <Link
+                    to={ctaConfig.route}
+                    className="group flex flex-col items-center justify-center gap-3 p-6 rounded-[2.5rem] bg-gradient-to-br from-primary-600 to-primary-700 dark:from-primary-700 dark:to-primary-800 text-white shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full max-w-[220px] aspect-square text-center"
+                  >
+                    {/* Animated arrow circle */}
+                    <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30 group-hover:bg-white/30 transition-colors duration-300">
+                      <svg
+                        className="w-7 h-7 text-white transition-transform duration-300 group-hover:translate-x-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span className="block text-sm font-bold leading-tight mb-1">
+                        Explore for more
+                      </span>
+                      <span className="block text-[10px] text-white/70 font-medium uppercase tracking-wider">
+                        View all listings →
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* sectionRef on the outermost wrapper — py-12 padding + heading give it
+          {/* sectionRef on the outermost wrapper — py-12 padding + heading give it
           guaranteed intrinsic height so the observer fires early & reliably. */}
-        <section ref={sectionRef} className="py-12">
-          <div className="max-w-7xl mx-auto px-6">
-            <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <section ref={sectionRef} className="py-12">
+            <div className="max-w-7xl mx-auto px-6">
+              <h3 className="section-header dark:text-slate-100">Why Choose FarmTrust?</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
 
-              {/* ── Card 1 — Transparent Pricing
+                {/* ── Card 1 — Transparent Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : none (fires first) */}
-              <div
-                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgb(16,185,129,0.12)]
+                <div
+                  className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgb(16,185,129,0.12)]
                 transition-all duration-1000 ease-out
                 ${isVisible
-                    ? 'opacity-100 translate-x-0 translate-y-0'
-                    : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                  }`}
-              >
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                  <Scale className="w-7 h-7 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+                      ? 'opacity-100 translate-x-0 translate-y-0'
+                      : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                    }`}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <Scale className="w-7 h-7 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Transparent Pricing</h4>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Transparent Pricing</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Automated market analysis delivers fair quotes for farmers and buyers, eliminating middleman markup.</p>
-              </div>
 
-              {/* ── Card 2 — Secure Payments
+                {/* ── Card 2 — Secure Payments
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-              <div
-                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]
+                <div
+                  className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-violet-500/30 hover:shadow-[0_8px_30px_rgb(139,92,246,0.12)]
                 transition-all duration-1000 ease-out delay-200
                 ${isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-10 md:translate-y-20'
-                  }`}
-              >
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 border border-violet-200 dark:border-violet-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-                  <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2} />
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-10 md:translate-y-20'
+                    }`}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-violet-50 dark:from-violet-900/40 dark:to-violet-800/20 border border-violet-200 dark:border-violet-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+                    <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2} />
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Secure Payments</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Protected escrow workflows and encrypted transfers give both parties confidence and contract safety.</p>
-              </div>
 
-              {/* ── Card 3 — Verified Trust
+                {/* ── Card 3 — Verified Trust
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-              <div
-                className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-sky-500/30 hover:shadow-[0_8px_30px_rgb(14,165,233,0.12)]
+                <div
+                  className={`feature-card group relative text-left bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50 hover:border-sky-500/30 hover:shadow-[0_8px_30px_rgb(14,165,233,0.12)]
                 transition-all duration-1000 ease-out delay-400
                 ${isVisible
-                    ? 'opacity-100 translate-x-0 translate-y-0'
-                    : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                  }`}
-              >
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 border border-sky-200 dark:border-sky-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                  <BadgeCheck className="w-7 h-7 text-sky-600 dark:text-sky-400" strokeWidth={2} />
+                      ? 'opacity-100 translate-x-0 translate-y-0'
+                      : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                    }`}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-900/40 dark:to-sky-800/20 border border-sky-200 dark:border-sky-700/50 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                    <BadgeCheck className="w-7 h-7 text-sky-600 dark:text-sky-400" strokeWidth={2} />
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Verified Trust</h4>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Verified Trust</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">Blockchain-anchored verification badges and quality ratings make trust decisions instant and audit-ready.</p>
+
               </div>
-
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
+          {/* Platform Highlights — highlightsRef on the outermost <section> guarantees
           intrinsic height (pt-12 + heading), so the observer fires reliably. */}
-        <section ref={highlightsRef} className="pt-12 pb-24">
-          <div className="max-w-7xl mx-auto px-6">
-            <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          <section ref={highlightsRef} className="pt-12 pb-24">
+            <div className="max-w-7xl mx-auto px-6">
+              <h3 className="section-header dark:text-slate-100">Platform Highlights</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
 
-              {/* Card 1 — Fair Pricing
+                {/* Card 1 — Fair Pricing
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:-translate-x-20        →  translate-x-0
                  Delay  : 100ms */}
-              <div
-                className={`glass-card text-center bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
+                <div
+                  className={`glass-card text-center bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-100
                 ${isHighlightsVisible
-                    ? 'opacity-100 translate-x-0 translate-y-0'
-                    : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
-                  }`}
-              >
-                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
+                      ? 'opacity-100 translate-x-0 translate-y-0'
+                      : 'opacity-0 translate-y-10 md:translate-y-0 md:-translate-x-20'
+                    }`}
+                >
+                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
+                  <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Fair Pricing</h4>
-                <p className="text-slate-600 dark:text-slate-300">AI-powered market intelligence ensures transparent and fair pricing for all transactions.</p>
-              </div>
 
-              {/* Card 2 — Direct Connection
+                {/* Card 2 — Direct Connection
                  Mobile & Desktop: opacity-0 translate-y-10/20  →  opacity-100 translate-y-0
                  Delay: 200ms */}
-              <div
-                className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
+                <div
+                  className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-200
                 ${isHighlightsVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-10 md:translate-y-20'
-                  }`}
-              >
-                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-10 md:translate-y-20'
+                    }`}
+                >
+                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Direct Connection</h4>
+                  <p className="text-slate-600 dark:text-slate-300">Link directly with verified local farmers, ensuring the freshest produce while eliminating middleman delays.</p>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Direct Connection</h4>
-                <p className="text-slate-600 dark:text-slate-300">Link directly with verified local farmers, ensuring the freshest produce while eliminating middleman delays.</p>
-              </div>
 
-              {/* Card 3 — Trust Marks
+                {/* Card 3 — Trust Marks
                  Mobile : opacity-0 translate-y-10  →  opacity-100 translate-y-0
                  Desktop: md:translate-x-20         →  translate-x-0
                  Delay  : 400ms */}
-              <div
-                className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
+                <div
+                  className={`card-lg text-center hover:shadow-lg bg-white/70 dark:bg-slate-800/60 backdrop-blur-sm border border-white/60 dark:border-slate-600/50
                 transition-all duration-1000 ease-out delay-400
                 ${isHighlightsVisible
-                    ? 'opacity-100 translate-x-0 translate-y-0'
-                    : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
-                  }`}
-              >
-                <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                      ? 'opacity-100 translate-x-0 translate-y-0'
+                      : 'opacity-0 translate-y-10 md:translate-y-0 md:translate-x-20'
+                    }`}
+                >
+                  <div className="w-14 h-14 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
+                  <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">Trust Marks</h4>
-                <p className="text-slate-600 dark:text-slate-300">Blockchain-based verification system for authenticity, reliability, and seller reputation.</p>
-              </div>
 
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
         </div> {/* End of z-10 content wrapper */}
       </div> {/* End of Middle Sections Gradient Wrapper */}
 
@@ -693,7 +693,7 @@ const Home = () => {
           </div>
 
           {/* Two-column layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left — Story */}
             <div className="space-y-6">
               <div className="p-8 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none backdrop-blur-sm">
@@ -716,18 +716,26 @@ const Home = () => {
             {/* Right — Stats grid */}
             <div className="grid grid-cols-2 gap-6">
               {[
-                { value: '5,000+', label: 'Verified Farmers', icon: '🌾',
+                {
+                  value: '5,000+', label: 'Verified Farmers', icon: '🌾',
                   lightBg: 'bg-emerald-50', lightBorder: 'border-emerald-200', lightVal: 'text-emerald-700', lightLabel: 'text-emerald-600',
-                  darkColor: 'dark:bg-emerald-500/10', darkBorder: 'dark:border-emerald-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400' },
-                { value: '12,000+', label: 'Active Buyers', icon: '🛒',
+                  darkColor: 'dark:bg-emerald-500/10', darkBorder: 'dark:border-emerald-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
+                },
+                {
+                  value: '12,000+', label: 'Active Buyers', icon: '🛒',
                   lightBg: 'bg-sky-50', lightBorder: 'border-sky-200', lightVal: 'text-sky-700', lightLabel: 'text-sky-600',
-                  darkColor: 'dark:bg-sky-500/10', darkBorder: 'dark:border-sky-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400' },
-                { value: '₹50Cr+', label: 'Transactions Processed', icon: '🔒',
+                  darkColor: 'dark:bg-sky-500/10', darkBorder: 'dark:border-sky-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
+                },
+                {
+                  value: 'Rs. 5M+', label: 'Transactions Processed', icon: '🔒',
                   lightBg: 'bg-violet-50', lightBorder: 'border-violet-200', lightVal: 'text-violet-700', lightLabel: 'text-violet-600',
-                  darkColor: 'dark:bg-violet-500/10', darkBorder: 'dark:border-violet-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400' },
-                { value: '4.9★', label: 'Average Platform Rating', icon: '⭐',
+                  darkColor: 'dark:bg-violet-500/10', darkBorder: 'dark:border-violet-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
+                },
+                {
+                  value: '4.9★', label: 'Average Platform Rating', icon: '⭐',
                   lightBg: 'bg-amber-50', lightBorder: 'border-amber-200', lightVal: 'text-amber-700', lightLabel: 'text-amber-600',
-                  darkColor: 'dark:bg-amber-500/10', darkBorder: 'dark:border-amber-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400' },
+                  darkColor: 'dark:bg-amber-500/10', darkBorder: 'dark:border-amber-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
+                },
               ].map(({ value, label, icon, lightBg, lightBorder, lightVal, lightLabel, darkColor, darkBorder, darkVal, darkLabel }) => (
                 <div
                   key={label}
@@ -742,20 +750,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Values strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              { title: 'Transparency First', desc: 'Every price, every transaction, every review is visible and verifiable by all parties.', icon: '🔍' },
-              { title: 'Farmer Empowerment', desc: 'We give growers the tools, data, and connections to command better prices and grow sustainably.', icon: '💪' },
-              { title: 'Technology for Good', desc: "AI and blockchain aren't buzzwords here — they're practical tools that solve real agricultural problems.", icon: '🤖' },
-            ].map(({ title, desc, icon }) => (
-              <div key={title} className="p-6 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none backdrop-blur-sm hover:border-emerald-400 dark:hover:border-emerald-500/30 hover:shadow-md transition-all duration-300">
-                <span className="text-3xl mb-3 block">{icon}</span>
-                <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-2">{title}</h4>
-                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
