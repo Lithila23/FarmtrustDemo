@@ -715,38 +715,35 @@ const Home = () => {
 
             {/* Right — Stats grid */}
             <div className="grid grid-cols-2 gap-6">
-              {[
-                {
-                  value: '5,000+', label: 'Verified Farmers', icon: '🌾',
-                  lightBg: 'bg-emerald-50', lightBorder: 'border-emerald-200', lightVal: 'text-emerald-700', lightLabel: 'text-emerald-600',
-                  darkColor: 'dark:bg-emerald-500/10', darkBorder: 'dark:border-emerald-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
-                },
-                {
-                  value: '12,000+', label: 'Active Buyers', icon: '🛒',
-                  lightBg: 'bg-sky-50', lightBorder: 'border-sky-200', lightVal: 'text-sky-700', lightLabel: 'text-sky-600',
-                  darkColor: 'dark:bg-sky-500/10', darkBorder: 'dark:border-sky-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
-                },
-                {
-                  value: 'Rs. 5M+', label: 'Transactions Processed', icon: '🔒',
-                  lightBg: 'bg-violet-50', lightBorder: 'border-violet-200', lightVal: 'text-violet-700', lightLabel: 'text-violet-600',
-                  darkColor: 'dark:bg-violet-500/10', darkBorder: 'dark:border-violet-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
-                },
-                {
-                  value: '4.9★', label: 'Average Platform Rating', icon: '⭐',
-                  lightBg: 'bg-amber-50', lightBorder: 'border-amber-200', lightVal: 'text-amber-700', lightLabel: 'text-amber-600',
-                  darkColor: 'dark:bg-amber-500/10', darkBorder: 'dark:border-amber-500/20', darkVal: 'dark:text-white', darkLabel: 'dark:text-slate-400'
-                },
-              ].map(({ value, label, icon, lightBg, lightBorder, lightVal, lightLabel, darkColor, darkBorder, darkVal, darkLabel }) => (
-                <div
-                  key={label}
-                  className={`p-6 rounded-3xl border backdrop-blur-sm text-center group hover:scale-105 transition-transform duration-300 shadow-sm dark:shadow-none
-                    ${lightBg} ${lightBorder} ${darkColor} ${darkBorder}`}
-                >
-                  <div className="text-4xl mb-3">{icon}</div>
-                  <div className={`text-3xl font-extrabold mb-1 ${lightVal} ${darkVal}`}>{value}</div>
-                  <div className={`text-sm font-medium ${lightLabel} ${darkLabel}`}>{label}</div>
-                </div>
-              ))}
+
+              {/* Verified Farmers */}
+              <div className="p-6 rounded-3xl border backdrop-blur-sm text-center group hover:scale-105 transition-transform duration-300 shadow-sm bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:shadow-none">
+                <div className="text-4xl mb-3">🌾</div>
+                <div className="text-3xl font-extrabold mb-1 text-emerald-700 dark:text-white">5,000+</div>
+                <div className="text-sm font-medium text-emerald-600 dark:text-slate-400">Verified Farmers</div>
+              </div>
+
+              {/* Active Buyers */}
+              <div className="p-6 rounded-3xl border backdrop-blur-sm text-center group hover:scale-105 transition-transform duration-300 shadow-sm bg-sky-50 border-sky-200 dark:bg-sky-500/10 dark:border-sky-500/20 dark:shadow-none">
+                <div className="text-4xl mb-3">🛒</div>
+                <div className="text-3xl font-extrabold mb-1 text-sky-700 dark:text-white">12,000+</div>
+                <div className="text-sm font-medium text-sky-600 dark:text-slate-400">Active Buyers</div>
+              </div>
+
+              {/* Transactions */}
+              <div className="p-6 rounded-3xl border backdrop-blur-sm text-center group hover:scale-105 transition-transform duration-300 shadow-sm bg-violet-50 border-violet-200 dark:bg-violet-500/10 dark:border-violet-500/20 dark:shadow-none">
+                <div className="text-4xl mb-3">🔒</div>
+                <div className="text-3xl font-extrabold mb-1 text-violet-700 dark:text-white">Rs. 5M+</div>
+                <div className="text-sm font-medium text-violet-600 dark:text-slate-400">Transactions Processed</div>
+              </div>
+
+              {/* Rating */}
+              <div className="p-6 rounded-3xl border backdrop-blur-sm text-center group hover:scale-105 transition-transform duration-300 shadow-sm bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20 dark:shadow-none">
+                <div className="text-4xl mb-3">⭐</div>
+                <div className="text-3xl font-extrabold mb-1 text-amber-700 dark:text-white">4.9★</div>
+                <div className="text-sm font-medium text-amber-600 dark:text-slate-400">Average Platform Rating</div>
+              </div>
+
             </div>
           </div>
 
