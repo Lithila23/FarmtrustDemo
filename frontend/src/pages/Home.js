@@ -228,6 +228,7 @@ const Home = () => {
   }
 
   return (
+    <>
     <div className="relative overflow-hidden min-h-screen transition-colors duration-300"
       style={{
         background: 'linear-gradient(180deg, #fff1f5 0%, #f3e8ff 35%, #e0f2fe 70%, #d1fae5 100%)'
@@ -664,6 +665,8 @@ const Home = () => {
         </div>
       </section>
 
+    </div> {/* ── End of outer hero/gradient wrapper ── */}
+
       {/* ── About Section ───────────────────────────────────────────────── */}
       <section id="about" className="relative py-24 overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         {/* Ambient glow — subtle in light, stronger in dark */}
@@ -831,7 +834,7 @@ const Home = () => {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 };
 
