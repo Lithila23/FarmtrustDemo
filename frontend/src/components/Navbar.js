@@ -132,7 +132,7 @@ const Navbar = () => {
     ? 'px-5 py-2 rounded-full border bg-emerald-500 text-white text-sm font-semibold transition-all duration-300 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]'
     : effectiveIsScrolled
       ? 'px-5 py-2 rounded-full border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 text-sm font-semibold transition-all duration-300 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] active:scale-95'
-      : 'px-5 py-2 rounded-full border border-white/70 text-white text-sm font-semibold transition-all duration-300 hover:bg-white hover:text-slate-900 active:scale-95';
+      : 'px-5 py-2 rounded-full border border-emerald-500 bg-emerald-500 text-white text-sm font-semibold transition-all duration-300 hover:bg-emerald-600 hover:border-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95';
 
   const hamburgerClass = effectiveIsScrolled
     ? 'md:hidden p-2 rounded-lg bg-white/70 hover:bg-white border border-slate-200'
